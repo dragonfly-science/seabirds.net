@@ -1,0 +1,26 @@
+<VirtualHost *:80>
+    ServerName www.dragonfly.co.nz
+    ServerAlias www.dragonfly.local
+    ServerAlias dragonfly.co.nz
+    ServerAdmin admin@dragonfly.co.nz
+
+    # bogus but safe DocumentRoot
+    ErrorLog /var/log/apache2/www.dragonfly.co.nz-error.log
+    CustomLog /var/log/apache2/www.dragonfly.co.nz-access.log combined
+
+    Alias /media/ /usr/local/django/www/media/
+    <Directory /usr/local/django/www/media/>
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    Alias /am/ /usr/local/lib/python2.6/dist-packages/Django-1.3-py2.6.egg/django/contrib/admin/media/
+    <Directory /usr/local/lib/python2.6/dist-packages/Django-1.3-py2.6.egg/django/contrib/admin/media/>
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    WSGIScriptAlias / /usr/local/django/www/apache/django.wsgi
+
+</VirtualHost>
+
