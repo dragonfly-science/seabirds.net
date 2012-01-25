@@ -1,0 +1,132 @@
+{% load markup %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>World Seabird Union</title>
+		<link rel="stylesheet" type="text/css" href="/css/960_12_col.css" />
+		<link rel="stylesheet" type="text/css" href="/css/reset.css" /> 
+		<link rel="stylesheet" type="text/css" href="/css/seabirds.css" />
+    </head>
+    <body>
+	<div id="banner">&nbsp;</div>
+	<div id="dropshadow">&nbsp;</div>
+		<div id="wrapper">
+	    <div id="mainbg">&nbsp;</div>
+		<div class="container_12">
+{% block header %}	
+			<!-- Header --!>
+			<div id="bannerphoto-1" class="grid_2">
+			</div>
+			<div id="bannerphoto-2" class="grid_2 push_8">
+			</div>
+			<div id="bannertext" class="grid_8 pull_2">
+<img src="/css/LOGO_jan2012.png" />
+			</div>
+            {% endblock %}
+            {% block navigation %}
+			<!-- Navigation Bar --!>
+			<ul>
+				<li>
+					<div class="grid_2 nav" id="navone">
+						<div class="navinner">
+<a href="">About WSU</a>
+						</div>
+						<ul>
+							<div class="filmstrip">
+<li><a href="">Mission Statement</a></li>
+<li>Personnel</li>
+<li>Documents</li>
+							</div>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<div class="grid_2 nav">
+						<div class="navinner">
+<a href="">Resources</a>
+						</div>
+						<ul>
+							<div class="filmstrip">
+<li>Publications</li>
+<li>Seabird Information <br />Network</li>
+<li>Conservation Action</li>
+							</div>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<div class="grid_2 nav">
+						<div class="navinner">
+People
+						</div>
+						<ul>
+							<div class="filmstrip">
+<li>WSUTT Personnel</li>
+<li>PETREL</li>
+							</div>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<div class="grid_2 nav">
+						<div class="navinner">
+Students
+						</div>
+						<ul>
+							<div class="filmstrip">
+<li>Job Postings</li>
+<li>Postgrad Opportunities</li>
+							</div>
+						</ul>
+					</div>
+				</li>	
+				<li>
+					<div class="grid_2 nav">
+						<div class="navinner">
+Contact
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="grid_2 nav">
+						<div class="navinner">
+Discussion
+						</div>
+					</div>
+				</li>
+			</ul>
+
+            {% endblock navigation %}
+            {% block content %}
+            {% endblock content %}
+            {% block sidebar %}
+            {% endblock sidebar %}
+		</div>
+            {% block footer %}
+			<div id="footbannershadow"></div>
+			<div id="footbanner">
+				<div class="container_12">
+					<div class="grid_3 foot">
+<img src="/css/small_logo.png" />
+					</div>
+					<div class="grid_2 navinner foot">
+Seabirds.net
+					</div>
+					<div class="grid_2 navinner foot">
+Contact Us
+					</div>
+					<div class="grid_2 navinner foot">
+Login
+					</div>
+					<div class="grid_3 navinner foot">
+World Seabird Union
+					</div>
+				</div>
+			</div>
+            {% endblock footer %}
+		</div> 
+    </body>
+</html>
+	
+
+
