@@ -76,7 +76,7 @@ urlpatterns += patterns('',
     (r'^css/(?P<path>.*)$',          'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'css')}),
     (r'^publications/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'publications')}),
     (r'^js/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'js')}),
-
+    (r'^yaml/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'yaml')}),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     url(r'^(?P<name>[-\w]+)\.html',           'seabirds.cms.views.top', name='page'),
 )
