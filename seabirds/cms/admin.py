@@ -28,14 +28,14 @@ class PageAdmin(admin.ModelAdmin):
     prepopulated_fields = {"name": ("title",)}
     list_display = ('title', 'name', 'parent', 'published')
     list_filter = ('parent', 'published')
-    fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text')}),)
+    fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text', 'sidebar')}),)
     inlines = (PlacementInline,)
     def placements(self, obj):
         return obj.image.count() or ''
     placements.short_description = 'Images'
     formfield_overrides = {
         models.TextField: {'widget': 
-            forms.Textarea(attrs={'rows':30, 'style':'width: 100%; font-size:1.3em'})
+            forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.1em'})
         },
     }
 admin.site.register(Page, PageAdmin)
