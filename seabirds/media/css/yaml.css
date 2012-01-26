@@ -1,0 +1,186 @@
+/**
+ * "Yet Another Multicolumn Layout" - YAML CSS Framework
+ *
+ * central stylesheet - layout example "flexible-columns"
+ *
+ * @copyright       Copyright 2005-2012, Dirk Jesse
+ * @license         CC-BY 2.0 (http://creativecommons.org/licenses/by/2.0/),
+ *                  YAML-CDL (http://www.yaml.de/license.html)
+ * @link            http://www.yaml.de
+ * @package         yaml
+ * @version         4.0
+ * @lastmodified    $Date: 2012-01-22 12:01:24 +0100 (So, 22 Jan 2012) $
+ */
+
+/* Google Font API */
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700|Droid+Sans:400);
+
+/* import core styles | Basis-Stylesheets einbinden */
+@import url(/yaml/core/base.css);
+
+/* Navigation */
+@import url(/yaml/navigation/vlist.css);
+
+/* import screen layout | Screen-Layout einbinden */
+@import url(/yaml/forms/gray-theme.css);
+
+@import url(/yaml/screen/typography.css);
+@import url(/yaml/screen/screen-PAGE-layout.css);
+
+.ym-col1 { width: 20%; } /* left column */
+.ym-col2 { width: 25%; } /* right column */
+.ym-col3 { /* center column */
+  margin: 0 25% 0 20%;
+  border-left: 1px #ddd solid;
+  border-right: 1px #ddd solid;
+}
+
+/* import print layout | Druck-Layout einbinden */
+@import url(/yaml/print/print.css);
+
+/* Override typography */
+.sidebar {font-size: 87%}
+
+	body {
+		font-family: "Droid Sans", Arial, Helvetica, sans-serif;
+	}
+	h1,h2,h3,h4,h5,h6 {
+		font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif;
+		font-weight: 400;
+        /*color: #67554B;*/
+	    color: #2e2d29;
+    /*color:#161e21;*/
+		margin:0;
+	}
+
+	h1 {
+		font-size:250%;
+		line-height: 1.2em;
+		margin: 0.6em 0 0 0;
+	}
+
+	h2 {
+		font-size:175%;
+		line-height: 0.8571em;
+		margin:0.8571em 0 0 0;
+	}
+
+	h3 {
+		font-size:133.33%;
+		line-height: 1.125em;
+		margin:1.125em 0 0 0;
+	}
+
+	h4 {
+		font-size:116.67%;
+		line-height: 1.2857em;
+		margin: 1.2857em 0 0 0;
+	}
+
+	h5, h6 {
+		font-weight: bold;
+		font-size:100%;
+		line-height: 1.5em;
+		margin: 1.5em 0 0 0;
+	}
+
+
+header {
+    background-color: #0d1626;
+    background-image: url("/css/bullers-albatross-stormpetrel1.jpg");
+    background-position: right top;
+    height: 80px;
+    background-repeat: no-repeat;
+    /*border:#ab9f87 1px solid;*/
+}
+
+footer {
+    background-image: url("/css/puffin-petergauti.jpg");
+    background-position: left top;
+    height: 120px;
+    background-repeat: no-repeat;
+    /*border:#ab9f87 1px solid;*/
+    padding: 0;
+}
+
+footer img {
+    margin-right: 20px;
+}
+
+#logo h1, #logo p {
+    color: #eee;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#logo h1 {
+    font-size: 35px;
+}
+#logo p {
+    font-size: 14px;
+}
+
+#logo {
+    position: relative;
+    background-image: url("/css/wsu-world.png");
+    background-position: left top;
+    background-repeat: no-repeat;
+    padding-left:120px;
+    padding-top:18px;
+    height: 85px;
+    width: 250px;
+    margin-top: -8px;
+}
+#logo span { 
+  position:absolute; 
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+  /* edit: added z-index */
+  z-index: 10 
+}  
+
+/* Navigation */
+
+
+.ym-col1 .ym-cbox {
+    padding: 0;
+}
+
+.ym-vlist {
+    border-bottom-width: 0px;
+}
+
+.ym-vlist li a {
+    width: 100%;
+    background-color: #ddd;
+    border-color: white;
+    border-top-width: 0px;
+}
+
+.ym-vlist li ul li a {
+    width: 100%;
+    background-color: white;
+    border-top-width: 0px;
+    border-color: #ddd;
+}
+
+.ym-vlist li ul li a:hover, .ym-vlist li a:hover {
+    background-color: #aad2d2;
+}
+
+.ym-vlist li ul .active, .ym-vlist li .active {
+    background-color: #f2e587
+}
+
+/*
+nav {margin:0; padding:0 0}
+nav a {padding-top:.2em; padding-bottom:.1em; margin: 0; font-weight:normal; display: block; color: black; text-decoration: none}
+nav a.depthx1 {background-color: #ddd; padding-left: 10px;}
+nav a.depthx2 {background-color: #f5f5f5; padding-left: 25px;}
+nav a.depthx3 {background-color: #fff; padding-left: 40px;}
+nav a.selected {background-color: #f2e587}
+nav a:hover {cursor: pointer; background-color: #aad2d2}
+*/

@@ -2,129 +2,88 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8"/>
         <title>World Seabird Union</title>
-		<link rel="stylesheet" type="text/css" href="/css/960_12_col.css" />
-		<link rel="stylesheet" type="text/css" href="/css/reset.css" /> 
-		<link rel="stylesheet" type="text/css" href="/css/seabirds.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/css/yaml.css" rel="stylesheet" type="text/css"/>
+        <!--[if lte IE 7]>
+        <link href="/yaml/core/iehacks.css" rel="stylesheet" type="text/css" />
+        <![endif]-->
+
+        <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
     </head>
     <body>
-	<div id="banner">&nbsp;</div>
-	<div id="dropshadow">&nbsp;</div>
-		<div id="wrapper">
-	    <div id="mainbg">&nbsp;</div>
-		<div class="container_12">
-{% block header %}	
-			<!-- Header --!>
-			<div id="bannerphoto-1" class="grid_2">
-			</div>
-			<div id="bannerphoto-2" class="grid_2 push_8">
-			</div>
-			<div id="bannertext" class="grid_8 pull_2">
-<img src="/css/LOGO_jan2012.png" />
-			</div>
-            {% endblock %}
-            {% block navigation %}
-			<!-- Navigation Bar --!>
-			<ul>
-				<li>
-					<div class="grid_2 nav" id="navone">
-						<div class="navinner">
-<a href="">About WSU</a>
-						</div>
-						<ul>
-							<div class="filmstrip">
-<li><a href="">Mission Statement</a></li>
-<li>Personnel</li>
-<li>Documents</li>
-							</div>
-						</ul>
-					</div>
-				</li>
-				<li>
-					<div class="grid_2 nav">
-						<div class="navinner">
-<a href="">Resources</a>
-						</div>
-						<ul>
-							<div class="filmstrip">
-<li>Publications</li>
-<li>Seabird Information <br />Network</li>
-<li>Conservation Action</li>
-							</div>
-						</ul>
-					</div>
-				</li>
-				<li>
-					<div class="grid_2 nav">
-						<div class="navinner">
-People
-						</div>
-						<ul>
-							<div class="filmstrip">
-<li>WSUTT Personnel</li>
-<li>PETREL</li>
-							</div>
-						</ul>
-					</div>
-				</li>
-				<li>
-					<div class="grid_2 nav">
-						<div class="navinner">
-Students
-						</div>
-						<ul>
-							<div class="filmstrip">
-<li>Job Postings</li>
-<li>Postgrad Opportunities</li>
-							</div>
-						</ul>
-					</div>
-				</li>	
-				<li>
-					<div class="grid_2 nav">
-						<div class="navinner">
-Contact
-						</div>
-					</div>
-				</li>
-				<li>
-					<div class="grid_2 nav">
-						<div class="navinner">
-Discussion
-						</div>
-					</div>
-				</li>
-			</ul>
-
-            {% endblock navigation %}
-            {% block content %}
-            {% endblock content %}
-            {% block sidebar %}
-            {% endblock sidebar %}
-		</div>
-            {% block footer %}
-			<div id="footbannershadow"></div>
-			<div id="footbanner">
-				<div class="container_12">
-					<div class="grid_3 foot">
-<img src="/css/small_logo.png" />
-					</div>
-					<div class="grid_2 navinner foot">
-Seabirds.net
-					</div>
-					<div class="grid_2 navinner foot">
-Contact Us
-					</div>
-					<div class="grid_2 navinner foot">
-Login
-					</div>
-					<div class="grid_3 navinner foot">
-World Seabird Union
-					</div>
-				</div>
-			</div>
-            {% endblock footer %}
+        <!-- skip link navigation -->
+        <ul class="ym-skiplinks">
+            <li><a class="ym-skip" href="#nav">Skip to navigation (Press Enter)</a></li>
+            <li><a class="ym-skip" href="#main">Skip to main content (Press Enter)</a></li>
+        </ul>
+        <div class="ym-wrapper">
+            <div class="ym-wbox">
+                <header>
+                {% block header %}
+                <div id="logo">
+                <a href="/"><span></span></a>
+                <h1> Seabirds.net</h1><p> A global seabird information portal </p>
+                </div>
+                {% endblock header%}
+                </header>
+                <div style="background-color:#eee">
+                    <div class="ym-column linearize-level-1">
+                        <!-- Navigation column -->
+                        <div class="ym-col1">
+                            <div class="ym-cbox">
+                                <div class="nav-wrapper">
+                                    <nav class="ym-vlist">
+                                        {% block navigation %}
+                                        <ul> 
+                                            {% for link in navigation %}
+	                                        <li> <a {% if link.1 %}class="active"{% endif %} href="{{ link.0.url }}" title="{{ link.0.title }}">{{ link.0.name }}</a>
+                                                {% if link.2 %} 
+                                                <ul> 
+                                                    {% for sublink in link.2 %}
+	                                                <li> <a {% if sublink.1 %}class="active"{% endif %} href="{{ sublink.0.url }}" title="{{ link.0.title }}">{{ sublink.0.name }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% endif %}
+                                            </li>
+                                            {% endfor %} 
+                                            {% if user.is_authenticated %}
+                                            {% if perms.website.administration %}
+	                                        <li> <a href="/admin/" >ADMIN</a> </li> 
+                                            {% endif %}
+                                            {% endif %}
+                                        </ul>
+                                        {% endblock navigation %}
+                                    </nav>
+                                </div>
+                            </div>
+                        </div> <!-- End of navigation column -->
+                        <!-- Sidebar column -->
+                        <div class="ym-col2 sidebar" style="color:red">
+                            <div class="ym-cbox">
+                                {% block sidebar %}
+                                {% endblock sidebar %}
+                            </div>
+                        </div>
+                        <div id="main" class="ym-col3">
+                            <div class="ym-cbox ym-clearfix">
+                                {% block content %}
+                                {% endblock content %}
+		                    </div>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    {% block footer %}
+                    <a href="/"><img src="/css/wsu-logo-gray.png" height=90px class="float-right"></a>
+                    {% endblock footer %}
+                </footer>
+            </div>
 		</div> 
+        <script src="/yaml/core/js/yaml-focusfix.js" type="text/javascript"></script> 
     </body>
 </html>
 	
