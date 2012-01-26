@@ -5,8 +5,8 @@ from django.contrib.sitemaps import Sitemap, GenericSitemap
 from django.contrib import admin
 
 
-from seabirds.cms.models import Page, Post
-from seabirds.settings import MEDIA_ROOT
+from cms.models import Page, Post
+from django.conf import settings
 admin.autodiscover()
 
 from django.contrib.auth.models import User, Group
@@ -20,7 +20,7 @@ for model in (Group, Site, User):
 #Sitemaps
 class PublicationsSitemap(Sitemap):
     def items(self):
-        return os.listdir(os.path.join(MEDIA_ROOT, 'publications'))
+        return os.listdir(os.path.join(settings.MEDIA_ROOT, 'publications'))
 
     def location(self, item):
         return '/publications/' + item
@@ -63,21 +63,21 @@ urlpatterns += patterns('',
     (r'^login',   'django.contrib.auth.views.login',    {'template_name': 'account/login.html'}),
     (r'^logout',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
 
-    (r'^account/',  include('seabirds.account.urls')),
+    (r'^account/',  include('account.urls')),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
-    (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'seabirds.cms.views.reference'),
+    (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'cms.views.reference'),
 
-    (r'^$',                                         'seabirds.cms.views.top', {'name': 'index'}),
-    (r'^images/(?P<path>.*)$',                      'seabirds.cms.views.image'),
-    (r'^resources/(?P<path>.*)$',   'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'resources')}),
-	(r'^people.html$',								'seabirds.cms.views.people'),
-    url(r'^people/(?P<name>[-\w]+)\.html',           'seabirds.cms.views.top', name='person'),
-    (r'^files/(?P<path>.*)$',       'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'files')}),
-    (r'^css/(?P<path>.*)$',          'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'css')}),
-    (r'^publications/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'publications')}),
-    (r'^js/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'js')}),
-    (r'^yaml/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(MEDIA_ROOT, 'yaml')}),
+    (r'^$',                                         'cms.views.top', {'name': 'index'}),
+    (r'^images/(?P<path>.*)$',                      'cms.views.image'),
+    (r'^resources/(?P<path>.*)$',   'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'resources')}),
+	(r'^people.html$',								'cms.views.people'),
+    url(r'^people/(?P<name>[-\w]+)\.html',           'cms.views.top', name='person'),
+    (r'^files/(?P<path>.*)$',       'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'files')}),
+    (r'^css/(?P<path>.*)$',          'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'css')}),
+    (r'^publications/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'publications')}),
+    (r'^js/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'js')}),
+    (r'^yaml/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'yaml')}),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
-    url(r'^(?P<name>[-\w]+)\.html',           'seabirds.cms.views.top', name='page'),
+    url(r'^(?P<name>[-\w]+)\.html',           'cms.views.top', name='page'),
 )
 
