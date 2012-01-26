@@ -44,6 +44,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
     'seabirds.cms.views.get_base_navigation',
+    'seabirds.admin.context_processors.whereami',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -14,7 +14,7 @@ from PIL import Image as PILImage
 
 from cms.models import Page, Person, File, Placement, Navigation
 from bibliography.models import Reference
-from settings import SITE_URL
+from django.conf import settings
 
 def top(request, name):
     context_instance=RequestContext(request)
@@ -26,13 +26,13 @@ def top(request, name):
         fullpath = name
     name = os.path.basename(name)
     page =  get_object_or_404(Page, name = name)
-    navigation = page.get_absolute_url().split(SITE_URL)[1]
+    navigation = page.get_absolute_url().split(settings.SITE_URL)[1]
     level = page
     while level.parent:
         if Navigation.objects.filter(url = navigation):
             break
         level = level.parent
-        navigation = level.get_absolute_url().split(SITE_URL)[1]
+        navigation = level.get_absolute_url().split(settings.SITE_URL)[1]
     c = dict(
             page = page, 
             navigation = get_navigation(navigation),
