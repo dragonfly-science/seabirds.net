@@ -166,15 +166,6 @@ class Person(models.Model):
         pages = Page.objects.filter(name = linkname)
         return pages
 
-class Image(models.Model):
-    image = models.ImageField(upload_to = "images")
-    title = models.CharField(max_length = 100, null = True, blank=True)
-    credit = models.CharField(max_length = 200, null = True, blank=True)
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return self.image.path
 
 class File(models.Model):
    name = models.CharField(max_length = 100)
@@ -187,42 +178,49 @@ class File(models.Model):
    def html(self):
       return "<a href=\"%s/%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
 
-class Placement(models.Model):
-    image = models.ForeignKey('Image')
-    caption = models.TextField(null=True, blank=True)
-    number = models.PositiveIntegerField(default = 1)
-    width = models.IntegerField(blank=True, null=True)
-    height = models.IntegerField(blank=True, null=True)
-    gotourl = models.CharField(max_length = 200, null = True, blank=True)
-    PLACE_CHOICES = (
+
+PLACE_CHOICES = (
     ('R', 'Right'),
     ('C', 'Centre'),
+    ('L', 'Left'),
     )
-    place = models.CharField(max_length=1, choices=PLACE_CHOICES, default='R')
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.IntegerField()
-    content_object = generic.GenericForeignKey()
+
+class Image(models.Model):
+    name = models.SlugField(max_length = 50, unique=True)
+    title = models.CharField(max_length = 100) #Displays on mouse over
+    image = models.ImageField(upload_to = "images")
+    caption = models.TextField(null=True, blank=True)
+    width = models.IntegerField(blank=True, null=True)
+    height = models.IntegerField(blank=True, null=True)
+    alignment = models.CharField(max_length=1, choices=PLACE_CHOICES, default='R')
+    owner = models.CharField(max_length = 200, null = True, blank=True)
+    source_url = models.URLField(null=True, blank=True)
+    license = models.ForeignKey(License, null=True, blank=True)
     
     def save(self, *args, **kwargs):
         ih = float(self.image.image.height)
         iw = float(self.image.image.width)
+        if self.width and self.height:  
+            self._width  = floor(iw * ( self.height / ih))
+            self._height = floor(ih * ( self.width / iw))
         if not self.width and self.height:  
-            self.width  = floor(iw * ( self.height / ih))
+            self._width  = floor(iw * ( self.height / ih))
+            self._height  = floor(ih)
         if not self.height and self.width: 
-            self.height = floor(ih * ( self.width / iw))
+            self._width  = floor(iw)
+            self._height = floor(ih * ( self.width / iw))
         if not self.height and not self.width: 
-            self.height = floor(ih)
-            self.width  = floor(iw)
-        super(Placement, self).save(*args, **kwargs)
+            self._height = floor(ih)
+            self._width  = floor(iw)
+        super(Image, self).save(*args, **kwargs)
 
-    def url(self):
-        url = self.image.image.url
-        if not (self.width and self.height):
-            return url
-        return re.sub('\.', '-%dx%d.' % (self.width, self.height), url)
+    def __str__(self):
+        return self.title
 
-    class Meta:      
-        unique_together = ('object_id', 'content_type', 'number')
+    @permalink
+    def get_absolute_url(self):
+        base, ext = os.path.splitext(os.path.split(self.image.path)[1])
+        return ('cms.views.image', (), {'path': '%s-%dx%d%s'%(base, self._width, self._height, ext)}) 
 
 class Navigation(MPTTModel):
     order = models.PositiveIntegerField()
