@@ -1,5 +1,5 @@
 {% autoescape off %}
-<div class="figure{% if place %} {{ place }}{% endif %}"> 
+<div class="figure{% if place %} {{ place }}{% endif %}"{% if width %} style="width: {{ width }}px" {% endif %}> 
     <img src="/{{ url }}" alt="{{ image.title }}" class="flexible" {% if width %} width="{{ width }}"px {% endif %} >
     <div class="attribution">
         {% if image.owner %}
