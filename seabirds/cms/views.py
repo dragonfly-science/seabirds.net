@@ -8,11 +8,10 @@ from django.shortcuts import get_object_or_404, render_to_response, get_list_or_
 from django.template import RequestContext
 from django.conf import settings
 from django.views.static import serve
-from django.contrib.contenttypes.models import ContentType
 
 from PIL import Image as PILImage
 
-from cms.models import Page, Person, File, Placement, Navigation
+from cms.models import Page, Person, File, Navigation
 from bibliography.models import Reference
 from django.conf import settings
 
@@ -46,17 +45,17 @@ def people(request):
     return render_to_response('people.html', dict(person_list=persons, page=page, navigation=get_navigation('/people.html')),
         RequestContext(request))
 		
-
-def image(request, path):
-    fullpath = os.path.join(settings.MEDIA_ROOT, 'images', path)
-    if os.path.exists(fullpath):
-        return serve(request, path, document_root=os.path.join(settings.MEDIA_ROOT, 'images'))
+def image(request, filename):
+    path = os.path.join(settings.MEDIA_ROOT, 'images', 'cache', filename)
+    if os.path.exists(path):
+        return serve(request, filename, document_root=os.path.join(settings.MEDIA_ROOT, 'images', 'cache'))
 
     # make the image if we don't already have it
     # look for an image that is the same without size info
-    m = re.search('-(\d+)x(\d+)', fullpath)
+    m = re.search('-(\d+)x(\d+)', filename)
     if not m: raise Http404
-    origpath = re.sub('-\d+x\d+', '', fullpath)
+    origname = re.sub('-\d+x\d+', '', filename)
+    origpath = os.path.join(settings.MEDIA_ROOT, 'images', origname)
     if not os.path.exists(origpath): raise Http404
     orig = PILImage.open(origpath)
     format = orig.format
@@ -64,7 +63,7 @@ def image(request, path):
     wpercent = (basewidth/float(orig.size[0]))
     hsize = int((float(orig.size[1])*float(wpercent)))
     img = orig.convert('RGB').resize((basewidth, hsize), PILImage.ANTIALIAS)
-    img.save(fullpath, format)
+    img.save(path, format)
 
     response = HttpResponse(mimetype="image/%s"%(format))
     img.save(response, format)
@@ -81,7 +80,7 @@ def reference(request, key):
 
 def get_navigation(url):
     try:
-        home = Navigation.tree.root_nodes()[0]
+        home = Navigation.objects.root_nodes()[0]
     except IndexError:
         return []
     try:
@@ -110,7 +109,7 @@ def get_navigation(url):
             
 def get_base_navigation(request):
     try:
-        root = Navigation.tree.root_nodes()[0]
+        root = Navigation.objects.root_nodes()[0]
     except IndexError:
         return []
     return {'navigation': get_navigation(root.url)}

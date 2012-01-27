@@ -75,7 +75,8 @@ INSTALLED_APPS = (
     'taggit',
     'mptt',
     'disqus',
-    'reversion'
+    'reversion',
+    'license'
 )
 
 SITENAME="development"

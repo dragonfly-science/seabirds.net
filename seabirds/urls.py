@@ -68,7 +68,7 @@ urlpatterns += patterns('',
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'cms.views.reference'),
 
     (r'^$',                                         'cms.views.top', {'name': 'index'}),
-    (r'^images/(?P<path>.*)$',                      'cms.views.image'),
+    (r'^images/(?P<filename>.*)$',                      'cms.views.image'),
     (r'^resources/(?P<path>.*)$',   'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'resources')}),
 	(r'^people.html$',								'cms.views.people'),
     url(r'^people/(?P<name>[-\w]+)\.html',           'cms.views.top', name='person'),

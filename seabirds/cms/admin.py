@@ -1,10 +1,9 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
-from cms.models import Page, Image, Placement, Person, File, Post, Navigation
+from cms.models import Page, Image, Person, File, Post, Navigation
 from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.generic import GenericTabularInline
 from mptt.admin import MPTTModelAdmin
 
 
@@ -15,8 +14,8 @@ class NavigationAdmin(MPTTModelAdmin):
     fieldsets = ((None, {'fields':(('order', 'name', 'url'), ('title', 'parent'),)}),)
 admin.site.register(Navigation, NavigationAdmin)
 
-class PlacementInline(GenericTabularInline):
-    model = Placement
+class PageImageInline(admin.TabularInline):
+    model = Page.images.through
     extra = 1
     formfield_overrides = {
         models.TextField: {'widget': 
@@ -29,10 +28,10 @@ class PageAdmin(admin.ModelAdmin):
     list_display = ('title', 'name', 'parent', 'published')
     list_filter = ('parent', 'published')
     fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text', 'sidebar')}),)
-    inlines = (PlacementInline,)
-    def placements(self, obj):
+    inlines = (PageImageInline,)
+    def images(self, obj):
         return obj.image.count() or ''
-    placements.short_description = 'Images'
+    images.short_description = 'Images'
     formfield_overrides = {
         models.TextField: {'widget': 
             forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.1em'})
@@ -45,10 +44,10 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'name', 'author', 'date_published', 'published')
     list_filter = ('author', 'published')
     fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'teaser', 'text')}),)
-    inlines = (PlacementInline,)
-    def placements(self, obj):
-        return obj.image.count() or ''
-    placements.short_description = 'Images'
+   # inlines = (ImageInline,)
+   # def images(self, obj):
+   #     return obj.image.count() or ''
+   # images.short_description = 'Images'
     formfield_overrides = {
         models.TextField: {'widget': 
             forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.3em'})
@@ -56,23 +55,8 @@ class PostAdmin(admin.ModelAdmin):
     }
 admin.site.register(Post, PostAdmin)
 
-#
-#class PostAdmin(VersionAdmin):
-#    list_display = ('author', 'title', 'page_link', 'placements', 'order', 'date_updated')
-#    list_filter = ('page', 'date_updated', 'published')
-#    inlines = (PlacementInline,)
-#    def placements(self, obj):
-#        return obj.image.count() or ''
-#    placements.short_description = 'Images'
-#
-#    def page_link(self, obj):
-#        return " &gt; ".join([ "<a href='%(href)s'>%(name)s</a>" % bc for bc in obj.page.breadcrumb()])
-#    page_link.allow_tags = True
-#admin.site.register(Post, PostAdmin)
-
-
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('title', 'credit', 'image')
+    list_display = ('title',)
 admin.site.register(Image, ImageAdmin)
 
 class PersonAdmin(admin.ModelAdmin):
