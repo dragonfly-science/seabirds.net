@@ -1,12 +1,12 @@
-import re, logging
+import re
+import logging
+import os
 from math import floor
 
 from django.db import models
 from django.db.models import permalink
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
-from django.contrib.contenttypes.models import ContentType
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, Resolver404
@@ -14,6 +14,7 @@ from django.core.urlresolvers import resolve, Resolver404
 from markdown import markdown
 from mptt.models import MPTTModel, TreeForeignKey
 
+from license.models import License
 
 # Process references if the bibliography is installed
 try:
@@ -22,28 +23,59 @@ except ImportError:
     def markdown_post_references(text):
         return text
 
+check=True
 def markdownplus(instance, text, check=False):
-    content_name = instance.name
-    content_type = instance.__class__.__name__.lower()
+    text = markdown(text)
+    print text
     def insert_image(m):
+        print m.group(0)
         try:
-            ct = ContentType.objects.get(name=content_type)
-            cid = ct.model_class().objects.get(name=content_name)
-            placement = Placement.objects.get(number=m.group(1), object_id=cid.id, content_type=ct.id)
-            return render_to_string('image/plain.html', dict(placement=placement))
+            image = Image.objects.get(key=m.group(1))
+            try:
+                width = int(re.findall('width=([\w-]+)', m.group(2))[0])
+                print width
+            except:
+                width = None
+            try:
+                height = int(re.findall('height=([\w-]+)', m.group(2))[0])
+            except:
+                height = None
+            try:
+                place = re.findall('place=([\w]+)', m.group(2))[0]
+            except:
+                place = ''
+            ih = float(image.image.height)
+            iw = float(image.image.width)
+            if not width and height:  
+                width  = floor(iw * ( height / ih))
+            elif not height and width: 
+                height  = floor(ih * ( width / iw))
+            elif not height and not width: 
+                height  = floor(ih)
+                width  = floor(iw)
+            url = image.get_qualified_url(width, height)
+            if place.upper() == 'R':
+                place = 'float-right'
+            elif place.upper() == 'L':
+                place = 'float-left'
+            elif place.upper() == 'C':
+                place = 'center'
+            caption = m.group(3)
+            return render_to_string('image/plain.html', dict(image=image, width=width, place=place, url=url, caption=caption))
         except:
             if check: raise
             raise
-    text = re.sub('\[Image (\d+)\]', insert_image, text)
+    text = re.sub('\[Image\s+([-\w]+)(\s+\w[\w=%\'" -]+)?\s*\](.*)(</p>)?', insert_image,  text)
+    print text
 
-#    def insert_link(m):
-#        try:
-#            item = ContentType.objects.get(name=content_type).model_class().objects.get(name=m.group(1))
-#            return "(%s)" % (item.get_absolute_url())
-#        except:
-#            if check: raise 
-#            return ""
-#    text = re.sub('\((\w+)\)',       insert_link,  text)
+    def insert_references(m):
+        try:
+            return listview(None, query=m.group(1))
+        except:
+            if check: raise 
+            return ""
+    text = re.sub('\[References\s+(\w[\w=\'" -]+)\]', insert_references,  text)
+    return text
 
     def insert_file(m):
         try:
@@ -52,8 +84,8 @@ def markdownplus(instance, text, check=False):
         except:
             if check: raise 
             return ""
-    text = re.sub('\[@(\w+)@\]',   insert_file, text) 
-    text = markdown(text)
+    text = re.sub('\[File\s+(\w+)\]',   insert_file, text) 
+
     text = markdown_post_references(text)
     return text
 
@@ -66,7 +98,7 @@ class Page(models.Model):
     published = models.BooleanField(default=False)
     text = models.TextField(null=True, blank=True)
     sidebar = models.TextField(null=True, blank=True)
-    images = generic.GenericRelation('Placement')
+    images = models.ManyToManyField('Image', related_name = 'pages')
      
     def __str__(self):
         return self.name
@@ -114,7 +146,7 @@ class Post(models.Model):
     published = models.BooleanField(default=False)
     teaser = models.TextField()
     text = models.TextField()
-    images = generic.GenericRelation('Placement')
+    images = models.ManyToManyField('Image', related_name = 'posts')
      
     def __str__(self):
         return self.name
@@ -179,48 +211,31 @@ class File(models.Model):
       return "<a href=\"%s/%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
 
 
-PLACE_CHOICES = (
-    ('R', 'Right'),
-    ('C', 'Centre'),
-    ('L', 'Left'),
-    )
+def get_image_path(instance, filename):
+    base, ext = os.path.splitext(os.path.split(filename)[1])
+    return os.path.join('images', '%s%s'%(instance.key, ext))
 
 class Image(models.Model):
-    name = models.SlugField(max_length = 50, unique=True)
+    image = models.ImageField(upload_to = get_image_path)
     title = models.CharField(max_length = 100) #Displays on mouse over
-    image = models.ImageField(upload_to = "images")
-    caption = models.TextField(null=True, blank=True)
-    width = models.IntegerField(blank=True, null=True)
-    height = models.IntegerField(blank=True, null=True)
-    alignment = models.CharField(max_length=1, choices=PLACE_CHOICES, default='R')
-    owner = models.CharField(max_length = 200, null = True, blank=True)
+    key = models.SlugField(max_length = 50, unique=True)
     source_url = models.URLField(null=True, blank=True)
+    owner = models.CharField(max_length = 200, null = True, blank=True)
+    owner_url = models.URLField(null=True, blank=True)
     license = models.ForeignKey(License, null=True, blank=True)
-    
-    def save(self, *args, **kwargs):
-        ih = float(self.image.image.height)
-        iw = float(self.image.image.width)
-        if self.width and self.height:  
-            self._width  = floor(iw * ( self.height / ih))
-            self._height = floor(ih * ( self.width / iw))
-        if not self.width and self.height:  
-            self._width  = floor(iw * ( self.height / ih))
-            self._height  = floor(ih)
-        if not self.height and self.width: 
-            self._width  = floor(iw)
-            self._height = floor(ih * ( self.width / iw))
-        if not self.height and not self.width: 
-            self._height = floor(ih)
-            self._width  = floor(iw)
-        super(Image, self).save(*args, **kwargs)
-
+    uploaded_by = models.ForeignKey(User, null=True, blank=True)
+        
     def __str__(self):
-        return self.title
+        return '%s - %s'%(self.key, self.title)
+
+    def get_qualified_url(self, width, height):
+        base, ext = os.path.splitext(os.path.split(self.image.path)[1])
+        return os.path.join('images', '%s-%ix%i%s'%(base, width, height, ext))
 
     @permalink
     def get_absolute_url(self):
         base, ext = os.path.splitext(os.path.split(self.image.path)[1])
-        return ('cms.views.image', (), {'path': '%s-%dx%d%s'%(base, self._width, self._height, ext)}) 
+        return ('cms.views.image', (), {'path': os.path.join(base, '%s.html'%self.key) }) 
 
 class Navigation(MPTTModel):
     order = models.PositiveIntegerField()

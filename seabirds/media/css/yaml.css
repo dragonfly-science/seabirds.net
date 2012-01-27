@@ -175,6 +175,13 @@ footer img {
     background-color: #f2e587
 }
 
+.figure {
+    border-width: 1px;
+    border-color: black;
+    background-color: red;
+    font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif;
+}
+
 /*
 nav {margin:0; padding:0 0}
 nav a {padding-top:.2em; padding-bottom:.1em; margin: 0; font-weight:normal; display: block; color: black; text-decoration: none}
