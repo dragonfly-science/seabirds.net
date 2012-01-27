@@ -176,10 +176,18 @@ footer img {
 }
 
 .figure {
-    border-width: 1px;
-    border-color: black;
     background-color: red;
     font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif;
+    margin: 2px auto 2px auto;
+    padding: 2px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    text-align: left
+}
+.figure img {
+    margin: 0;
+    padding: 0;
 }
 
 /*
@@ -191,3 +199,5 @@ nav a.depthx3 {background-color: #fff; padding-left: 40px;}
 nav a.selected {background-color: #f2e587}
 nav a:hover {cursor: pointer; background-color: #aad2d2}
 */
+
+

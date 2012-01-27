@@ -32,12 +32,12 @@ def markdownplus(instance, text, check=False):
         try:
             image = Image.objects.get(key=m.group(1))
             try:
-                width = int(re.findall('width=([\w-]+)', m.group(2))[0])
+                width = int(re.findall('width=([\d]+)', m.group(2))[0])
                 print width
             except:
                 width = None
             try:
-                height = int(re.findall('height=([\w-]+)', m.group(2))[0])
+                height = int(re.findall('height=([\d]+)', m.group(2))[0])
             except:
                 height = None
             try:
@@ -54,18 +54,18 @@ def markdownplus(instance, text, check=False):
                 height  = floor(ih)
                 width  = floor(iw)
             url = image.get_qualified_url(width, height)
-            if place.upper() == 'R':
+            if place.upper().startswith('R'):
                 place = 'float-right'
-            elif place.upper() == 'L':
+            elif place.upper().startswith('L'):
                 place = 'float-left'
-            elif place.upper() == 'C':
+            else:
                 place = 'center'
             caption = m.group(3)
             return render_to_string('image/plain.html', dict(image=image, width=width, place=place, url=url, caption=caption))
         except:
             if check: raise
             raise
-    text = re.sub('\[Image\s+([-\w]+)(\s+\w[\w=%\'" -]+)?\s*\](.*)(</p>)?', insert_image,  text)
+    text = re.sub('\[Image\s+([-\w]+)(\s+\w[\w=%\'" -]+)?\s*\](.*)(?=</p>)', insert_image,  text)
     print text
 
     def insert_references(m):
