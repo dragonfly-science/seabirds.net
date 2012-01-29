@@ -26,11 +26,11 @@
     </td>
 </tr>
 </table>
-<input type="hidden" name="next" value="{{ next|default:'/account/profile' }}" />
+<input type="hidden" name="next" value="{{ next|default:'/' }}" />
 </form>
 
 <p style="text-align: right; font-size:0.7em; width:20em">
-<a href="{% url www.account.views.password_reset %}">Forgotten your password ?</a></p>
+<a href="{% url account.views.password_reset %}">Forgotten your password ?</a></p>
 
 {% endblock %}
 

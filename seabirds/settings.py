@@ -72,12 +72,18 @@ INSTALLED_APPS = (
     'seabirds.cms',
     'bibliography',
     'django.contrib.admin',
+    'profiles', #Django profiles
+    'profile', #App for storing user info
     'taggit',
     'mptt',
     'disqus',
     'reversion',
-    'license'
+    'license',
+    'django_countries',
 )
+
+
+AUTH_PROFILE_MODULE = 'profile.UserProfile'
 
 SITENAME="development"
 SITE_NAME = 'Seabirds.net website'
@@ -99,3 +105,7 @@ except ImportError:
 
 CUCKOO_DIRECTORY = '/usr/local/django/seabirds.net/patches'
 
+# Required for enforcing a global login during testing
+LOGIN_URL = '^login'
+
+AVATAR_CROP_MIN_SIZE = 20

@@ -1,21 +1,22 @@
 import os
 
 from django.conf.urls.defaults import *
+from django.conf import settings
 from django.contrib.sitemaps import Sitemap, GenericSitemap
 from django.contrib import admin
 
-
 from cms.models import Page, Post
-from django.conf import settings
+from profile.forms import ProfileForm
+
 admin.autodiscover()
 
-from django.contrib.auth.models import User, Group
-from django.contrib.sites.models import Site
-for model in (Group, Site, User):
-    try:
-        admin.site.unregister(model)
-    except:
-        pass
+#from django.contrib.auth.models import User, Group
+#from django.contrib.sites.models import Site
+#for model in (Group, Site, User):
+#    try:
+#        admin.site.unregister(model)
+#    except:
+#        pass
 
 #Sitemaps
 class PublicationsSitemap(Sitemap):
@@ -62,16 +63,16 @@ urlpatterns += patterns('',
 
     (r'^login',   'django.contrib.auth.views.login',    {'template_name': 'account/login.html'}),
     (r'^logout',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
-
-    (r'^account/',  include('account.urls')),
+    ('^profiles/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}),
+    url(r'^profiles/', include('profiles.urls')),
+    url(r'^account/',  include('account.urls')),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'cms.views.reference'),
-
     (r'^$',                                         'cms.views.top', {'name': 'index'}),
     (r'^images/(?P<filename>.*)$',                      'cms.views.image'),
     (r'^resources/(?P<path>.*)$',   'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'resources')}),
-	(r'^people.html$',								'cms.views.people'),
-    url(r'^people/(?P<name>[-\w]+)\.html',           'cms.views.top', name='person'),
+	#(r'^people.html$',								'cms.views.people'),
+   # url(r'^people/(?P<name>[-\w]+)\.html',           'cms.views.top', name='person'),
     (r'^files/(?P<path>.*)$',       'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'files')}),
     (r'^css/(?P<path>.*)$',          'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'css')}),
     (r'^publications/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'publications')}),

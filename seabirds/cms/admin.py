@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
-from cms.models import Page, Image, Person, File, Post, Navigation
+from cms.models import Page, Image, File, Post, Navigation
 from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
 from mptt.admin import MPTTModelAdmin
@@ -58,10 +58,6 @@ admin.site.register(Post, PostAdmin)
 class ImageAdmin(admin.ModelAdmin):
     list_display = ('title',)
 admin.site.register(Image, ImageAdmin)
-
-class PersonAdmin(admin.ModelAdmin):
-	list_display = ('username', 'firstname', 'lastname', 'order', 'active', 'role')
-admin.site.register(Person, PersonAdmin)
 
 class FileAdmin(admin.ModelAdmin):
 	list_display = ('title','file')
