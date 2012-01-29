@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Edit your profile{% endblock %}
+ 
+{% block content %}
+<h1>Edit contact info for {{ user }} </h1>
+ 
+<form method="POST" action="" class="ym-form ym-columnar">
+{% csrf_token %}
+    <h6> Personal information </h6>
+    <div class="ym-fbox-text {% if form.title.errors %}ym-error{% endif %}">
+        <strong> {{ form.title.errors }} </strong>
+        <label for="id_title">{{ form.title.label }}</label>
+        {{ form.title }}
+    </div>
+    <div class="ym-fbox-text {% if form.first_name.errors %}ym-error{% endif %}">
+        <strong> {{ form.first_name.errors }} </strong>
+        <label for="id_first_name">{{ form.first_name.label }}</label>
+        {{ form.first_name }}
+    </div>
+    <div class="ym-fbox-text {% if form.last_name.errors %}ym-error{% endif %}">
+        <strong> {{ form.last_name.errors }} </strong>
+        <label for="id_last_name">{{ form.last_name.label }}</label>
+        {{ form.last_name }}
+    </div>
+    <div class="ym-fbox-text {% if form.email.errors %}ym-error{% endif %}">
+        <strong> {{ form.email.errors }} </strong>
+        <label for="id_email">{{ form.email.label }}</label>
+        {{ form.email }}
+    </div>
+    <div class="ym-fbox-text {% if form.country.errors %}ym-error{% endif %}">
+        <strong> {{ form.country.errors }} </strong>
+        <label for="id_country">{{ form.country.label }}</label>
+        {{ form.country }}
+    </div>
+    <div class="ym-fbox-text {% if form.webpage.errors %}ym-error{% endif %}">
+        <strong> {{ form.webpage.errors }} </strong>
+        <label for="id_webpage">{{ form.webpage.label }}</label>
+        {{ form.webpage }}
+    </div>
+
+    <h6> Professional information </h6>
+    <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
+        <strong> {{ form.institution.errors }} </strong>
+        <label for="id_institution">{{ form.institution.label }}</label>
+        {{ form.institution }}
+    </div>
+    <div class="ym-fbox-text {% if form.institution_website.errors %}ym-error{% endif %}">
+        <strong> {{ form.institution_website.errors }} </strong>
+        <label for="id_institution_website">{{ form.institution_website.label }}</label>
+        {{ form.institution_website }}
+    </div>
+    <div class="ym-fbox-text {% if form.research.errors %}ym-error{% endif %}">
+        <strong> {{ form.research.errors }} </strong>
+        <label for="id_research">{{ form.research.label }}</label>
+        {{ form.research }}
+    </div>
+    <div class="ym-fbox-check {% if form.seabirds.errors %}ym-error{% endif %}">
+        <strong> {{ form.seabirds.errors }} </strong>
+        <label for="id_seabirds">{{ form.seabirds.label }}</label>
+        {{ form.seabirds }}
+    </div>
+<input type="submit" name="submit" value="Update" id="submit">
+</form>
+ 
+{% endblock content %}
+
+

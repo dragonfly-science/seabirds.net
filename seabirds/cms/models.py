@@ -141,7 +141,7 @@ class Page(models.Model):
 class Post(models.Model):
     name = models.SlugField(max_length = 50, unique = True)
     title = models.CharField(max_length = 100)
-    author = models.ForeignKey('Person', null=True, blank=True)
+    author = models.ForeignKey(User, null=True, blank=True)
     date_published = models.DateField()
     published = models.BooleanField(default=False)
     teaser = models.TextField()
@@ -169,34 +169,6 @@ class Post(models.Model):
 
     class Meta:
         ordering = ['-date_published']
-
-class Person(models.Model):
-    username = models.TextField()
-    firstname = models.TextField()
-    lastname = models.TextField()
-    teaser = models.TextField()
-    image = models.OneToOneField('Image')
-    email = models.TextField(null=True, blank=True)
-    phone = models.TextField(null=True, blank=True)
-    mobile = models.TextField(null=True, blank=True)
-    order = models.PositiveIntegerField(default = 1)
-    active = models.BooleanField()
-    role = models.TextField()
-    class Meta:
-        ordering = ['order',]
-        verbose_name_plural = 'people'
-
-    def __str__(self):
-        return "%s %s"%(self.firstname, self.lastname)
-
-    @permalink
-    def get_absolute_url(self):
-        return ('person', (), {'name': self.firstname.lower() + '-' + self.lastname.lower()})
-
-    def has_link(self):
-        linkname = ('%s-%s' % (self.firstname, self.lastname)).lower()
-        pages = Page.objects.filter(name = linkname)
-        return pages
 
 
 class File(models.Model):

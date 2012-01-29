@@ -11,7 +11,7 @@ from django.views.static import serve
 
 from PIL import Image as PILImage
 
-from cms.models import Page, Person, File, Navigation
+from cms.models import Page, File, Navigation
 from bibliography.models import Reference
 from django.conf import settings
 
@@ -39,11 +39,11 @@ def top(request, name):
     return render_to_response('index.html', c, context_instance)
 
 
-def people(request):
-    persons = Person.objects.all().order_by('order')
-    page = Page.objects.get(name = 'people')
-    return render_to_response('people.html', dict(person_list=persons, page=page, navigation=get_navigation('/people.html')),
-        RequestContext(request))
+#def people(request):
+#    persons = Person.objects.all().order_by('order')
+#    page = Page.objects.get(name = 'people')
+#    return render_to_response('people.html', dict(person_list=persons, page=page, navigation=get_navigation('/people.html')),
+#        RequestContext(request))
 		
 def image(request, filename):
     path = os.path.join(settings.MEDIA_ROOT, 'images', 'cache', filename)
