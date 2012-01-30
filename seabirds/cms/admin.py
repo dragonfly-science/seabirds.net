@@ -11,7 +11,7 @@ from mptt.admin import MPTTModelAdmin
 class NavigationAdmin(MPTTModelAdmin):
     list_display = ('name', 'order', 'url', 'parent')
     list_filter = ('parent',)
-    fieldsets = ((None, {'fields':(('order', 'name', 'url'), ('title', 'parent'),)}),)
+    #fieldsets = ((None, {'fields':(('order', 'name', 'url'), ('title', 'parent'),)}),)
 admin.site.register(Navigation, NavigationAdmin)
 
 
@@ -19,7 +19,7 @@ class PageAdmin(admin.ModelAdmin):
     prepopulated_fields = {"name": ("title",)}
     list_display = ('title', 'name', 'parent', 'published')
     list_filter = ('parent', 'published')
-    fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text', 'sidebar')}),)
+    #fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text', 'sidebar')}),)
     save_on_top = True
     formfield_overrides = {
         models.TextField: {'widget': 
@@ -32,7 +32,7 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {"name": ("title",)}
     list_display = ('title', 'name', 'author', 'date_published', 'published')
     list_filter = ('author', 'published')
-    fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'teaser', 'text')}),)
+    #fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'teaser', 'text')}),)
     formfield_overrides = {
         models.TextField: {'widget': 
             forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.3em'})
@@ -41,6 +41,7 @@ class PostAdmin(admin.ModelAdmin):
 admin.site.register(Post, PostAdmin)
 
 class ImageAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"key": ("title",)}
     list_display = ('key', 'tag', 'title', 'date_created', 'uploaded_by', 'thumbnail')
     list_filter = ('date_created', 'uploaded_by', 'owner')
 admin.site.register(Image, ImageAdmin)

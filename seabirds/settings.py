@@ -14,8 +14,9 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'seabirds.sqlite'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'seabirds',
+        'PASSWORD': '9b10c7d8'
     }
 }
 

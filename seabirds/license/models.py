@@ -8,4 +8,4 @@ class License(models.Model):
     symbol =  models.ImageField(upload_to="images")
 
     def __str__(self):
-        return self.name
+        return "%s (%s)"%(self.description, self.name)

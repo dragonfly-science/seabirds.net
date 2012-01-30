@@ -82,20 +82,21 @@ def markdownplus(instance, text, check=False):
 
 # Create your models here.
 class Page(models.Model):
-    name = models.SlugField(max_length = 50, unique = True)
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
-    title = models.CharField(max_length = 100)
-    order = models.PositiveIntegerField(default = 1)
-    published = models.BooleanField(default=False)
-    text = models.TextField(null=True, blank=True)
-    sidebar = models.TextField(null=True, blank=True)
-    #images = models.ManyToManyField('Image', related_name = 'pages')
+    title = models.CharField(max_length = 100, 
+        help_text='Title of the page, appears in the title bar of the browser')
+    name = models.SlugField(max_length = 50, unique = True, 
+        help_text = 'The name of the page. Pages are referenced as "%s/{name}.html". The field name can only contain alphanumeric characters, dashes, and underscores.'%settings.SITE_URL)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', 
+        help_text='Set the parent page. Used to define a page hierarchy across the site')
+    published = models.BooleanField(default=False, 
+        help_text='Page will appear on the site when this field is ticked')
+    text = models.TextField(null=True, blank=True, 
+        help_text='Page text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
+    sidebar = models.TextField(null=True, blank=True, 
+        help_text='Sidebar text. Appears at the top of the right sidebar. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
      
     def __str__(self):
         return self.name
-
-    class Meta:
-        ordering = ['order']
 
     @property   
     def markdown_text(self):
@@ -110,14 +111,20 @@ class Page(models.Model):
         return ('cms.views.page', (), {'name': self.name})
 
 class Post(models.Model):
-    name = models.SlugField(max_length = 50, unique = True)
-    title = models.CharField(max_length = 100)
-    author = models.ForeignKey(User, null=True, blank=True)
-    date_published = models.DateField()
-    published = models.BooleanField(default=False)
-    teaser = models.TextField()
-    text = models.TextField()
-    #images = models.ManyToManyField('Image', related_name = 'posts')
+    title = models.CharField(max_length = 100,
+        help_text="Title of the post")
+    name = models.SlugField(max_length = 50, unique = True,
+        help_text="Name used to refer to the post in the URL. Must be only letters, numbers, underscores, or hyphens.")
+    author = models.ForeignKey(User, null=True, blank=True,
+        help_text="Optional. User who made the post, leave blank for anonymous posts.")
+    date_published = models.DateField(
+        help_text="Publication date")
+    published = models.BooleanField(default=False,
+        help_text="When this box is checked, the post will be visible on the site.")
+    teaser = models.TextField(max_length = 300,
+        help_text='Teaser text. Short text that appears in lists of posts. Must be less than 300 characters long. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
+    text = models.TextField(
+        help_text='Post text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
      
     def __str__(self):
         return self.name
@@ -160,14 +167,22 @@ def get_image_path(instance, filename):
 
 class Image(models.Model):
     image = models.ImageField(upload_to = get_image_path)
-    title = models.CharField(max_length = 100) #Displays on mouse over
-    key = models.SlugField(max_length = 50, unique=True)
-    caption = models.TextField(null=True, blank=True)
-    source_url = models.URLField(null=True, blank=True)
-    owner = models.CharField(max_length = 200, null = True, blank=True)
-    owner_url = models.URLField(null=True, blank=True)
-    license = models.ForeignKey(License, null=True, blank=True)
-    uploaded_by = models.ForeignKey(User, null=True, blank=True)
+    title = models.CharField(max_length = 100, 
+        help_text="The title is displayed when you mouse over the image")
+    key = models.SlugField(max_length = 50, unique=True, 
+        help_text="A unique name for each image on the website. Must only be letters, number, underscores, or hyphens.")
+    uploaded_by = models.ForeignKey(User, 
+        help_text="The user who uploaded the image")
+    owner = models.CharField(max_length = 200, 
+        help_text="The name of the copyright holder of the image")
+    license = models.ForeignKey(License, 
+        help_text="Copyright license. All uploaded images must be made available under a <a href='http://creativecommons.org/'>creative commons</a> or public domain license")
+    owner_url = models.URLField(null=True, blank=True, 
+        help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
+    caption = models.TextField(null=True, blank=True, 
+        help_text="Optional. The default caption that will be displayed under the image.")
+    source_url = models.URLField(null=True, blank=True, 
+        help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
     date_created = models.DateField(auto_now_add=True)
     date_modified = models.DateField(auto_now=True)
 
@@ -200,11 +215,16 @@ class Image(models.Model):
         return ('cms.views.image', (), {'filename': os.path.split(self.image.path)[1]}) 
 
 class Navigation(MPTTModel):
-    order = models.PositiveIntegerField()
-    name = models.CharField(max_length=20)
-    url = models.CharField(max_length = 100)
-    title = models.CharField(max_length = 100)
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    name = models.CharField(max_length=20,
+        help_text="Text that appears in the navigation menu")
+    url = models.CharField(max_length = 100,
+        help_text="URL of the link (e.g. '/home.html')")
+    title = models.CharField(max_length = 100,
+        help_text="Text that appears when you mouse over the menu item")
+    order = models.PositiveIntegerField(
+        help_text="Order of the items in the fully expanded menu (a postive integer)")
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
+        help_text="Parent navigation item, used to define the navigation hierarchy")
 
     def __unicode__(self):
         return self.name

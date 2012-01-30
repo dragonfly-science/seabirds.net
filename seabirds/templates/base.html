@@ -44,7 +44,7 @@
                                                 {% if link.2 %} 
                                                 <ul> 
                                                     {% for sublink in link.2 %}
-	                                                <li> <a {% if sublink.1 %}class="active"{% endif %} href="{{ sublink.0.url }}" title="{{ link.0.title }}">{{ sublink.0.name }}</a></li>
+	                                                <li> <a {% if sublink.1 %}class="active"{% endif %} href="{{ sublink.0.url }}">{{ sublink.0.name }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
