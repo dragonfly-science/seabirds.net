@@ -23,7 +23,6 @@ DATABASES = {
 
 TIME_ZONE = 'Pacific/Auckland'
 LANGUAGE_CODE = 'en-nz'
-SITE_ID = 1
 USE_I18N = True
 MEDIA_ROOT = '/usr/local/django/seabirds.net/media/'
 MEDIA_URL = ''
@@ -85,10 +84,17 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'profile.UserProfile'
 
-SITENAME="development"
-SITE_NAME = 'Seabirds.net website'
-SITE_URL = 'http://localhost:8000'
-FROM_ADDRESS = 'web@dragonfly.co.nz'
+if DEBUG == True:
+    SITENAME ="development"
+    SITE_NAME = 'Seabirds.net website'
+    SITE_URL = 'http://localhost:8000'
+    SITE_ID = 1
+else:
+    SITENAME = "Seabirds.net"
+    SITE_NAME = 'Seabirds.net website'
+    SITE_URL = 'http://seabirds.net'
+    SITE_ID = 2
+FROM_ADDRESS = 'web@seabirds.net'
 
 INTERNAL_IPS = ('127.0.0.1',)
 DISQUS_API_KEY = 'LZG4ehRCHVeOofUobfHU5TDWhtsC3o4UDnJHkGrwo0OmWtwtHpb46q7A8ebDUUFF'

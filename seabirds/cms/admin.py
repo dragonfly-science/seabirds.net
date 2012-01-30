@@ -14,24 +14,13 @@ class NavigationAdmin(MPTTModelAdmin):
     fieldsets = ((None, {'fields':(('order', 'name', 'url'), ('title', 'parent'),)}),)
 admin.site.register(Navigation, NavigationAdmin)
 
-class PageImageInline(admin.TabularInline):
-    model = Page.images.through
-    extra = 1
-    formfield_overrides = {
-        models.TextField: {'widget': 
-            forms.Textarea(attrs={'cols': 50, 'rows':2, })
-        },
-    }
 
 class PageAdmin(admin.ModelAdmin):
     prepopulated_fields = {"name": ("title",)}
     list_display = ('title', 'name', 'parent', 'published')
     list_filter = ('parent', 'published')
     fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text', 'sidebar')}),)
-    inlines = (PageImageInline,)
-    def images(self, obj):
-        return obj.image.count() or ''
-    images.short_description = 'Images'
+    save_on_top = True
     formfield_overrides = {
         models.TextField: {'widget': 
             forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.1em'})
@@ -44,10 +33,6 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'name', 'author', 'date_published', 'published')
     list_filter = ('author', 'published')
     fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'teaser', 'text')}),)
-   # inlines = (ImageInline,)
-   # def images(self, obj):
-   #     return obj.image.count() or ''
-   # images.short_description = 'Images'
     formfield_overrides = {
         models.TextField: {'widget': 
             forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.3em'})
@@ -56,7 +41,8 @@ class PostAdmin(admin.ModelAdmin):
 admin.site.register(Post, PostAdmin)
 
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('title',)
+    list_display = ('key', 'tag', 'title', 'date_created', 'uploaded_by', 'thumbnail')
+    list_filter = ('date_created', 'uploaded_by', 'owner')
 admin.site.register(Image, ImageAdmin)
 
 class FileAdmin(admin.ModelAdmin):
