@@ -180,16 +180,33 @@ footer img {
     font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif;
     margin: 2px auto 2px auto;
     padding: 2px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: black;
-    text-align: left
+    text-align: center;
+	background:#f4f4f4;
+	border:2px #fff solid;
+	margin: 1.5em 0 0 0;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	-webkit-box-shadow: 0 0 4px #ddd;
+	-moz-box-shadow: 0 0 4px #ddd;
+	box-shadow: 0 0 4px #ddd;
 }
+
 .figure img {
     margin: 0;
     padding: 0;
 }
 
+.figure .caption {
+    text-align: left;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+.figure .attribution {
+    text-align: right;
+    font-size: 0.7em;
+    color: #888;
+}
 /*
 nav {margin:0; padding:0 0}
 nav a {padding-top:.2em; padding-bottom:.1em; margin: 0; font-weight:normal; display: block; color: black; text-decoration: none}
@@ -200,4 +217,11 @@ nav a.selected {background-color: #f2e587}
 nav a:hover {cursor: pointer; background-color: #aad2d2}
 */
 
+.pageedit {
+    position: relative;
+    float: right;
+}
+
+a.pageedit { color: #fd1241; }
+a.pageedit:hover { color: #fff; }
 

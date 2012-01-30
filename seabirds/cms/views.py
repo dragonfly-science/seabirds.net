@@ -15,7 +15,7 @@ from cms.models import Page, File, Navigation
 from bibliography.models import Reference
 from django.conf import settings
 
-def top(request, name):
+def page(request, name):
     context_instance=RequestContext(request)
     context_instance.autoescape=False
     if name == 'index': 
@@ -25,19 +25,21 @@ def top(request, name):
         fullpath = name
     name = os.path.basename(name)
     page =  get_object_or_404(Page, name = name)
-    navigation = page.get_absolute_url().split(settings.SITE_URL)[1]
+    navigation = page.get_absolute_url()
     level = page
     while level.parent:
         if Navigation.objects.filter(url = navigation):
             break
         level = level.parent
-        navigation = level.get_absolute_url().split(settings.SITE_URL)[1]
+        navigation = level.get_absolute_url()
     c = dict(
             page = page, 
             navigation = get_navigation(navigation),
             )
     return render_to_response('index.html', c, context_instance)
 
+def home(request):
+    return page(request, 'home')
 
 #def people(request):
 #    persons = Person.objects.all().order_by('order')
@@ -46,11 +48,15 @@ def top(request, name):
 #        RequestContext(request))
 		
 def image(request, filename):
+    #Return the file if it is in the  images directory
+    if os.path.exists(os.path.join(settings.MEDIA_ROOT, 'images', filename)):
+        return serve(request, filename, document_root=os.path.join(settings.MEDIA_ROOT, 'images'))
+    #If not then look for it in the  cache directory
     path = os.path.join(settings.MEDIA_ROOT, 'images', 'cache', filename)
     if os.path.exists(path):
         return serve(request, filename, document_root=os.path.join(settings.MEDIA_ROOT, 'images', 'cache'))
 
-    # make the image if we don't already have it
+    # If it  isn't their, then make the image
     # look for an image that is the same without size info
     m = re.search('-(\d+)x(\d+)', filename)
     if not m: raise Http404

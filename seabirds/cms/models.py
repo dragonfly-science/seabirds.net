@@ -26,14 +26,11 @@ except ImportError:
 check=True
 def markdownplus(instance, text, check=False):
     text = markdown(text)
-    print text
     def insert_image(m):
-        print m.group(0)
         try:
             image = Image.objects.get(key=m.group(1))
             try:
                 width = int(re.findall('width=([\d]+)', m.group(2))[0])
-                print width
             except:
                 width = None
             try:
@@ -44,15 +41,6 @@ def markdownplus(instance, text, check=False):
                 place = re.findall('place=([\w]+)', m.group(2))[0]
             except:
                 place = ''
-            ih = float(image.image.height)
-            iw = float(image.image.width)
-            if not width and height:  
-                width  = floor(iw * ( height / ih))
-            elif not height and width: 
-                height  = floor(ih * ( width / iw))
-            elif not height and not width: 
-                height  = floor(ih)
-                width  = floor(iw)
             url = image.get_qualified_url(width, height)
             if place.upper().startswith('R'):
                 place = 'float-right'
@@ -61,12 +49,15 @@ def markdownplus(instance, text, check=False):
             else:
                 place = 'center'
             caption = m.group(3)
+            if not caption:
+                caption = image.caption
             return render_to_string('image/plain.html', dict(image=image, width=width, place=place, url=url, caption=caption))
         except:
-            if check: raise
-            raise
+            if check: 
+                raise
+            return m.group(0)
+            
     text = re.sub('\[Image\s+([-\w]+)(\s+\w[\w=%\'" -]+)?\s*\](.*)(?=</p>)', insert_image,  text)
-    print text
 
     def insert_references(m):
         try:
@@ -98,7 +89,7 @@ class Page(models.Model):
     published = models.BooleanField(default=False)
     text = models.TextField(null=True, blank=True)
     sidebar = models.TextField(null=True, blank=True)
-    images = models.ManyToManyField('Image', related_name = 'pages')
+    #images = models.ManyToManyField('Image', related_name = 'pages')
      
     def __str__(self):
         return self.name
@@ -114,29 +105,9 @@ class Page(models.Model):
     def markdown_sidebar(self):
         return markdownplus(self, self.sidebar)
 
+    @permalink
     def get_absolute_url(self):
-        return "%s/%s.html" % (settings.SITE_URL, self.name)
-
-    def breadcrumb(self):
-        path = [self]
-        this = self
-        while this.parent:
-            path.append(this.parent)
-            this = this.parent
-        path.reverse()
-        res = []
-        fullpath = []
-        for p in path:
-            if p.name == 'home': 
-                res.append({'name': "Home",
-                    'href': p.get_absolute_url(),
-                })
-            else:
-                fullpath.append(p.name)
-                res.append({'name': p.title,
-                    'href': p.get_absolute_url(),
-                })
-        return res
+        return ('cms.views.page', (), {'name': self.name})
 
 class Post(models.Model):
     name = models.SlugField(max_length = 50, unique = True)
@@ -146,7 +117,7 @@ class Post(models.Model):
     published = models.BooleanField(default=False)
     teaser = models.TextField()
     text = models.TextField()
-    images = models.ManyToManyField('Image', related_name = 'posts')
+    #images = models.ManyToManyField('Image', related_name = 'posts')
      
     def __str__(self):
         return self.name
@@ -191,23 +162,42 @@ class Image(models.Model):
     image = models.ImageField(upload_to = get_image_path)
     title = models.CharField(max_length = 100) #Displays on mouse over
     key = models.SlugField(max_length = 50, unique=True)
+    caption = models.TextField(null=True, blank=True)
     source_url = models.URLField(null=True, blank=True)
     owner = models.CharField(max_length = 200, null = True, blank=True)
     owner_url = models.URLField(null=True, blank=True)
     license = models.ForeignKey(License, null=True, blank=True)
     uploaded_by = models.ForeignKey(User, null=True, blank=True)
+    date_created = models.DateField(auto_now_add=True)
+    date_modified = models.DateField(auto_now=True)
+
+    def thumbnail(self, width=50, max_height=100):
+        return "<img src='/%s' title='%s'>"%(self.get_qualified_url(width=width, max_height=max_height), self.title)
+    thumbnail.allow_tags=True
+
+    def tag(self):
+        return "[Image %s]"%(self.key,)
         
     def __str__(self):
         return '%s - %s'%(self.key, self.title)
 
-    def get_qualified_url(self, width, height):
+    def get_qualified_url(self, width=None, height=None, max_height=None):
+        if not height and not width:
+            height = self.image.height
+            width = self.image.width
+        elif not height:
+            height = int(float(self.image.height*width)/self.image.width)
+        elif not width:
+            width = int(float(self.image.width*height)/self.image.height)
+        if max_height and height > max_height:
+            height = max_height
+            width = int(float(width*height)/max_height)
         base, ext = os.path.splitext(os.path.split(self.image.path)[1])
         return os.path.join('images', '%s-%ix%i%s'%(base, width, height, ext))
 
     @permalink
     def get_absolute_url(self):
-        base, ext = os.path.splitext(os.path.split(self.image.path)[1])
-        return ('cms.views.image', (), {'path': os.path.join(base, '%s.html'%self.key) }) 
+        return ('cms.views.image', (), {'filename': os.path.split(self.image.path)[1]}) 
 
 class Navigation(MPTTModel):
     order = models.PositiveIntegerField()

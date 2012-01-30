@@ -1,6 +1,8 @@
 {% autoescape off %}
 <div class="figure{% if place %} {{ place }}{% endif %}"{% if width %} style="width: {{ width }}px" {% endif %}> 
-    <img src="/{{ url }}" alt="{{ image.title }}" class="flexible" {% if width %} width="{{ width }}"px {% endif %} >
+   <span style="display: inline-block; position: relative">
+    <a class="pageedit" href="{% url admin:cms_image_change image.id %}" style="position:absolute; top: 10px; left: 10px">Edit image</a>
+   <img src="/{{ url }}" alt="{{ image.title }}" class="flexible" {% if width %} width="{{ width }}"px {% endif %} >
     <div class="attribution">
         {% if image.owner %}
         {% if image.source_url %}
@@ -12,5 +14,6 @@
         {% endif %}
     </div>
     <div class="caption">{{ caption }}</div>
+    </span>
 </div>
 {% endautoescape %}
