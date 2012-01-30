@@ -19,11 +19,7 @@ class PageAdmin(admin.ModelAdmin):
     prepopulated_fields = {"name": ("title",)}
     list_display = ('title', 'name', 'parent', 'published')
     list_filter = ('parent', 'published')
-<<<<<<< HEAD
     #fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text', 'sidebar')}),)
-=======
-    fieldsets = ((None, {'fields':(('title', 'name', 'parent'), ('order', 'published'), 'text', 'sidebar')}),)
->>>>>>> faac0b7... Working with the image model
     save_on_top = True
     formfield_overrides = {
         models.TextField: {'widget': 
@@ -36,11 +32,7 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {"name": ("title",)}
     list_display = ('title', 'name', 'author', 'date_published', 'published')
     list_filter = ('author', 'published')
-<<<<<<< HEAD
     #fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'teaser', 'text')}),)
-=======
-    fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'teaser', 'text')}),)
->>>>>>> faac0b7... Working with the image model
     formfield_overrides = {
         models.TextField: {'widget': 
             forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.3em'})
@@ -49,15 +41,12 @@ class PostAdmin(admin.ModelAdmin):
 admin.site.register(Post, PostAdmin)
 
 class ImageAdmin(admin.ModelAdmin):
-<<<<<<< HEAD
     prepopulated_fields = {"key": ("title",)}
-=======
->>>>>>> faac0b7... Working with the image model
     list_display = ('key', 'tag', 'title', 'date_created', 'uploaded_by', 'thumbnail')
     list_filter = ('date_created', 'uploaded_by', 'owner')
 admin.site.register(Image, ImageAdmin)
 
 class FileAdmin(admin.ModelAdmin):
-	list_display = ('title','file')
+    list_display = ('title','file')
 admin.site.register(File, FileAdmin)
 
