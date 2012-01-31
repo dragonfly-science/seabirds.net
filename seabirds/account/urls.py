@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from .account.views import *
+from account.views import *
 
 urlpatterns = patterns('',
     (r'^profile/$',                  profile),
