@@ -14,9 +14,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'seabirds',
-        'PASSWORD': '9b10c7d8'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'seabirds.sqlite',
     }
 }
 
@@ -28,7 +27,7 @@ USE_I18N = True
 MEDIA_ROOT = '/usr/local/django/seabirds.net/media/'
 MEDIA_URL = ''
 
-ADMIN_MEDIA_PREFIX = '/am/'
+#ADMIN_MEDIA_PREFIX = '/am/'
 
 SECRET_KEY = 'vtc+y0G^ja;p19874356GHbakhhaayaya987'
 
@@ -67,8 +66,9 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    #'django.contrib.sites',
     'django.contrib.sitemaps',
+    'django.contrib.staticfiles',
     'seabirds.cms',
     'bibliography',
     'django.contrib.admin',
@@ -85,16 +85,10 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'profile.UserProfile'
 
-if DEBUG == True:
-    SITENAME ="development"
-    SITE_NAME = 'Seabirds.net website'
-    SITE_URL = 'http://localhost:8000'
-    SITE_ID = 1
-else:
-    SITENAME = "Seabirds.net"
-    SITE_NAME = 'Seabirds.net website'
-    SITE_URL = 'http://seabirds.net'
-    SITE_ID = 2
+SITENAME ="development"
+SITE_NAME = 'Seabirds.net website'
+SITE_URL = 'http://localhost:8000'
+
 FROM_ADDRESS = 'web@seabirds.net'
 
 INTERNAL_IPS = ('127.0.0.1',)
