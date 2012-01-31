@@ -110,3 +110,5 @@ CUCKOO_DIRECTORY = '/usr/local/django/seabirds.net/patches'
 LOGIN_URL = '^login'
 
 AVATAR_CROP_MIN_SIZE = 20
+STATIC_URL = '/static/'
+STATIC_ROOT = '/usr/local/django/seabirds.net/static/'
