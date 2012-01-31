@@ -60,7 +60,6 @@ urlpatterns += patterns('',
     #The top pages
     (r'^admin/tagging/(.*)$', 'bibliography.views.tagging'),
     (r'^admin/', include(admin.site.urls)),
-
     (r'^login',   'django.contrib.auth.views.login',    {'template_name': 'account/login.html'}),
     (r'^logout',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
     ('^profiles/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}),
@@ -77,6 +76,7 @@ urlpatterns += patterns('',
     (r'^js/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'js')}),
     (r'^yaml/(?P<path>.*)$',           'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'yaml')}),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    (r'^static/(?P<path>.*)$',   'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     url(r'^(?P<name>[-\w]+)\.html',           'cms.views.page', name='page'),
 )
 
