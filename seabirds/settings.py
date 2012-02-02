@@ -1,12 +1,18 @@
 
-#import sys
-#sys.path.append('/usr/local/django/')
-
 import logging, os
 logging.basicConfig(level = logging.WARN,)
 
-
+# settings overridden in sitesettings
 DEBUG = True
+SITE_ROOT = '/usr/local/django/seabirds.net'
+SITE_NAME = 'Seabirds.net development'
+SITE_URL = 'http://localhost:8000'
+
+try:
+    from sitesettings import *
+except ImportError:
+    pass
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = ()
@@ -20,12 +26,10 @@ DATABASES = {
 }
 
 
-
-
 TIME_ZONE = 'Pacific/Auckland'
 LANGUAGE_CODE = 'en-nz'
 USE_I18N = True
-MEDIA_ROOT = '/usr/local/django/seabirds.net/media/'
+MEDIA_ROOT = os.path.join(SITE_ROOT, 'media/')
 MEDIA_URL = ''
 
 #ADMIN_MEDIA_PREFIX = '/am/'
@@ -59,7 +63,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'seabirds.urls'
 
 TEMPLATE_DIRS = (
-    '/usr/local/django/seabirds.net/templates',
+    os.path.join(SITE_ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (
@@ -86,9 +90,6 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'profile.UserProfile'
 
-SITENAME ="development"
-SITE_NAME = 'Seabirds.net website'
-SITE_URL = 'http://localhost:8000'
 
 FROM_ADDRESS = 'web@seabirds.net'
 
@@ -100,16 +101,12 @@ DISQUS_WEBSITE_SHORTNAME = 'seabirds'
 EMAIL_HOST = 'localhost'
 SUPPORT_EMAIL = 'Finlay Thompson <finlay@dragonfly.co.nz>'
 
-try:
-    from sitesettings import *
-except ImportError:
-    pass
 
-CUCKOO_DIRECTORY = '/usr/local/django/seabirds.net/patches'
+CUCKOO_DIRECTORY = os.path.join(SITE_ROOT, 'patches')
 
 # Required for enforcing a global login during testing
 LOGIN_URL = '^login'
 
 AVATAR_CROP_MIN_SIZE = 20
 STATIC_URL = '/static/'
-STATIC_ROOT = '/usr/local/django/seabirds.net/static/'
+STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
