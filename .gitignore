@@ -8,3 +8,4 @@ seabirds/sitesettings.py
 seabirds/seabirds.sqlite
 static/*
 seabirds/media/*
+seabirds/static/*
