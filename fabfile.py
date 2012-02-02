@@ -40,12 +40,12 @@ def get_live_database():
     "Copy live database from the production server to the local machine"
     with cd('%(path)s' % env):
         run('pg_dump -U seabirds -C seabirds > dumps/latest.sql')
-        get('seabirds/dumps/latest.sql', local_path='dumps')
+        get('dumps/latest.sql', local_path='dumps')
         with settings(warn_only=True):
             local('dropdb seabirds')
         local('psql postgres -f dumps/latest.sql')
 
-def local_uptodate():
+def get_remote():
     local('git pull')
     get_live_media()
     get_live_database()
