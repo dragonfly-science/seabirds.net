@@ -1,36 +1,27 @@
 import os
-from fabric.api import sudo, cd, local, env, run, prefix 
+from fabric.api import sudo, cd, local, env, run, lcd, get, settings
 from contextlib import contextmanager as _contextmanager
 
 
 #### Begin env settings ####
 
-env.project = 'seabirds.net'
-env.user = os.environ['USER']
+env.user = 'seabirds'
 env.repo = 'git@github.com:dragonfly-science'
 env.sitename = 'seabirds'
 env.production_server = 'seabirds.webfactional.com'
-env.db='seabirds'
+env.local_user = os.environ['USER']
 
-def dev():
-    env.hosts = ['localhost']
-    env.path = '/home/edward/dragonfly/seabirds.net'
-    env.activate = 'source /usr/local/bin/virtualenvwrapper.sh; workon %(project)s' % env
-
-def prod():
-    """ Use production server settings """
-    env.hosts = [env.production_server]
-    env.path = '/home/seabirds/seabirds.net'
-    env.activate = ''
+env.hosts = [env.production_server]
+env.path = '/home/seabirds/seabirds.net'
+env.local_path = os.getcwd()
+env.activate = 'source /usr/local/bin/virtualenvwrapper.sh; workon seabirds' % env
 #### End env settings ####
 
 #### Private functions ####
-@_contextmanager
-def _virtualenv():
-    with cd(env.path):
-        with prefix(env.activate):
-            yield
-
+#@_contextmanager
+#def _virtualenv():
+#    with prefix(env.activate):
+#        yield
 #### End private functions ####
 
 
@@ -41,22 +32,25 @@ def git_pull():
 
 def get_live_media():
     "Copy media from the production server to the local machine"
-    local('sudo rsync -avzL seabirds@%(production_server)s:/home/seabirds/seabirds.net/seabirds/media /usr/local/django/seabirds.net --exclude=*.css --exclude=*.js' % env)
-    local('sudo chown %(user)s:dragonfly /usr/local/django/seabirds.net/media -R' % env)
+    local('rsync -avz -e "ssh -l seabirds" seabirds@%(production_server)s:%(path)s/seabirds/media %(local_path)s/seabirds/ --exclude=*.css --exclude=*.js' % env)
+    local('rsync -avzL -e "ssh -l seabirds" seabirds@%(production_server)s:%(path)s/static %(local_path)s/ --exclude=*.css --exclude=*.js' % env)
+    local('chown %(local_user)s:dragonfly %(local_path)s -R' % env)
 
 def get_live_database():
     "Copy live database from the production server to the local machine"
-    local('dropdb %(db)s' % env)
-    local('ssh seabirds@%(production_server)s pg_dump -U %(db)s -C %(db)s | psql postgres' % env)
+    with cd('%(path)s' % env):
+        run('pg_dump -U seabirds -C seabirds > dumps/latest.sql')
+        get('seabirds/dumps/latest.sql', local_path='dumps')
+        with settings(warn_only=True):
+            local('dropdb seabirds')
+        local('psql postgres -f dumps/latest.sql')
 
-def get_uptodate():
-    with cd("%(path)s" % env):
-        run('git pull')
+def local_uptodate():
+    local('git pull')
     get_live_media()
     get_live_database()
 
 def validate():
     "Run django validation"
-    with _virtualenv():
-        with cd('%(sitename)s'% env):
-            run('python manage.py validate')
+    with cd('%(path)s/seabirds' % env):
+        run('python manage.py validate')
