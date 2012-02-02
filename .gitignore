@@ -7,3 +7,4 @@ seabirds/media/images/cache/*
 seabirds/sitesettings.py
 seabirds/seabirds.sqlite
 static/*
+seabirds/media/*

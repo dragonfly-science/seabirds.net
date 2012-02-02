@@ -24,6 +24,7 @@ except ImportError:
         return text
 
 check=True
+IMAGE_REGEX = '\[Image\s+([-\w]+)(\s+\w[\w=%\'" -]+)?\s*\](.*)(?=</p>)'
 def markdownplus(instance, text, check=False):
     text = markdown(text)
     def insert_image(m):
@@ -41,6 +42,7 @@ def markdownplus(instance, text, check=False):
                 place = re.findall('place=([\w]+)', m.group(2))[0]
             except:
                 place = ''
+            width, height = image.get_dimensions(width, height)
             url = image.get_qualified_url(width, height)
             if place.upper().startswith('R'):
                 place = 'float-right'
@@ -55,9 +57,8 @@ def markdownplus(instance, text, check=False):
         except:
             if check: 
                 raise
-            return m.group(0)
-            
-    text = re.sub('\[Image\s+([-\w]+)(\s+\w[\w=%\'" -]+)?\s*\](.*)(?=</p>)', insert_image,  text)
+            return m.group(0) 
+    text = re.sub(IMAGE_REGEX, insert_image,  text)
 
     def insert_references(m):
         try:
@@ -125,7 +126,9 @@ class Post(models.Model):
         help_text='Teaser text. Short text that appears in lists of posts. Must be less than 300 characters long. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     text = models.TextField(
         help_text='Post text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
-     
+    image = models.ForeignKey('Image', related_name = 'posts',
+	help_text='Image associated with the post')
+	
     def __str__(self):
         return self.name
 
@@ -175,7 +178,7 @@ class Image(models.Model):
         help_text="The user who uploaded the image")
     owner = models.CharField(max_length = 200, 
         help_text="The name of the copyright holder of the image")
-    license = models.ForeignKey(License, 
+    license = models.ForeignKey(License, null=True, blank=True, 
         help_text="Copyright license. All uploaded images must be made available under a <a href='http://creativecommons.org/'>creative commons</a> or public domain license")
     owner_url = models.URLField(null=True, blank=True, 
         help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
@@ -186,9 +189,17 @@ class Image(models.Model):
     date_created = models.DateField(auto_now_add=True)
     date_modified = models.DateField(auto_now=True)
 
-    def thumbnail(self, width=50, max_height=100):
-        return "<img src='/%s' title='%s'>"%(self.get_qualified_url(width=width, max_height=max_height), self.title)
+    def thumbnail(self, width=100, max_height=300):
+        width, height = self.get_dimensions(width=width, max_height=max_height)
+        return "<img src='/%s' title='%s'>"%(self.get_qualified_url(width, height), self.title)
     thumbnail.allow_tags=True
+
+    def render(self, width=None, height=None, caption=None, place=None):
+        width, height = self.get_dimensions(widt=width, height=height)
+        url = self.get_qualified_url(width, height)
+        if not caption:
+            caption=self.caption
+        return render_to_string('image/plain.html', dict(image=image, width=width, place=None, url=url, caption=caption))
 
     def tag(self):
         return "[Image %s]"%(self.key,)
@@ -196,7 +207,7 @@ class Image(models.Model):
     def __str__(self):
         return '%s - %s'%(self.key, self.title)
 
-    def get_qualified_url(self, width=None, height=None, max_height=None):
+    def get_dimensions(self, width=None, height=None, max_height=None):
         if not height and not width:
             height = self.image.height
             width = self.image.width
@@ -207,6 +218,11 @@ class Image(models.Model):
         if max_height and height > max_height:
             height = max_height
             width = int(float(width*height)/max_height)
+        return width, height       
+
+    def get_qualified_url(self, width=None, height=None, max_height=None):
+	if not width or not height or max_height:
+	    width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
         base, ext = os.path.splitext(os.path.split(self.image.path)[1])
         return os.path.join('images', '%s-%ix%i%s'%(base, width, height, ext))
 

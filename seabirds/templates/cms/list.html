@@ -10,13 +10,11 @@
   <p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>
 {% endif %}
   {% autoescape off %}
-    <div class="grid_8 firstrow">
     <h2> Recent discussion </h2>
-    </div>
-        <div class="grid_8">
-        <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3><p class="byline">{{ object.date_published|date:"F j, Y" }}</p></div>
-        <div class = "grid_6"  > {{ object.markdown_teaser }}<p><a href="{{ object.get_absolute_url }}"> Read more </a></p></div>
-        <div class = "grid_1"><a href="{{ object.get_absolute_url }}"><img src="/{{ object.images.all.0.url }}" alt="{{ object.images.all.0.image.title }}" width="140px" ></a></div>
+        <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3><p class="byline">{{ object.date_published|date:"F j, Y" }}</p>
+        <img src="/{{ object.image.get_qualified_url }}" class="flexible float-right" width=100px>
+	<div class="teaser"> {{ object.markdown_teaser }}</p>
+        <p><a href="{{ object.get_absolute_url }}"> Read more </a></p>
   {% endautoescape %}
   {% if not object.published %}
     </div>

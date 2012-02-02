@@ -39,7 +39,8 @@
 @import url(/yaml/print/print.css);
 
 /* Override typography */
-.sidebar {font-size: 87%}
+.sidebar {font-size: 87%;
+}
 
 	body {
 		font-family: "Droid Sans", Arial, Helvetica, sans-serif;
@@ -225,3 +226,18 @@ nav a:hover {cursor: pointer; background-color: #aad2d2}
 a.pageedit { color: #fd1241; }
 a.pageedit:hover { color: #fff; }
 
+
+#dsq-brlink {
+	display: none;
+}
+
+#dsq-content h3 {
+	font-size: 100%;
+}
+
+#dsq-subscribe {
+	font-size: 90%;
+}
+.dsq-subscribe a em {
+	text-decoration: none;
+}
