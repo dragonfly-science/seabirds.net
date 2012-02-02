@@ -126,7 +126,7 @@ class Post(models.Model):
         help_text='Teaser text. Short text that appears in lists of posts. Must be less than 300 characters long. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     text = models.TextField(
         help_text='Post text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
-    image = models.ForeignKey('Image', related_name = 'posts',
+    image = models.ForeignKey('Image', related_name = 'posts', null=True, blank=True,
 	help_text='Image associated with the post')
 	
     def __str__(self):
