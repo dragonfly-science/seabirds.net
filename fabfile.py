@@ -10,6 +10,7 @@ env.user = os.environ['USER']
 env.repo = 'git@github.com:dragonfly-science'
 env.sitename = 'seabirds'
 env.production_server = 'seabirds.webfactional.com'
+env.db='seabirds'
 
 def dev():
     env.hosts = ['localhost']
@@ -40,13 +41,13 @@ def git_pull():
 
 def get_live_media():
     "Copy media from the production server to the local machine"
-    local('sudo rsync -avzL seabirds@%(production_server)s:/home/seabirds/seabirds.net/seabirds/media /usr/local/django/seabirds.net/media --exclude=*.css --exclude=*.js' % env)
+    local('sudo rsync -avzL seabirds@%(production_server)s:/home/seabirds/seabirds.net/seabirds/media /usr/local/django/seabirds.net --exclude=*.css --exclude=*.js' % env)
     local('sudo chown %(user)s:dragonfly /usr/local/django/seabirds.net/media -R' % env)
 
 def get_live_database():
     "Copy live database from the production server to the local machine"
     local('dropdb %(db)s' % env)
-    local('ssh %(production_server)s pg_dump -U %(db)s -C %(db)s | psql postgres' % env)
+    local('ssh seabirds@%(production_server)s pg_dump -U %(db)s -C %(db)s | psql postgres' % env)
 
 def get_uptodate():
     with cd("%(path)s" % env):
