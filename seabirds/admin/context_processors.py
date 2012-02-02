@@ -4,6 +4,6 @@ import socket
 from django.conf import settings
 
 def whereami(request):
-    return {'database_host':  "%s on %s" % (settings.SITENAME, socket.gethostname()),
+    return {'database_host':  "%s on %s" % (settings.SITE_NAME, socket.gethostname()),
             'site_url': settings.SITE_URL}
 
