@@ -8,3 +8,9 @@ django-taggit==0.9.3
 django-reversion==1.5.1
 django-countries
 django-profiles
+Markdown==2.0.3
+PIL==1.1.7
+psycopg2==2.4.4
+Fabric==dev
+pycrypto==2.5
+ssh==dev
