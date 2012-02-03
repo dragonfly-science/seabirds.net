@@ -9,3 +9,4 @@ seabirds/seabirds.sqlite
 static/*
 seabirds/media/*
 dumps/*.sql
+sitesettings.py

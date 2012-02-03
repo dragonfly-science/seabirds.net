@@ -1,5 +1,5 @@
 import os
-from fabric.api import sudo, cd, local, env, run, lcd, get, settings
+from fabric.api import sudo, cd, local, env, run, lcd, get, settings, put
 from contextlib import contextmanager as _contextmanager
 
 
@@ -25,10 +25,15 @@ env.activate = 'source /usr/local/bin/virtualenvwrapper.sh; workon seabirds' % e
 #### End private functions ####
 
 
+# Commands for  getting data from the server
 def git_pull():
     "Make sure that any commits are synchronised with the server"
     with cd("%(path)s" % env):
         run('git pull')
+
+def get_secrets():
+    "Get files that aren't in the checkout, such as sitesettings.py"
+    get('%(path)s/seabirds/sitesettings.py' % env, local_path='.')
 
 def get_live_media():
     "Copy media from the production server to the local machine"
@@ -45,12 +50,38 @@ def get_live_database():
             local('dropdb seabirds')
         local('psql postgres -f dumps/latest.sql')
 
-def get_remote():
+
+def pull():
     local('git pull')
+    get_secrets()
     get_live_media()
     get_live_database()
+
+
+# Commands for deploying to the remote server
+def git_push():
+    "Make sure that any commits are synchronised with the server"
+    local("git push")
+    with cd("%(path)s" % env):
+        run('git pull')
+
+def put_secrets():
+    "Put files that aren't in the checkout, such as sitesettings.py"
+    put('sitesettings.py', remote_path='%(path)s/seabirds' % env)
 
 def validate():
     "Run django validation"
     with cd('%(path)s/seabirds' % env):
         run('python manage.py validate')
+
+def restart():
+    "Restart the server"
+    run('/home/seabirds/webapps/django/apache2/bin/restart')
+
+def push():
+    git_push()
+    put_secrets()
+    validate()
+    restart()
+
+
