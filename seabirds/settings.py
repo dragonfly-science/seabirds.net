@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     'django_countries',
     'registration',
     'captcha',
+    'categories'
 )
 
 

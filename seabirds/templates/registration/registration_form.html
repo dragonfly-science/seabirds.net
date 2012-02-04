@@ -1,10 +1,60 @@
-{% extends "registration/registration_base.html" %}
-{% block title %}Register for an account{% endblock %}
-{% block content %}
-<table>
-    <form method='post' action=''>{% csrf_token %}
-        {{ form }}
-        <tr><td></td><td><input type="submit" value="Send activation email" /></td>
-    </form>
-</table>
+{% extends "profiles/edit_profile.html" %}
+{% block title %}Register as a seabird researcher{% endblock %}
+{% block above %}
+<p>
+Registering as a researcher in the PETREL databse gives you access to Seabirds.net. Once you are registered you will be able to post discussion items, upload photographs, and recieve news on seabirds and from the World Seabird Union. Registration is free. Please complete the information below (mandatory fields are indicated with a red asterisk). The registration information will be displayed on your profile page.
+</p>
+<p>
+Once you have registered, you will be sent an activation email to confirm your email address. Clicking on the link in the email will confirm your registration. You will be able to edit this profile information once you have activated your registration.
+</p>
+{% endblock above %}
+{% block password %}
+    <h6> Password </h6>
+    <div class="ym-fbox-text {% if form.password1.errors %}ym-error{% endif %}">
+        <strong> {{ form.password1.errors }} </strong>
+        <label for="id_password1">{{ form.password1.label }}
+        <sup title="This field is mandatory.">*</sup>
+        </label>
+        {{ form.password1 }}
+    </div>
+    <div class="ym-fbox-text {% if form.password2.errors %}ym-error{% endif %}">
+        <strong> {{ form.password2.errors }} </strong>
+        <label for="id_password2">{{ form.password2.label }}
+        <sup title="This field is mandatory.">*</sup>
+        </label>
+        {{ form.password2 }}
+    </div>
+{% endblock password %}
+{% block terms %}
+<h6> Terms and conditions </h6>
+<p>
+The adminstrators of Seabirds.net reserve the right to decline your registration if the
+information provided is incorrect, or if you do not appear to have a genuine interest in
+seabird research. 
+When posting content and discussion, you are expected to be
+courteous and respectful. People who are abusive or otherwise unpleasant may
+have their access revoked. You are also expected to ensure that you have the
+appropriate copyright for material (such as photohgraphs and papers) uploaded
+to Seabirds.net, and content may be removed if it is found to have been
+inappropriately copied. Text posted to the website will be made available under
+a <a href="http://creativecommons.org/licenses/by-sa/3.0/">creative commons
+attribution share-alike license</a>.
+</p>
+    <div class="ym-fbox-check {% if form.accept_terms.errors %}ym-error{% endif %}">
+        <strong> {{ form.accept_terms.errors }} </strong>
+        <label for="id_accept_terms">Check to accept these terms and conditions:
+        </label>
+        {{ form.accept_terms }}
+    </div>
+{% endblock terms  %}
+{% block captcha %}
+<h6> A quick check that you are human and then you are done </h6>
+    <div class="ym-fbox-text {% if form.captcha.errors %}ym-error{% endif %}">
+        <strong> {{ form.captcha.errors }} </strong>
+        {{ form.captcha }}
+    </div>
+
+{% endblock captcha %}
+{% block submit %}
+<input type="submit" name="submit" value="Register me" >
 {% endblock %}

@@ -1,7 +1,15 @@
 from django import forms
-from profile.models import UserProfile, SEABIRDS
+from django.contrib.auth.models import User
+
+from profile.models import UserProfile
+
+attrs_dict = {'class': 'required'}
 
 class ProfileForm(forms.ModelForm):
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
+                                                               maxlength=75)))
+    first_name = forms.CharField(label="First name",help_text='', max_length=30)
+    last_name = forms.CharField(label="Last name",help_text='', max_length=30)
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
         try:
@@ -10,14 +18,11 @@ class ProfileForm(forms.ModelForm):
             self.fields['last_name'].initial = self.instance.user.last_name
         except User.DoesNotExist:
             pass
-    email = forms.EmailField(label="Email address",help_text='')
-    first_name = forms.CharField(label="First name",help_text='', max_length=30)
-    last_name = forms.CharField(label="Last name",help_text='', max_length=30)
 
     class Meta:
         model = UserProfile
         exclude = ('user',)
-        widgets = { 'seabirds': forms.CheckboxSelectMultiple }
+        #widgets = { 'seabirds': forms.CheckboxSelectMultiple }
 
     def save(self, *args, **kwargs):
         """
