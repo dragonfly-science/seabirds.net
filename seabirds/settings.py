@@ -7,11 +7,14 @@ DEBUG = True
 SITE_ROOT = '/usr/local/django/seabirds.net'
 SITE_NAME = 'Seabirds.net development'
 SITE_URL = 'http://localhost:8000'
+SITE_ID = 1
 
 try:
     from sitesettings import *
 except ImportError:
     pass
+
+from secrets import RECAPTCHA_PRIVATE_KEY
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -71,7 +74,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    #'django.contrib.sites',
+    'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'seabirds.cms',
@@ -85,11 +88,15 @@ INSTALLED_APPS = (
     'reversion',
     'license',
     'django_countries',
+    'registration',
+    'captcha',
 )
 
 
 AUTH_PROFILE_MODULE = 'profile.UserProfile'
+ACCOUNT_ACTIVATION_DAYS = 7
 
+RECAPTCHA_PUBLIC_KEY = '6Le9Ms0SAAAAAMEtTQWyP-Pn93SUE3FeYC2LoVcw'
 
 FROM_ADDRESS = 'web@seabirds.net'
 
@@ -97,9 +104,16 @@ INTERNAL_IPS = ('127.0.0.1',)
 DISQUS_API_KEY = 'LZG4ehRCHVeOofUobfHU5TDWhtsC3o4UDnJHkGrwo0OmWtwtHpb46q7A8ebDUUFF'
 DISQUS_WEBSITE_SHORTNAME = 'seabirds'
 
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'edward@dragonfly.co.nz'
+EMAIL_PORT = 587
+try:
+    from secrets import EMAIL_HOST_PASSWORD
+except ImportError:
+    EMAIL_HOST_PASSWORD = ''
+SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
-EMAIL_HOST = 'localhost'
-SUPPORT_EMAIL = 'Finlay Thompson <finlay@dragonfly.co.nz>'
 
 
 CUCKOO_DIRECTORY = os.path.join(SITE_ROOT, 'patches')

@@ -7,6 +7,8 @@ from django.contrib import admin
 
 from cms.models import Page, Post
 from profile.forms import ProfileForm
+from registration.views import register
+from profile.custom_registration import ProfileRegistrationForm
 
 admin.autodiscover()
 
@@ -60,11 +62,16 @@ urlpatterns += patterns('',
     #The top pages
     (r'^admin/tagging/(.*)$', 'bibliography.views.tagging'),
     (r'^admin/', include(admin.site.urls)),
-    (r'^login',   'django.contrib.auth.views.login',    {'template_name': 'account/login.html'}),
-    (r'^logout',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
+    #(r'^login',   'django.contrib.auth.views.login',    {'template_name': 'account/login.html'}),
+    #(r'^logout',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
     ('^profiles/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}),
     url(r'^profiles/', include('profiles.urls')),
-    url(r'^account/',  include('account.urls')),
+    url(r'^accounts/register/$',
+        register,
+        {'backend': 'profile.custom_registration.ProfileBackend', 'form_class': ProfileRegistrationForm},        
+        name='registration_register'
+    ),    
+    (r'^accounts/', include('registration.urls')),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'cms.views.reference'),
     (r'^$',                                         'cms.views.home'),

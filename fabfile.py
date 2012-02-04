@@ -1,5 +1,5 @@
 import os
-from fabric.api import sudo, cd, local, env, run, lcd, get, settings, put
+from fabric.api import sudo, cd, local, env, run, lcd, get, settings, put, prefix
 from contextlib import contextmanager as _contextmanager
 
 
@@ -14,14 +14,13 @@ env.local_user = os.environ['USER']
 env.hosts = [env.production_server]
 env.path = '/home/seabirds/seabirds.net'
 env.local_path = os.getcwd()
-env.activate = 'source /usr/local/bin/virtualenvwrapper.sh; workon seabirds' % env
-#### End env settings ####
 
 #### Private functions ####
-#@_contextmanager
-#def _virtualenv():
-#    with prefix(env.activate):
-#        yield
+@_contextmanager
+def _virtualenv():
+    local('/bin/bash /usr/local/bin/virtualenvwrapper.sh; workon seabirds')
+    yield
+    local('deactivate')
 #### End private functions ####
 
 
@@ -34,6 +33,7 @@ def git_pull():
 def get_secrets():
     "Get files that aren't in the checkout, such as sitesettings.py"
     get('%(path)s/seabirds/sitesettings.py' % env, local_path='.')
+    get('%(path)s/seabirds/secrets.py' % env, local_path='seabirds')
 
 def get_live_media():
     "Copy media from the production server to the local machine"
@@ -50,6 +50,11 @@ def get_live_database():
             local('dropdb seabirds')
         local('psql postgres -f dumps/latest.sql')
 
+def runserver():
+    with lcd('seabirds'):
+        with _virtualenv():
+            with settings(warn_only=True):
+                local('python manage.py runserver')
 
 def pull():
     local('git pull')
@@ -68,6 +73,7 @@ def git_push():
 def put_secrets():
     "Put files that aren't in the checkout, such as sitesettings.py"
     put('sitesettings.py', remote_path='%(path)s/seabirds' % env)
+    put('seabirds/secrets.py', remote_path='%(path)s/seabirds' % env)
 
 def validate():
     "Run django validation"
