@@ -10,3 +10,4 @@ static/*
 seabirds/media/*
 dumps/*.sql
 sitesettings.py
+seabirds/secrets.py

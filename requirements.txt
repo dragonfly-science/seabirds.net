@@ -14,3 +14,5 @@ psycopg2==2.4.4
 Fabric==dev
 pycrypto==2.5
 ssh==dev
+git+https://github.com/praekelt/django-recaptcha==0.0.4.-unreleased-
+hg+https://bitbucket.org/ubernostrum/django-registration==0.8-alpha-1
