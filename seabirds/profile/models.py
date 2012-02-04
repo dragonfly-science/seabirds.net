@@ -4,22 +4,23 @@ from django.contrib.auth.models import User
 from django_countries import CountryField
 from django.db.models.signals import post_save
 
+from categories.models import SeabirdFamily, InstitutionType
 
 TITLES = ('Mr', 'Ms', 'Mrs', 'Miss', 'Dr', 'Prof')
-SEABIRDS = ('All seabirds', 'Penguins', 'Diving petrels', 'Storm petrels', 'Petrels', 'Pelicans', 'Gannets and boobies', 'Cormorants', 'Frigatebirds', 'Tropicbirds', 'Skuas', 'Gulls and kitttiwakes', 'Terns', 'Skimmers', 'Auks')
-
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, related_name = 'profile')
     title = models.CharField(max_length=5, choices=zip(TITLES, TITLES), null=True, blank=True)
     webpage = models.URLField(null=True, blank=True)
+    display_email = models.BooleanField(default=False)
     institution = models.CharField(max_length=50, null=True, blank=True)
+    institution_type = models.ForeignKey(InstitutionType, null=True, blank=True)
     institution_website = models.URLField(null=True, blank=True)
     country = CountryField(null=True, blank=True)
     research = models.TextField(null=True, blank=True)
     photograph = models.ImageField(upload_to='profiles', null=True, blank=True)
-    seabirds = models.CharField(max_length=60, choices=zip(SEABIRDS, SEABIRDS), null=True, blank=True)
- 
+    seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True) 
+    accept_terms = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s %s"%(self.title, self.user.first_name, self.user.last_name)

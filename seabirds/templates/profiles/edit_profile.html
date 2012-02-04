@@ -2,8 +2,10 @@
 {% block title %}Edit your profile{% endblock %}
  
 {% block content %}
-<h1>Edit contact info for {{ user }} </h1>
- 
+{% block above %}
+<p> The profile information will be used to complete your profile page. Most of the information is optional, but more details will give you a better looking profile page.  </p>
+{% endblock above %}
+
 <form method="POST" action="" class="ym-form ym-columnar">
 {% csrf_token %}
     <h6> Personal information </h6>
@@ -14,18 +16,31 @@
     </div>
     <div class="ym-fbox-text {% if form.first_name.errors %}ym-error{% endif %}">
         <strong> {{ form.first_name.errors }} </strong>
-        <label for="id_first_name">{{ form.first_name.label }}</label>
+        <label for="id_first_name">{{ form.first_name.label }}
+        <sup title="This field is mandatory.">*</sup>
+        </label>
         {{ form.first_name }}
     </div>
     <div class="ym-fbox-text {% if form.last_name.errors %}ym-error{% endif %}">
         <strong> {{ form.last_name.errors }} </strong>
-        <label for="id_last_name">{{ form.last_name.label }}</label>
+        <label for="id_last_name">{{ form.last_name.label }}
+        <sup title="This field is mandatory.">*</sup>
+        </label>
+
         {{ form.last_name }}
     </div>
     <div class="ym-fbox-text {% if form.email.errors %}ym-error{% endif %}">
         <strong> {{ form.email.errors }} </strong>
-        <label for="id_email">{{ form.email.label }}</label>
+        <label for="id_email">{{ form.email.label }}
+        <sup title="This field is mandatory.">*</sup> 
+        </label>
         {{ form.email }}
+    </div>
+    <div class="ym-fbox-check {% if form.display_email.errors %}ym-error{% endif %}">
+        <strong> {{ form.display_email.errors }} </strong>
+        <label for="id_display_email">Check to show your email address on your page:
+        </label>
+        {{ form.display_email }}
     </div>
     <div class="ym-fbox-text {% if form.country.errors %}ym-error{% endif %}">
         <strong> {{ form.country.errors }} </strong>
@@ -37,12 +52,24 @@
         <label for="id_webpage">{{ form.webpage.label }}</label>
         {{ form.webpage }}
     </div>
+    <div class="ym-fbox-text {% if form.photograph.errors %}ym-error{% endif %}">
+        <strong> {{ form.photograph.errors }} </strong>
+        <label for="id_webpage">{{ form.photograph.label }}</label>
+        {{ form.photograph }}
+    </div>
 
+{% block password %}
+{% endblock password %}
     <h6> Professional information </h6>
     <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
         <strong> {{ form.institution.errors }} </strong>
         <label for="id_institution">{{ form.institution.label }}</label>
         {{ form.institution }}
+    </div>
+    <div class="ym-fbox-select {% if form.institution_type.errors %}ym-error{% endif %}">
+        <strong> {{ form.institution_type.errors }} </strong>
+        <label for="id_institution_type">{{ form.institution_type.label }}</label>
+        {{ form.institution_type }}
     </div>
     <div class="ym-fbox-text {% if form.institution_website.errors %}ym-error{% endif %}">
         <strong> {{ form.institution_website.errors }} </strong>
@@ -54,12 +81,20 @@
         <label for="id_research">{{ form.research.label }}</label>
         {{ form.research }}
     </div>
-    <div class="ym-fbox-check {% if form.seabirds.errors %}ym-error{% endif %}">
+    <div class="ym-fbox-select {% if form.seabirds.errors %}ym-error{% endif %}">
         <strong> {{ form.seabirds.errors }} </strong>
-        <label for="id_seabirds">{{ form.seabirds.label }}</label>
+        <label for="id_seabirds">{{ form.seabirds.label }}
+        <p> {{ form.seabirds.help_text }} </p>
+        </label>
         {{ form.seabirds }}
     </div>
+{% block terms %}
+{% endblock %}
+{% block captcha %}
+{% endblock captcha %}
+{% block submit %}
 <input type="submit" name="submit" value="Update" id="submit">
+{% endblock %}
 </form>
  
 {% endblock content %}
