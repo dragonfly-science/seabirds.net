@@ -14,7 +14,7 @@ try:
 except ImportError:
     pass
 
-from secrets import RECAPTCHA_PRIVATE_KEY
+from secrets import RECAPTCHA_PRIVATE_KEY, DISQUS_API_KEY, SECRET_KEY
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -37,7 +37,6 @@ MEDIA_URL = ''
 
 #ADMIN_MEDIA_PREFIX = '/am/'
 
-SECRET_KEY = 'vtc+y0G^ja;p19874356GHbakhhaayaya987'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -101,7 +100,6 @@ RECAPTCHA_PUBLIC_KEY = '6Le9Ms0SAAAAAMEtTQWyP-Pn93SUE3FeYC2LoVcw'
 FROM_ADDRESS = 'web@seabirds.net'
 
 INTERNAL_IPS = ('127.0.0.1',)
-DISQUS_API_KEY = 'LZG4ehRCHVeOofUobfHU5TDWhtsC3o4UDnJHkGrwo0OmWtwtHpb46q7A8ebDUUFF'
 DISQUS_WEBSITE_SHORTNAME = 'seabirds'
 
 EMAIL_USE_TLS = True
