@@ -6,7 +6,7 @@
 <p> The profile information will be used to complete your profile page. Most of the information is optional, but more details will give you a better looking profile page.  </p>
 {% endblock above %}
 
-<form method="POST" action="" class="ym-form ym-columnar">
+<form method="POST" action="" class="ym-form ym-columnar" enctype="multipart/form-data">
 {% csrf_token %}
     <h6> Personal information </h6>
     <div class="ym-fbox-text {% if form.title.errors %}ym-error{% endif %}">
@@ -58,8 +58,6 @@
         {{ form.photograph }}
     </div>
 
-{% block password %}
-{% endblock password %}
     <h6> Professional information </h6>
     <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
         <strong> {{ form.institution.errors }} </strong>
@@ -90,6 +88,8 @@
     </div>
 {% block terms %}
 {% endblock %}
+{% block password %}
+{% endblock password %}
 {% block captcha %}
 {% endblock captcha %}
 {% block submit %}

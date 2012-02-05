@@ -1,4 +1,5 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, check_password
+from django.contrib.auth.backends import ModelBackend
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.models import RequestSite
@@ -10,8 +11,10 @@ from registration import signals
 from registration.forms import RegistrationForm
 from registration.models import RegistrationProfile
 from registration.backends.default import DefaultBackend
+from passwords.fields import PasswordField
 
 from profile.forms import ProfileForm
+from profile.models import UserProfile
 
 attrs_dict = {'class': 'required'}
 
@@ -28,15 +31,11 @@ class ProfileRegistrationForm(ProfileForm):
     saving of collected user data is delegated to the active
     registration backend.
     """
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict,
-            render_value=False),
-        label=_("Password"))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict,
-            render_value=False),
-        label=_("Password (again)"))
+    password1 = PasswordField(label=_("Password"))
+    password2 = PasswordField(label=_("Password (again)"))
     captcha = ReCaptchaField(attrs={'theme' : 'clean'})
  
-    def clean_username(self):
+    def get_username(self):
         """
         Construct the username out of the firstname and the lastname, 
         """
@@ -45,19 +44,19 @@ class ProfileRegistrationForm(ProfileForm):
         user = slugify('%s %s' % (first, last))[:30].rstrip('-').lower()
         try:
             u = User.objects.get(username__iexact=user)
-        except User.DoesNotExist:
             user_root = user[:26]
             if user_root.endswith('-'):
                 suffix_join = ''
             else:
                 suffix_join = '-'
-            for suffix in range(2, 999):
+            for suffix in range(2, 1000):
                 try:
                     user = '%s%s%s'%(user_root, suffix_join, suffix)
                     u = User.objects.get(username__iexact=user)
-                    break
                 except:
-                    pass        
+                    break
+        except User.DoesNotExist:
+            pass
         return user
 
     def clean(self):
@@ -71,6 +70,7 @@ class ProfileRegistrationForm(ProfileForm):
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields didn't match."))
+        self.cleaned_data['username'] = self.get_username()
         return self.cleaned_data
 
     def clean_email(self):
@@ -97,11 +97,17 @@ class ProfileBackend(DefaultBackend):
                                      user=new_user,
                                      request=request)
 
-        u = User.objects.get(username=new_user.username)
-        u.first_name = kwargs['first_name']
-        u.last_name = kwargs['last_name']
-        u.save() 
-    
+        user = User.objects.get(username=new_user.username)
+        user.first_name = kwargs['first_name']
+        user.last_name = kwargs['last_name']
+        user.save() 
+        # Create profile
+        profile = UserProfile.objects.get(user = user)
+        for key, value in kwargs.items():
+            if hasattr(profile, key):
+                profile.__setattr__(key, value)
+        profile.save()
+
         return new_user
     
     def get_form_class(self, request):
@@ -110,3 +116,16 @@ class ProfileBackend(DefaultBackend):
         
         """
         return ProfileRegistrationForm
+
+
+class EmailAuthBackend(ModelBackend):
+    """Allow a user to login with their email address"""
+    def authenticate(self, username=None, password=None):
+        if not username or not password:
+            return None
+        possibles = User.objects.filter(email__istartswith=username)
+        for possible in possibles:
+            if username[:30].lower() == possible.email.lower() and \
+                check_password(password, possible.password):
+                return possible
+        return None

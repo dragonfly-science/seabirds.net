@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from PIL import Image as PILImage
 
 from profile.models import UserProfile
 
@@ -23,6 +24,14 @@ class ProfileForm(forms.ModelForm):
         model = UserProfile
         exclude = ('user',)
         #widgets = { 'seabirds': forms.CheckboxSelectMultiple }
+
+#    def clean_image(self):
+#        image = self.cleaned_data.get('image', False)
+#        if image:
+#            if image._size > 4*1024*1024: #4MB size limit
+#                raise ValidationError("Image file too large (must be less than 4MB)")
+#            else:
+#                return image
 
     def save(self, *args, **kwargs):
         """

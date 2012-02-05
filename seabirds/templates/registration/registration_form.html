@@ -2,7 +2,7 @@
 {% block title %}Register as a seabird researcher{% endblock %}
 {% block above %}
 <p>
-Registering as a researcher in the PETREL databse gives you access to Seabirds.net. Once you are registered you will be able to post discussion items, upload photographs, and recieve news on seabirds and from the World Seabird Union. Registration is free. Please complete the information below (mandatory fields are indicated with a red asterisk). The registration information will be displayed on your profile page.
+Registering as a researcher in the PETREL database gives you access to Seabirds.net. Once you are registered you will be able to post discussion items, upload photographs, and recieve news on seabirds and from the World Seabird Union. Registration is free. Please complete the information below (mandatory fields are indicated with a red asterisk). The registration information will be displayed on your profile page.
 </p>
 <p>
 Once you have registered, you will be sent an activation email to confirm your email address. Clicking on the link in the email will confirm your registration. You will be able to edit this profile information once you have activated your registration.
@@ -42,9 +42,10 @@ attribution share-alike license</a>.
 </p>
     <div class="ym-fbox-check {% if form.accept_terms.errors %}ym-error{% endif %}">
         <strong> {{ form.accept_terms.errors }} </strong>
-        <label for="id_accept_terms">Check to accept these terms and conditions:
+        <strong><label for="id_accept_terms">Check to accept these terms and conditions:
         </label>
         {{ form.accept_terms }}
+        </strong>
     </div>
 {% endblock terms  %}
 {% block captcha %}
