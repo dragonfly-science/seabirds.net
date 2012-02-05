@@ -92,6 +92,10 @@ INSTALLED_APPS = (
     'categories'
 )
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'profile.custom_registration.EmailAuthBackend',
+)
 
 AUTH_PROFILE_MODULE = 'profile.UserProfile'
 ACCOUNT_ACTIVATION_DAYS = 7
@@ -123,3 +127,5 @@ LOGIN_URL = '^login'
 AVATAR_CROP_MIN_SIZE = 20
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
+
+PASSWORD_DICTIONARY = "/usr/share/dict/words" 
