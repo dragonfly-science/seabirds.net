@@ -75,10 +75,12 @@ def put_secrets():
     put('sitesettings.py', remote_path='%(path)s/seabirds' % env)
     put('seabirds/secrets.py', remote_path='%(path)s/seabirds' % env)
 
-def syncdb():
+def install():
     "Fetch any new software that is required and run syncdb"
     with cd('%(path)s' % env):
         run('pip install -r requirements.txt')
+
+def syncdb():
     with cd('%(path)s/seabirds' % env):
         run('python manage.py syncdb')
 
