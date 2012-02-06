@@ -1,72 +1,92 @@
 [
     {
         "pk": 1, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Penguins" 
+            "choice": "Albatrosses",
+            "family": "Diomedeidae"
         }
     },
     {
         "pk": 2, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Diving petrels" 
+            "choice": "Auks" ,
+            "family": "Alcidae"
         }
     },
     {
         "pk": 3, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Storm petrels" 
+            "choice": "Cormorants",
+            "family": "Phalacrocoracidae"
         }
     },
     {
         "pk": 4, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Petrels" 
+            "choice": "Diving petrels", 
+            "family": "Pelecanoididae"
         }
     },
     {
         "pk": 5, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Pelicans" 
+            "choice": "Frigatebirds" ,
+            "family": "Fregatidae"
         }
     },
     {
         "pk": 6, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Gannets and boobies" 
+            "choice": "Gannets and boobies" ,
+            "family": "Sulidae"
         }
     },
     {
         "pk": 7, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Cormorants" 
+            "choice": "Gulls and kittiwakes",
+            "family": "Laridae"
         }
     },
     {
         "pk": 8, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Frigatebirds" 
+            "choice": "Pelicans",
+            "family": "Pelecanidae"
         }
     },
     {
         "pk": 9, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Tropicbirds" 
+            "choice": "Penguins",
+            "family": "Spheniscidae"
         }
     },
     {
         "pk": 10, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Skuas" 
+            "choice": "Petrels",
+            "family": "Procellariidae"
         }
     },
     {
         "pk": 11, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Gulls and kittiwakes" 
+            "choice": "Skuas",
+            "family": "Sterocorariidae"
         }
     },
     {
         "pk": 12, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Terns" 
+            "choice": "Storm petrels",
+            "family": "Hydrobatidae"
         }
     },
     {
         "pk": 13, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Skimmers" 
+            "choice": "Terns",
+            "family": "Sternidae"
         }
     },
     {
         "pk": 14, "model": "categories.seabirdfamily", "fields": {
-            "choice": "Auks" 
+            "choice": "Tropicbirds",
+            "family": "Phaethonidae"
+        }
+    },
+    {
+        "pk": 15, "model": "categories.seabirdfamily", "fields": {
+            "choice": "Skimmers" ,
+            "family" : "Rhynchopidae"
         }
     },
     {

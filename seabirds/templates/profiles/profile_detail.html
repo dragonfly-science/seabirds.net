@@ -21,7 +21,6 @@
 {% if profile.country %}{{ profile.country.name }}{% endif %}
 {% if profile.institution or profile.country %}</h4>{% endif %}
 {% if profile.research %}
-<h4>Research</h4>
 <div class="profile-research">
 {{ profile.research|markdown }}
 </div>
@@ -30,7 +29,9 @@
 {% endblock content %}
 {% block sidebar %}
 <div class="profile">
-<img src="/{{ im.photograph.url }}" class="flexible">
+{% if profile.photograph %}
+<img src="/{{ profile.photograph.url }}" class="flexible">
+{% endif %}
 </div>
 {% endblock sidebar %}
 

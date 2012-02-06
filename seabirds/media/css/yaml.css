@@ -170,6 +170,7 @@ footer img {
 
 .ym-vlist li ul li a:hover, .ym-vlist li a:hover {
     background-color: #aad2d2;
+    text-decoration: none;
 }
 
 .ym-vlist li ul .active, .ym-vlist li .active {
