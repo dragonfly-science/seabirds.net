@@ -30,6 +30,21 @@
                 </div>
                 {% endblock header%}
                 </header>
+                <div id="top-navigation" class='ym-contain-fl ym-clearfix'>
+                    <ul class="float-right">
+                        {% if user.is_authenticated %}
+                        <li><a href='/profiles/{{ user.username }}/' {% block view-active %}{% endblock %}>View profile</a><li>
+                        <li><a href='/profiles/edit' {% block edit-active %}{% endblock %}>Edit profile</a><li>
+                        {% if perms.website.administration %}
+                        <li><a href='/admin'>Admin site</a><li>
+                        {% endif %}
+                        <li><a href='/accounts/logout' {% block logout-active %}{% endblock %}>Logout</a><li>
+                        {% else %}
+                        <li><a href='/accounts/login' {% block login-active %}{% endblock %}>Login</a><li>
+                        <li><a href='/accounts/register' {% block register-active %}{% endblock %}>Register</a><li>
+                        {% endif %}
+                    </ul>
+                </div>
                 <div style="background-color:#eee">
                     <div class="ym-column linearize-level-1">
                         <!-- Navigation column -->
