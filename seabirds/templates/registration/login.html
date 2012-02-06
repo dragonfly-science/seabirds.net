@@ -19,6 +19,6 @@
 <input type="submit" value="login" />
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
-<p>Login using your email address or your username. Your username is usually of the form firstname-lastname.<br> <a href="{% url auth_password_reset %}">Forgot your password?</a><br><a href="{% url registration_register %}">Need to register</a>?</p>
+<p>Login using your email address or your username. Your username is usually of the form firstname-lastname.<br> <a href="{% url auth_password_reset %}">Request a new password</a><br><a href="{% url registration_register %}">Register as a seabird researcher</a></p>
 
 {% endblock %}
