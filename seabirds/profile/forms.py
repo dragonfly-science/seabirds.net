@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from PIL import Image as PILImage
+from form_utils.widgets import ImageWidget
 
 from profile.models import UserProfile
 
@@ -23,7 +24,7 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         exclude = ('user',)
-        #widgets = { 'seabirds': forms.CheckboxSelectMultiple }
+        widgets = { 'photograph': ImageWidget }
 
 #    def clean_image(self):
 #        image = self.cleaned_data.get('image', False)

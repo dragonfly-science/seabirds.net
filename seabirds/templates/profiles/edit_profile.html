@@ -38,30 +38,38 @@
     </div>
     <div class="ym-fbox-check {% if form.display_email.errors %}ym-error{% endif %}">
         <strong> {{ form.display_email.errors }} </strong>
-        <label for="id_display_email">Check to show your email address on your page:
+        <label for="id_display_email">Check to show your email address on your profile page:
         </label>
         {{ form.display_email }}
     </div>
     <div class="ym-fbox-text {% if form.country.errors %}ym-error{% endif %}">
         <strong> {{ form.country.errors }} </strong>
-        <label for="id_country">{{ form.country.label }}</label>
+        <label for="id_country">{{ form.country.label }}
+        <div class="form-help"> Country of residence</div>
+        </label>
         {{ form.country }}
     </div>
     <div class="ym-fbox-text {% if form.webpage.errors %}ym-error{% endif %}">
         <strong> {{ form.webpage.errors }} </strong>
-        <label for="id_webpage">{{ form.webpage.label }}</label>
+        <label for="id_webpage">{{ form.webpage.label }}
+        <div class="form-help"> Webpage with more information about you (e.g., http://www.foo.com/me.html)</div>
+        </label>
         {{ form.webpage }}
     </div>
     <div class="ym-fbox-text {% if form.photograph.errors %}ym-error{% endif %}">
         <strong> {{ form.photograph.errors }} </strong>
-        <label for="id_webpage">{{ form.photograph.label }}</label>
-        {{ form.photograph }}
+        <label for="id_webpage">{{ form.photograph.label }}       
+        <div class="form-help"> Photograph used on your profile page.</div>
+</label>
+<div class="flexible">{{ form.photograph }}</div>
     </div>
 
     <h6> Professional information </h6>
     <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
         <strong> {{ form.institution.errors }} </strong>
-        <label for="id_institution">{{ form.institution.label }}</label>
+        <label for="id_institution">{{ form.institution.label }}
+        <div class="form-help"> Leave blank if you are not associated with a research organisation.</div>
+        </label>
         {{ form.institution }}
     </div>
     <div class="ym-fbox-select {% if form.institution_type.errors %}ym-error{% endif %}">
@@ -71,18 +79,22 @@
     </div>
     <div class="ym-fbox-text {% if form.institution_website.errors %}ym-error{% endif %}">
         <strong> {{ form.institution_website.errors }} </strong>
-        <label for="id_institution_website">{{ form.institution_website.label }}</label>
+        <label for="id_institution_website">{{ form.institution_website.label }} 
+        <div class="form-help"> e.g., http://seabirds.noaa.gov/</div>
+        </label>
         {{ form.institution_website }}
     </div>
     <div class="ym-fbox-text {% if form.research.errors %}ym-error{% endif %}">
         <strong> {{ form.research.errors }} </strong>
-        <label for="id_research">{{ form.research.label }}</label>
-        {{ form.research }}
+        <label for="id_research">{{ form.research.label }}        
+        <div class="form-help"> Describe your research from a first point of view ("I am a ..."). You can use markdown to format the text, or to include images.</div>
+       </label>
+       {{ form.research }}
     </div>
     <div class="ym-fbox-select {% if form.seabirds.errors %}ym-error{% endif %}">
         <strong> {{ form.seabirds.errors }} </strong>
         <label for="id_seabirds">{{ form.seabirds.label }}
-        <p> {{ form.seabirds.help_text }} </p>
+        <div class="form-help"> Select the families of the seabirds you primarily study. Use the Ctrl or Command key to select more than one. </div>
         </label>
         {{ form.seabirds }}
     </div>
