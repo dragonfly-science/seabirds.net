@@ -9,8 +9,8 @@
 {% if profile.title %}{{ profile.title }} {% endif %}{{ profile.user.first_name}} {{ profile.user.last_name }}
 {% if profile.webpage %}</a>{% endif %}
 </h2>
-{% if user.email and profile.display_email %}
-<a href=mailto:{{ user.email }}>{{ user.email }}</a>
+{% if profile.user.email and profile.display_email %}
+<a href=mailto:{{ profile.user.email }}>{{ profile.user.email }}</a>
 {% endif %}
 
 {% if profile.institution or profile.country %}<h4>{% endif %}
