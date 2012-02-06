@@ -73,6 +73,7 @@ urlpatterns += patterns('',
         {'backend': 'profile.custom_registration.ProfileBackend', 'form_class': ProfileRegistrationForm},        
         name='registration_register'
     ),    
+    url(r'^accounts/profile/', 'profile.views.profile'),
     (r'^accounts/', include('registration.urls')),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'cms.views.reference'),

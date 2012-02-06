@@ -218,6 +218,7 @@ nav a.selected {background-color: #f2e587}
 nav a:hover {cursor: pointer; background-color: #aad2d2}
 */
 
+a:hover { color: #369; text-decoration: underline; background-color: transparent}
 .pageedit {
     position: relative;
     float: right;
@@ -260,4 +261,42 @@ footer {
 
 .ym-form p {
 	margin: 1em 0 0 1em;
+}
+
+#top-navigation {
+    margin: 0;
+    padding: 0;
+    background-color: #464b61;
+}
+
+#top-navigation ul {
+    padding-left: 0;
+    background-color: #464b61;
+    color: white;
+}
+
+#top-navigation, #top-navigation ul, #top-navigation ul li, #top-navigation ul li a {
+margin: 0;
+padding: 0;
+}
+
+#top-navigation ul li { display: inline; }
+
+#top-navigation ul li a
+{
+padding: 0.2em 1em;
+background-color: #464b61;
+color: #f2e587;
+text-decoration: none;
+}
+
+#top-navigation ul li a:hover
+{
+background-color: #369;
+color: #fff;
+}
+
+#top-navigation .active {
+    background-color: #f2e587;
+    color: #444; 
 }
