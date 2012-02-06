@@ -130,4 +130,3 @@ AVATAR_CROP_MIN_SIZE = 20
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
 
-PASSWORD_DICTIONARY = "/usr/share/dict/words" 

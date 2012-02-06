@@ -6,8 +6,9 @@ build/*
 seabirds/media/images/cache/*
 seabirds/sitesettings.py
 seabirds/seabirds.sqlite
-static/*
+seabirds/static/*
 seabirds/media/*
 dumps/*.sql
 sitesettings.py
 seabirds/secrets.py
+static/*
