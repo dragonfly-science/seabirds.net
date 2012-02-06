@@ -4,11 +4,17 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib.sitemaps import Sitemap, GenericSitemap
 from django.contrib import admin
+from django.views.generic.simple import redirect_to
 
 from cms.models import Page, Post
 from profile.forms import ProfileForm
 from registration.views import register
 from profile.custom_registration import ProfileRegistrationForm
+
+
+urlpatterns = patterns('',
+    )
+
 
 admin.autodiscover()
 
@@ -66,6 +72,7 @@ urlpatterns += patterns('',
     #(r'^logout',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
     ('^profiles/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}),
     ('^profiles/create', 'profiles.views.create_profile', {'form_class': ProfileForm,}),
+    ('^profiles/users/(?P<rest>.*)$', redirect_to, {'url': '/users/%(rest)s'}), #Catch to fix the use of a relative url in the profile edit function ...
     url(r'^profiles/(?P<username>[\w.@+-]+)/$', 'profiles.views.profile_detail', name='profiles_profile_detail'),
     url(r'^profiles/', include('profiles.urls')),
     url(r'^accounts/register/$',

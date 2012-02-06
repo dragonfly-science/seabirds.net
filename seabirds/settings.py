@@ -89,7 +89,9 @@ INSTALLED_APPS = (
     'django_countries',
     'registration',
     'captcha',
-    'categories'
+    'categories',
+    'form_utils',
+    'sorl.thumbnail',
 )
 
 AUTHENTICATION_BACKENDS = (

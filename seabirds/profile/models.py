@@ -26,7 +26,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, related_name = 'profile', unique=True)
     title = models.CharField(max_length=5, choices=zip(TITLES, TITLES), null=True, blank=True)
     webpage = models.URLField(null=True, blank=True)
-    display_email = models.BooleanField(default=False)
+    display_email = models.BooleanField(default=True)
     institution = models.CharField(max_length=50, null=True, blank=True)
     institution_type = models.ForeignKey(InstitutionType, null=True, blank=True)
     institution_website = models.URLField(null=True, blank=True)

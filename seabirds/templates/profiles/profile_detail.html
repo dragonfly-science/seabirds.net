@@ -1,10 +1,37 @@
 {% extends "base.html" %}
+{% load markup %}
+{% load thumbnail %}
 
 {% block content %}
-<a class="float-right" href=/profiles/edit/>Edit your profile</a>
+<div class="profile">
 <h2>
+{% if profile.webpage %}<a href="{{ profile.webpage}}">{% endif %}
 {% if profile.title %}{{ profile.title }} {% endif %}{{ profile.user.first_name}} {{ profile.user.last_name }}
+{% if profile.webpage %}</a>{% endif %}
 </h2>
+{% if user.email and profile.display_email %}
+<a href=mailto:{{ user.email }}>{{ user.email }}</a>
+{% endif %}
 
-
+{% if profile.institution or profile.country %}<h4>{% endif %}
+{% if profile.institution %}
+{% if profile.institution_website %}<a href="{{ profile.institution_website}}">{% endif %}
+{{ profile.institution }}{% if profile.institution_website %}{% if profile.country %}, {% endif %}</a>{% endif %}
+{% endif %}
+{% if profile.country %}{{ profile.country.name }}{% endif %}
+{% if profile.institution or profile.country %}</h4>{% endif %}
+{% if profile.research %}
+<h4>Research</h4>
+<div class="profile-research">
+{{ profile.research|markdown }}
+</div>
+{% endif %}
+</div>
 {% endblock content %}
+{% block sidebar %}
+<div class="profile">
+<img src="/{{ im.photograph.url }}" class="flexible">
+</div>
+{% endblock sidebar %}
+
+

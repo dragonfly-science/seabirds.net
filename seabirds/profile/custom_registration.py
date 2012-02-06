@@ -126,6 +126,7 @@ class EmailAuthBackend(ModelBackend):
         possibles = User.objects.filter(email__istartswith=username)
         for possible in possibles:
             if username[:30].lower() == possible.email.lower() and \
-                check_password(password, possible.password):
+                check_password(password, possible.password) and \
+                possible.is_active:
                 return possible
         return None
