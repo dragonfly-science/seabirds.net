@@ -1,9 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h2> Seabird researchers </h2>
+<table>
+<tr> 
+<th> First name </th>
+<th> Last name </th>
+<th> Institution </th>
+<th> Country </th>
+</tr>
 {% for p in object_list  %}
-<p>
-<a href="{% url profiles_profile_detail p.user %}">{{ p.user.title }} {{ p.user.first_name }} {{ p.user.last_name }}</a>
-</p>
+<tr>
+<td>
+<a href="{% url profiles_profile_detail p.user %}">{{ p.user.first_name }}</a>
+</td>
+<td>
+<a href="{% url profiles_profile_detail p.user %}">{{ p.user.last_name }}</a>
+</td>
+<td>
+{% if p.institution %}
+{% if p.institution_website %}<a href="{{ p.institution_website }}">{% endif %}
+{{ p.institution }}
+{% if p.institution_website %}</a>{% endif %}
+</a>
+{% endif %}
+</td>
+<td>
+{% if p.country %}
+{{ p.country.name }}
+{% endif %}
+</td>
+</tr>
 {% endfor %}
+</table>
 {% endblock content %}
