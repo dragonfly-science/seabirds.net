@@ -74,6 +74,7 @@ urlpatterns += patterns('',
     ('^petrel/create', 'profiles.views.create_profile', {'form_class': ProfileForm,}),
     ('^petrel/users/(?P<rest>.*)$', redirect_to, {'url': '/users/%(rest)s'}), #Catch to fix the use of a relative url in the profile edit function ...
     url(r'^petrel/(?P<username>[\w.@+-]+)/$', 'profiles.views.profile_detail', name='profiles_profile_detail'),
+    url(r'^petrel/$', 'profile.views.custom_list', name='profile_custom_list'),
     url(r'^petrel/', include('profiles.urls')),
     url(r'^accounts/register/$',
         register,
