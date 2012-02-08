@@ -1,21 +1,32 @@
 {% extends "base.html" %}
+{% load thumbnail %}
 
 {% block content %}
 <h2> Seabird researchers </h2>
+
+<h4>Filter by seabird family:</h4>
+<a href="/petrel/" class="ym-button">All</a>
+{% for bird in profile_birds %}
+<a href="/petrel/?s={{ bird.choice|slice:":3"|lower }}" class="ym-button {% ifequal bird seabird %}active{% endifequal %}">{{ bird.choice }}</a>
+{% endfor %}
+<h4>Filter by country:</h4>
+<a href="/petrel/" class="ym-button">All</a>
+{% for pc in profile_countries %}
+<a href="/petrel/?c={{ pc }}" class="ym-button">{{ pc.name }}</a>
+{% endfor %}
+{% if seabird %} <h3> Seabird researchers studying {{ seabird|lower }} </h3> {% endif %}
+{% if country %} <h3> Seabird researchers in {{ country }} </h3> {% endif %}
 <table>
 <tr> 
-<th> First name </th>
-<th> Last name </th>
+<th> Name </th>
 <th> Institution </th>
 <th> Country </th>
 </tr>
 {% for p in object_list  %}
 <tr>
 <td>
-<a href="{% url profiles_profile_detail p.user %}">{{ p.user.first_name }}</a>
-</td>
-<td>
-<a href="{% url profiles_profile_detail p.user %}">{{ p.user.last_name }}</a>
+<a href="{% url profiles_profile_detail p.user %}">{{ p.user.first_name }}
+{{ p.user.last_name }}</a>
 </td>
 <td>
 {% if p.institution %}
@@ -34,3 +45,17 @@
 {% endfor %}
 </table>
 {% endblock content %}
+
+{% block sidebar %}
+<div class="ym-grid">
+{% for p in object_list %}
+{% if p.photograph  %}
+<div class="ym-g33 ym-gl">
+{% thumbnail p.photograph "100x100" crop="center" as im %}
+    <a href="{{ p.get_absolute_url }}" title="{{ p.user.first_name }} {{ p.user.last_name }}"><img src="/{{ im.url }}" width="{{ im.width }}"  class="flexible">
+{% endthumbnail %}
+</div>
+{% endif %}
+{% endfor %}
+</div>
+{% endblock sidebar%}
