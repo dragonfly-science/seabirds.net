@@ -41,9 +41,9 @@ class UserProfile(models.Model):
     def __str__(self):
         return "%s %s"%(self.user.first_name, self.user.last_name)
 
-#    @permalink
-#    def get_absolute_url(self):
-#        return ('profile', (), {'username': self.user.username})
+    @models.permalink
+    def get_absolute_url(self):
+        return ('profiles_profile_detail', (), {'username': self.user.username})
 
 
 #Automatically create a profile when a User is created (if one doesn't already exits)

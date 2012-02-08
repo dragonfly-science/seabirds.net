@@ -32,6 +32,10 @@
 {% if profile.photograph %}
 <img src="/{{ profile.photograph.url }}" class="flexible">
 {% endif %}
+<h4>Seabird families</h4>
+{% for bird in profile.seabirds.all %}
+<span class="badge">{{ bird.choice }}</span>
+{% endfor %}
 </div>
 {% endblock sidebar %}
 

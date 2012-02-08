@@ -306,3 +306,43 @@ color: #fff;
     font-size: 80%;
     line-height: 1.2;
 }
+
+.badge { /* Based on ym-button */
+		display: inline-block;
+		white-space: nowrap;
+		background-color: #ccc;
+		background-image: -webkit-linear-gradient(top, #eee, #ccc);
+		background-image: -moz-linear-gradient(top, #eee, #ccc);
+		background-image: -ms-linear-gradient(top, #eee, #ccc);
+		background-image: -o-linear-gradient(top, #eee, #ccc);
+		background-image: linear-gradient(top, #eee, #ccc);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#eeeeee', EndColorStr='#cccccc');
+		border: 1px solid #777;
+		-webkit-border-radius: .2em;
+		-moz-border-radius: .2em;
+		border-radius: .2em;
+		/*-webkit-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);
+		-moz-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);
+		box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);*/
+		color: #333 !important;
+		font: normal 1em/2em Arial, Helvetica;
+		margin: 1.2em 0.75em 0 0;
+		padding: 0 0.8em;
+		overflow: visible; /* removes extra side spacing in IE */
+		text-decoration: none !important;
+		text-shadow: 0 1px 0 rgba(255,255,255,.8);
+	}
+
+.ym-button {
+		margin: 1.2em 0.75em 0 0;
+		padding: 0 0.8em;
+}
+.ym-button .active {
+        background-color: #f2e587;
+		background-image: -webkit-linear-gradient(top,#f2e587 , #ccc);
+		background-image: -moz-linear-gradient(top,#f2e587, #ccc);
+		background-image: -ms-linear-gradient(top,#f2e587, #ccc);
+		background-image: -o-linear-gradient(top,#f2e587, #ccc);
+		background-image: linear-gradient(top,#f2e587, #ccc);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#eeeeee', EndColorStr='#cccccc');
+}
