@@ -57,7 +57,7 @@ def runserver():
                 local('python manage.py runserver')
 
 def pull():
-    local('git pull')
+    git_pull()
     get_secrets()
     get_live_media()
     get_live_database()
