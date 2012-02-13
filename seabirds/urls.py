@@ -7,10 +7,10 @@ from django.contrib import admin
 from django.views.generic.simple import redirect_to
 
 from cms.models import Page, Post
+from cms.forms import PostForm
 from profile.forms import ProfileForm
 from registration.views import register
 from profile.custom_registration import ProfileRegistrationForm
-
 
 urlpatterns = patterns('',
     )
@@ -76,6 +76,8 @@ urlpatterns += patterns('',
     url(r'^petrel/(?P<username>[\w.@+-]+)/$', 'profiles.views.profile_detail', name='profiles_profile_detail'),
     url(r'^petrel/$', 'profile.views.custom_list', name='profile_custom_list'),
     url(r'^petrel/', include('profiles.urls')),
+    url('^edit/post/$', 'cms.views.edit_post'),
+    url('^edit/image/$', 'cms.views.edit_image'),
     url(r'^accounts/register/$',
         register,
         {'backend': 'profile.custom_registration.ProfileBackend', 'form_class': ProfileRegistrationForm},        
@@ -86,7 +88,7 @@ urlpatterns += patterns('',
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'cms.views.reference'),
     (r'^$',                                         'cms.views.home'),
-    (r'^images/(?P<filename>.*)$',                      'cms.views.image'),
+    url(r'^images/(?P<filename>.*)$', 'cms.views.image', name='image'),
     (r'^resources/(?P<path>.*)$',   'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'resources')}),
     (r'^cache/(?P<path>.*)$',   'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'cache')}),
     (r'^files/(?P<path>.*)$',       'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'files')}),

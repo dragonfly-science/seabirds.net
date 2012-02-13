@@ -57,6 +57,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfResponseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
@@ -124,9 +125,10 @@ SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 CUCKOO_DIRECTORY = os.path.join(SITE_ROOT, 'patches')
 
 # Required for enforcing a global login during testing
-LOGIN_URL = '^login'
+LOGIN_URL = '/accounts/login/'
 
 AVATAR_CROP_MIN_SIZE = 20
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
+
 

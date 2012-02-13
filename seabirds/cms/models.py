@@ -165,27 +165,28 @@ class File(models.Model):
 
 
 def get_image_path(instance, filename):
+    print 'get path'
     base, ext = os.path.splitext(os.path.split(filename)[1])
     return os.path.join('images', '%s%s'%(instance.key, ext))
 
 class Image(models.Model):
     image = models.ImageField(upload_to = get_image_path)
+    source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
+        help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
     title = models.CharField(max_length = 100, 
         help_text="The title is displayed when you mouse over the image")
+    caption = models.TextField(null=True, blank=True, 
+        help_text="Optional. Displayed under the image.")
     key = models.SlugField(max_length = 50, unique=True, 
         help_text="A unique name for each image on the website. Must only be letters, number, underscores, or hyphens.")
-    uploaded_by = models.ForeignKey(User, 
-        help_text="The user who uploaded the image")
     owner = models.CharField(max_length = 200, 
         help_text="The name of the copyright holder of the image")
+    owner_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG,
+        help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
     license = models.ForeignKey(License, null=True, blank=True, 
         help_text="Copyright license. All uploaded images must be made available under a <a href='http://creativecommons.org/'>creative commons</a> or public domain license")
-    owner_url = models.URLField(null=True, blank=True, 
-        help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
-    caption = models.TextField(null=True, blank=True, 
-        help_text="Optional. The default caption that will be displayed under the image.")
-    source_url = models.URLField(null=True, blank=True, 
-        help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
+    uploaded_by = models.ForeignKey(User, 
+        help_text="The user who uploaded the image")
     date_created = models.DateField(auto_now_add=True)
     date_modified = models.DateField(auto_now=True)
 
