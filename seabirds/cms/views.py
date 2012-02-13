@@ -149,10 +149,13 @@ def edit_image(request):
     if request.method == 'POST': # If the form has been submitted...
         form = ImageForm(request.POST, request.FILES) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-            new_image = form.save()
-            return HttpResponseRedirect(reverse('image', 
-                args=(), 
-                kwargs={'filename': new_image.photograph.filename}))
+            new_image = form.save(commit=False)
+            if not request.user:
+                raise ValidationError, 'User must be logged in '
+            else:
+                new_image.uploaded_by = request.user
+            new_image.save()
+            return HttpResponseRedirect(new_image.get_absolute_url())
     else:
         initial = {'owner': '%s %s'%(request.user.first_name.capitalize(), request.user.last_name.capitalize()),
             'license': License.objects.get(name='BY-SA')}
