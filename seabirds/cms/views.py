@@ -8,12 +8,18 @@ from django.shortcuts import get_object_or_404, render_to_response, get_list_or_
 from django.template import RequestContext
 from django.conf import settings
 from django.views.static import serve
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+
 
 from PIL import Image as PILImage
 
 from cms.models import Page, File, Navigation
+from cms.forms import PostForm, ImageForm
 from bibliography.models import Reference
-from django.conf import settings
+from license.models import License
+from profile.models import UserProfile
 
 def page(request, name):
     context_instance=RequestContext(request)
@@ -119,4 +125,45 @@ def get_base_navigation(request):
     except IndexError:
         return []
     return {'navigation': get_navigation(root.url)}
+
+@login_required
+def edit_post(request):
+    if request.method == 'POST': # If the form has been submitted...
+        form = PostForm(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            form.save()
+            return HttpResponseRedirect(reverse('individual-post', args=(), kwargs={
+            'year': form.cleaned_data['date_published'].year,
+            'month': form.cleaned_data['date_published'].strftime('%m'), 
+            'day': form.cleaned_data['date_published'].strftime('%d'), 
+            'slug': form.cleaned_data['name']}))
+    else:
+        form = PostForm() # An unbound form
+    return render_to_response('cms/edit_post.html', {'form': form,}, 
+        context_instance=RequestContext(request))
+
+
+
+@login_required
+def edit_image(request):
+    if request.method == 'POST': # If the form has been submitted...
+        form = ImageForm(request.POST, request.FILES) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            new_image = form.save()
+            return HttpResponseRedirect(reverse('image', 
+                args=(), 
+                kwargs={'filename': new_image.photograph.filename}))
+    else:
+        initial = {'owner': '%s %s'%(request.user.first_name.capitalize(), request.user.last_name.capitalize()),
+            'license': License.objects.get(name='BY-SA')}
+        try:
+            profile = UserProfile.objects.get(user = request.user)
+            initial['owner_url'] = settings.SITE_URL + reverse('profiles_profile_detail', 
+                args=(), 
+                kwargs={'username': request.user.username})
+        except UserProfile.DoesNotExist:
+            pass
+        form = ImageForm(initial=initial) # An unbound form
+    return render_to_response('cms/edit_image.html', {'form': form,}, context_instance=RequestContext(request))
+
 

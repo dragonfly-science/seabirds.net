@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post" action="." class="ym-form ym-columnar" enctype="multipart/form-data">{% csrf_token %}
+{% for field in form %}
+    <div class="ym-fbox-text {% if field.errors %}ym-error{% endif %}">
+        <strong> {{ field.errors }} </strong>
+        <label for="id_country">{{ field.label }}
+            <div class="form-help"> {{ field.help_text }}</div>
+        </label>
+        {{ field }}
+    </div>
+{% endfor %}
+    <div class="ym-fbox-button">
+        <input type="submit" name="submit" value="Save" id="submit" class="ym-button">
+    </div>
+</form>
+{% endblock content %}
+
+
+
