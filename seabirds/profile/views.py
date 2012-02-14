@@ -39,6 +39,7 @@ def custom_list(request, template_name='profiles/profile_list.html', **kwargs):
     if country is not None and country in COUNTRIES.keys():
         queryset = queryset.filter(country=country)
         extra_context['country'] =  unicode(COUNTRIES[country])
+        extra_context['country_tag'] =  country
 
     key = request.GET.get('o', None)
     if (key in ORDER_KEYS.keys()) or (key in ['-' + k for k in ORDER_KEYS.keys()]):

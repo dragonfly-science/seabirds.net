@@ -2,20 +2,13 @@
 {% load thumbnail %}
 
 {% block content %}
-<h2> Seabird researchers </h2>
 
-<h4>Filter by seabird family:</h4>
-<a href="/petrel/" class="ym-button">All</a>
-{% for bird in profile_birds %}
-<a href="/petrel/?s={{ bird.choice|slice:":3"|lower }}" class="ym-button {% ifequal bird seabird %}active{% endifequal %}">{{ bird.choice }}</a>
-{% endfor %}
-<h4>Filter by country:</h4>
-<a href="/petrel/" class="ym-button">All</a>
-{% for pc in profile_countries %}
-<a href="/petrel/?c={{ pc }}" class="ym-button">{{ pc.name }}</a>
-{% endfor %}
-{% if seabird %} <h3> Seabird researchers studying {{ seabird|lower }} </h3> {% endif %}
-{% if country %} <h3> Seabird researchers in {{ country }} </h3> {% endif %}
+{% if seabird and country %} <h2> Seabird researchers in {% if country|slice:"6" == 'United' %}the{% endif %} {{ country }} studying {{ seabird|lower }} </h2 >
+{% else %}{% if seabird %} <h2> Seabird researchers studying {{ seabird|lower }} </h2>
+{% else %}{% if country %} <h2> Seabird researchers  in {% if country|slice:"6" == 'United' %}the{% endif %} {{ country }}</h2>
+{% else %} <h2> Seabird researchers </h2>
+{% endif %}{% endif %}{% endif %}
+
 <table>
 <tr> 
 <th> Name </th>
@@ -25,8 +18,8 @@
 {% for p in object_list  %}
 <tr>
 <td>
-<a href="{% url profiles_profile_detail p.user %}"> {{ p.user.first_name }} 
-{{ p.user.last_name }}</a>
+<a href="{% url profiles_profile_detail p.user %}"> {{ p.user.first_name|capfirst }} 
+{{ p.user.last_name|capfirst }}</a>
 </td>
 <td>
 {% if p.institution %}
@@ -45,16 +38,31 @@
 </table>
 {% endblock content %}
 
-{% block sidebar %}
+{% block leftbar %}
 <div class="ym-grid">
 {% for p in object_list %}
 {% if p.photograph  %}
 <div class="ym-g33 ym-gl">
 {% thumbnail p.photograph "100x100" crop="center" as im %}
-    <a href="{{ p.get_absolute_url }}" title="{{ p.user.first_name }} {{ p.user.last_name }}"><img src="/{{ im.url }}" width="{{ im.width }}"  class="flexible"></a>
+    <a href="{{ p.get_absolute_url }}" title="{{ p.user.first_name|capfirst }} {{ p.user.last_name|capfirst }}"><img src="/{{ im.url }}" width="{{ im.width }}"  class="flexible"></a>
 {% endthumbnail %}
 </div>
 {% endif %}
 {% endfor %}
 </div>
-{% endblock sidebar%}
+{% endblock leftbar%}
+                                    
+{% block sidebar %}
+<h4>Filter by seabird family</h4>
+<a href="/petrel/{% if country_tag %}?c={{ country_tag }}{% endif %}" class="badge smallbadge">All</a></li>
+{% for bird in profile_birds %}
+<a href="/petrel/?s={{ bird.choice|slice:":3"|lower }}{% if country_tag %}&c={{ country_tag }}{% endif %}" class="badge smallbadge {% ifequal bird seabird %}activebadge{% endifequal %}">{{ bird.choice }}</a>
+        {% endfor %}
+
+
+<h4>Filter by country</h4>
+<a href="/petrel/{% if seabird %}?s={{ seabird.choice|slice:"3"|lower }}{% endif %}" class="badge smallbadge">All</a>
+{% for pc in profile_countries %}
+{% if pc.name %}<a href="/petrel/?c={{ pc }}{% if seabird %}&s={{ seabird.choice|slice:"3"|lower }}{% endif %}" class="badge smallbadge">{{ pc.name }}</a> {% endif %}
+{% endfor %}
+{% endblock sidebar %}
