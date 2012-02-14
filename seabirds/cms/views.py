@@ -11,11 +11,12 @@ from django.views.static import serve
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.template.defaultfilters import slugify
 
 
 from PIL import Image as PILImage
 
-from cms.models import Page, File, Navigation
+from cms.models import Page, File, Navigation, Image
 from cms.forms import PostForm, ImageForm
 from bibliography.models import Reference
 from license.models import License
@@ -80,6 +81,10 @@ def image(request, filename):
     response = HttpResponse(mimetype="image/%s"%(format))
     img.save(response, format)
     return response
+
+def imagepage(request, key):
+    image = get_object_or_404(Image, key=key)
+    return render_to_response('cms/imagepage.html', {'image': image})
 
 def reference(request, key):
     current = None
@@ -149,9 +154,24 @@ def edit_image(request):
     if request.method == 'POST': # If the form has been submitted...
         form = ImageForm(request.POST, request.FILES) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
+            # Get the key
+            key = slugify(form.cleaned_data['title'])
+            try:
+                Image.objects.get(key=key)
+            except Image.DoesNotExist:
+                count = 1
+                while True:
+                    newkey = '%s-%s'%(key, count)
+                    try:
+                        Image.objects.get(key=newkey)
+                        count += 1
+                    except Image.DoesNotExist:
+                        key = newkey
+                        break
             new_image = form.save(commit=False)
+            new_image.key = key
             if not request.user:
-                raise ValidationError, 'User must be logged in '
+                raise ValidationError, 'User must be logged in'
             else:
                 new_image.uploaded_by = request.user
             new_image.save()

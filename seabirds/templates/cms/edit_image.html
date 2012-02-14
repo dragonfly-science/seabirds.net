@@ -6,7 +6,7 @@
     <div class="ym-fbox-text {% if field.errors %}ym-error{% endif %}">
         <strong> {{ field.errors }} </strong>
         <label for="id_country">{{ field.label }}
-            <div class="form-help"> {{ field.help_text }}</div>
+            <div class="form-help"> {% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
         </label>
         {{ field }}
     </div>

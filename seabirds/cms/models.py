@@ -15,6 +15,7 @@ from markdown import markdown
 from mptt.models import MPTTModel, TreeForeignKey
 
 from license.models import License
+from categories.models import SeabirdFamily
 
 # Process references if the bibliography is installed
 try:
@@ -171,10 +172,10 @@ def get_image_path(instance, filename):
 
 class Image(models.Model):
     image = models.ImageField(upload_to = get_image_path)
-    source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
-        help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
     title = models.CharField(max_length = 100, 
         help_text="The title is displayed when you mouse over the image")
+    source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
+        help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
     caption = models.TextField(null=True, blank=True, 
         help_text="Optional. Displayed under the image.")
     key = models.SlugField(max_length = 50, unique=True, 
@@ -187,6 +188,7 @@ class Image(models.Model):
         help_text="Copyright license. All uploaded images must be made available under a <a href='http://creativecommons.org/'>creative commons</a> or public domain license")
     uploaded_by = models.ForeignKey(User, 
         help_text="The user who uploaded the image")
+    seabirds = models.ManyToManyField(SeabirdFamily, related_name='images', null=True, blank=True, help_text="If this is an image of a seabird, please select the correct family") 
     date_created = models.DateField(auto_now_add=True)
     date_modified = models.DateField(auto_now=True)
 
@@ -228,8 +230,12 @@ class Image(models.Model):
         return os.path.join('images', '%s-%ix%i%s'%(base, width, height, ext))
 
     @permalink
-    def get_absolute_url(self):
+    def get_image_url(self):
         return ('cms.views.image', (), {'filename': os.path.split(self.image.path)[1]}) 
+    
+    @permalink
+    def get_absolute_url(self):
+        return ('cms.views.imagepage', (), {'key': self.key}) 
 
 class Navigation(MPTTModel):
     name = models.CharField(max_length=20,
