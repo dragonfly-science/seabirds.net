@@ -22,6 +22,7 @@ from bibliography.models import Reference
 from license.models import License
 from profile.models import UserProfile
 
+@login_required
 def page(request, name):
     context_instance=RequestContext(request)
     context_instance.autoescape=False
@@ -45,6 +46,7 @@ def page(request, name):
             )
     return render_to_response('index.html', c, context_instance)
 
+@login_required
 def home(request):
     return page(request, 'home')
 
@@ -82,10 +84,12 @@ def image(request, filename):
     img.save(response, format)
     return response
 
+@login_required
 def imagepage(request, key):
     image = get_object_or_404(Image, key=key)
     return render_to_response('cms/imagepage.html', {'image': image})
 
+@login_required
 def reference(request, key):
     current = None
     for r in get_list_or_404(Reference, name=key):

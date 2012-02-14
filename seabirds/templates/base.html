@@ -69,15 +69,19 @@
                                         {% endblock navigation %}
                                     </nav>
                                 </div>
-                                {% block leftbar %}
-                                {% endblock leftbar %}
+                                <div id="leftbar">
+                                    {% block leftbar %}
+                                    {% endblock leftbar %}
+                                </div>
                             </div>
                         </div> <!-- End of navigation column -->
                         <!-- Sidebar column -->
                         <div class="ym-col2 sidebar">
                             <div class="ym-cbox">
-                                {% block sidebar %}
-                                {% endblock sidebar %}
+                                <div id="sidebar">
+                                    {% block sidebar %}
+                                    {% endblock sidebar %}
+                                </div>
                             </div>
                         </div>
                         <div id="main" class="ym-col3">
