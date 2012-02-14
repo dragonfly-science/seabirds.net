@@ -22,24 +22,6 @@ class ImageForm(forms.ModelForm):
     owner_url = forms.URLField(required = False,
         help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
 
-    def clean_title(self):
-        if not self.cleaned_data.get('title', None):
-            raise ValidationError, 'Title must not be empty'
-        else:
-            key = slugify(title)
-            try:
-                Image.objects.get(key=key)
-            except Image.DoesNotExist:
-                count = 1
-                while True:
-                    newkey = '%s-%s'%(key, count)
-                    try:
-                        Image.objects.get(key=newkey)
-                        count += 1
-                    except Image.DoesNotExist:
-                        key = newkey
-                        break
-                self.cleaned_data['key'] = key
 
     class Meta:
         model = Image
