@@ -7,6 +7,9 @@ class SeabirdFamily(models.Model):
     def __str__(self):
         return self.choice
 
+    class Meta:
+        ordering = ('choice',)
+
 class InstitutionType(models.Model):
     choice = models.CharField(max_length=60)
     

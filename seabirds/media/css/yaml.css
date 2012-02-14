@@ -62,13 +62,13 @@
 
 	h2 {
 		font-size:175%;
-		line-height: 0.8571em;
+		line-height: 1.2em;
 		margin:0.8571em 0 0 0;
 	}
 
 	h3 {
 		font-size:133.33%;
-		line-height: 1.125em;
+		line-height: 1.2em;
 		margin:1.125em 0 0 0;
 	}
 
@@ -307,6 +307,10 @@ color: #fff;
     line-height: 1.2;
 }
 
+.ym-button {
+		margin: 1.2em 0.75em 0 0;
+		padding: 0 0.8em;
+}
 .badge { /* Based on ym-button */
 		display: inline-block;
 		white-space: nowrap;
@@ -321,29 +325,55 @@ color: #fff;
 		-webkit-border-radius: .2em;
 		-moz-border-radius: .2em;
 		border-radius: .2em;
-		/*-webkit-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);
+		-webkit-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);
 		-moz-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);
-		box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);*/
+		box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.15);
 		color: #333 !important;
 		font: normal 1em/2em Arial, Helvetica;
-		margin: 1.2em 0.75em 0 0;
+		margin: 0.3em;
 		padding: 0 0.8em;
 		overflow: visible; /* removes extra side spacing in IE */
 		text-decoration: none !important;
 		text-shadow: 0 1px 0 rgba(255,255,255,.8);
+	    font-size: 1em;
+        line-height: 1.4em;
 	}
 
-.smallbadge {
-	font-size: 1em;
-    line-height: 1.4em;
-    margin: 0.3em;
+
+.linkbadge:hover {
+		background-color: #ddd;
+		background-image: -webkit-linear-gradient(top, #fafafa, #ddd);
+		background-image: -moz-linear-gradient(top, #fafafa, #ddd);
+		background-image: -ms-linear-gradient(top, #fafafa, #ddd);
+		background-image: -o-linear-gradient(top, #fafafa, #ddd);
+		background-image: linear-gradient(top, #fafafa, #ddd);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#fafafa', EndColorStr='#dddddd');
 }
 
-.ym-button {
-		margin: 1.2em 0.75em 0 0;
-		padding: 0 0.8em;
-}
+
 .activebadge {
-        background-color: #ff0000;
-		background-image: -webkit-linear-gradient(top, #eee, #f2e587);
+		background-image: -webkit-linear-gradient(top, #eee, #fae652);
+		background-image: -moz-linear-gradient(top, #eee, #fae652);
+		background-image: -ms-linear-gradient(top, #eee, #fae652);
+		background-image: -o-linear-gradient(top, #eee, #fae652);
+		background-image: linear-gradient(top, #eee, #fae652);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#eeeeee', EndColorStr='#fae652');
 }
+
+.activebadge:hover {
+		background-image: -webkit-linear-gradient(top, #fafafa, #f5eba6);
+		background-image: -moz-linear-gradient(top, #fafafa, #f5eba6);
+		background-image: -ms-linear-gradient(top, #fafafa, #f5eba6);
+		background-image: -o-linear-gradient(top, #fafafa, #f5eba6);
+		background-image: linear-gradient(top, #fafafa, #f5eba6);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#fafafa', EndColorStr='#f5eba6');
+}
+
+.inactivebadge {
+        color: #ddd;
+		background-image: None;
+        border-color: #ddd;
+        background-color: #ddd;
+        text-shadow: None;
+}
+
