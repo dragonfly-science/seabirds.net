@@ -6,7 +6,7 @@
 <div class="profile">
 <h2>
 {% if profile.webpage %}<a href="{{ profile.webpage}}">{% endif %}
-{% if profile.title %}{{ profile.title }} {% endif %}{{ profile.user.first_name}} {{ profile.user.last_name }}
+{% if profile.title %}{{ profile.title }} {% endif %}{{ profile.user.first_name|capfirst}} {{ profile.user.last_name|capfirst }}
 {% if profile.webpage %}</a>{% endif %}
 </h2>
 {% if profile.user.email and profile.display_email %}

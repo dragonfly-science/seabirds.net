@@ -149,6 +149,8 @@ def edit_post(request):
 
 
 
+REQUIRED_FIELDS = ('image', 'title', 'owner')
+
 @login_required
 def edit_image(request):
     if request.method == 'POST': # If the form has been submitted...
@@ -187,6 +189,9 @@ def edit_image(request):
         except UserProfile.DoesNotExist:
             pass
         form = ImageForm(initial=initial) # An unbound form
-    return render_to_response('cms/edit_image.html', {'form': form,}, context_instance=RequestContext(request))
+    return render_to_response('cms/edit_image.html', 
+        {'form': form, 'required': REQUIRED_FIELDS}, 
+        context_instance=RequestContext(request)
+        )
 
 

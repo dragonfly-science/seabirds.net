@@ -333,16 +333,17 @@ color: #fff;
 		text-shadow: 0 1px 0 rgba(255,255,255,.8);
 	}
 
+.smallbadge {
+	font-size: 1em;
+    line-height: 1.4em;
+    margin: 0.3em;
+}
+
 .ym-button {
 		margin: 1.2em 0.75em 0 0;
 		padding: 0 0.8em;
 }
-.ym-button .active {
-        background-color: #f2e587;
-		background-image: -webkit-linear-gradient(top,#f2e587 , #ccc);
-		background-image: -moz-linear-gradient(top,#f2e587, #ccc);
-		background-image: -ms-linear-gradient(top,#f2e587, #ccc);
-		background-image: -o-linear-gradient(top,#f2e587, #ccc);
-		background-image: linear-gradient(top,#f2e587, #ccc);
-		filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#eeeeee', EndColorStr='#cccccc');
+.activebadge {
+        background-color: #ff0000;
+		background-image: -webkit-linear-gradient(top, #eee, #f2e587);
 }

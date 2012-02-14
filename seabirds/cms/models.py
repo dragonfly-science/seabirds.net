@@ -180,15 +180,15 @@ class Image(models.Model):
         help_text="Optional. Displayed under the image.")
     key = models.SlugField(max_length = 50, unique=True, 
         help_text="A unique name for each image on the website. Must only be letters, number, underscores, or hyphens.")
+    seabird_families = models.ManyToManyField(SeabirdFamily, related_name='images', null=True, blank=True, help_text="Optional. If this is an image of a seabird or seabirds, please select the correct families.") 
     owner = models.CharField(max_length = 200, 
         help_text="The name of the copyright holder of the image")
     owner_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG,
         help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
     license = models.ForeignKey(License, null=True, blank=True, 
-        help_text="Copyright license. All uploaded images must be made available under a <a href='http://creativecommons.org/'>creative commons</a> or public domain license")
+        help_text="Optional copyright license. Available licenses include <a href='http://creativecommons.org/'>creative commons</a> or public domain licenses. If no license is specified it is assumed that the owner has the copyright and has granted permission for the image to be used")
     uploaded_by = models.ForeignKey(User, 
         help_text="The user who uploaded the image")
-    seabirds = models.ManyToManyField(SeabirdFamily, related_name='images', null=True, blank=True, help_text="If this is an image of a seabird, please select the correct family") 
     date_created = models.DateField(auto_now_add=True)
     date_modified = models.DateField(auto_now=True)
 

@@ -3,10 +3,11 @@
 {% block content %}
 <form method="post" action="." class="ym-form ym-columnar" enctype="multipart/form-data">{% csrf_token %}
 {% for field in form %}
-    <div class="ym-fbox-text {% if field.errors %}ym-error{% endif %}">
+    <div class="{% ifequal field.name 'seabird_families' %}ym-fbox-select{% else %}ym-fbox-text{% endifequal %} {% if field.errors %}ym-error{% endif %}">
         <strong> {{ field.errors }} </strong>
         <label for="id_country">{{ field.label }}
-            <div class="form-help"> {% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+        {% if field.name in required %}<sup title="This field is mandatory.">*</sup>{% endif %}
+        <div class="form-help"> {% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
         </label>
         {{ field }}
     </div>
