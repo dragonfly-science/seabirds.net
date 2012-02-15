@@ -93,6 +93,7 @@ INSTALLED_APPS = (
     'categories',
     'form_utils',
     'sorl.thumbnail',
+    'cuckoo',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -122,7 +123,6 @@ SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
 
 
-CUCKOO_DIRECTORY = os.path.join(SITE_ROOT, 'patches')
 
 # Required for enforcing a global login during testing
 LOGIN_URL = '/accounts/login/'

@@ -1,20 +1,21 @@
 {% extends 'base.html' %}
 {% load disqus_tags %}
+{% load thumbnail %}
 {% set_disqus_identifier "post_" object.id %}
 {% disqus_dev %}
 {% block content %}
 <br>
-{% if object.published or user.is_authenticated and perms.website.administration %}
+{% if object.published and not object.retracted or user.is_authenticated and perms.website.administration %}
   {% if not object.published %}
     <div class="pagedraft">
   {% endif %}
-{% if user.is_authenticated and perms.website.administration %}
+{% if user == object.author or user.is_authenticated and perms.website.administration %}
   <p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>
 {% endif %}
   {% autoescape off %}
     <div class="grid_8 firstrow">
 	 <div class="textbox">
-  <h2>{{ object.title }}</h2>
+  <h2>{{ object.title|capfirst }}</h2>
   <p class="byline"><!--{% if object.author %}<a href="{{ object.author.get_absolute_url }}">{{ object.author.firstname }} {{ object.author.lastname }}</a>, 
     {% endif %}-->{{ object.date_published|date:"F j, Y" }}</p>
   {{ object.markdown_text }}
@@ -35,6 +36,20 @@
 {% endif %}
 <br>
 {% endblock %}
+
 {% block sidebar %}
- 
+{% if object.published and not object.retracted or user.is_authenticated and perms.website.administration %}
+{% if object.image %}
+<a href="{{ object.image.get_absolute_url }}">
+{% if object.image.image.width > 255 %}
+    {% thumbnail object.image.image "255"  as im %}
+    <img src="/{{ im.url }}" width="255"  class="flexible" alt="{{ im.title|capfirst }}" title="{{ im.title|capfirst }}"></a>
+    {% endthumbnail %}
+{% else %}
+    <img src="/{{ object.image.image.url }}" width="{{ object.image.image.width }}"  class="flexible"  alt="{{ object.image.title|capfirst }}" title="{{ object.image.title|capfirst }}"></a>
+{% endif %}
+</a>
+{% if object.image.caption %}<p>{{ object.image.caption }} </p>{% endif %}
+{% endif %}
+{% endif %}
 {% endblock sidebar %}
