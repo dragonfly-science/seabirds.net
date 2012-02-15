@@ -77,7 +77,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
-    'seabirds.cms',
+    'cms',
     'bibliography',
     'django.contrib.admin',
     'profiles', #Django profiles
@@ -94,6 +94,7 @@ INSTALLED_APPS = (
     'form_utils',
     'sorl.thumbnail',
     'cuckoo',
+    'django_coverage',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -131,4 +132,4 @@ AVATAR_CROP_MIN_SIZE = 20
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
 
-
+COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
