@@ -12,3 +12,4 @@ dumps/*.sql
 sitesettings.py
 seabirds/secrets.py
 static/*
+seabirds/htmlcov/*
