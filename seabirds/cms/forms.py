@@ -12,7 +12,11 @@ class PostForm(forms.ModelForm):
     
     class Meta:
         model = Post
-        exclude = ('author',)
+        exclude = ('author', 'name', 'date_published', 'published', 'image', 'retracted')
+        widgets = {
+            'teaser': forms.Textarea(attrs={'rows': 6}),
+            'text': forms.Textarea(attrs={'rows': 27}),
+            }
 
 class ImageForm(forms.ModelForm):
     "Form for creating a post"

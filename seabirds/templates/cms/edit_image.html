@@ -2,19 +2,30 @@
 
 {% block content %}
 <form method="post" action="." class="ym-form ym-columnar" enctype="multipart/form-data">{% csrf_token %}
-{% for field in form %}
+    <div class="ym-fbox-button float-right">
+        <input type="submit" name="submit" value="Save" id="submit" class="ym-button">
+    </div>
+{% block postblock %}
+{% endblock postblock %}
+{% block imageblock %}
+<div id='image-form'>
+{% for field in imageform %}
     <div class="{% ifequal field.name 'seabird_families' %}ym-fbox-select{% else %}ym-fbox-text{% endifequal %} {% if field.errors %}ym-error{% endif %}">
         <strong> {{ field.errors }} </strong>
-        <label for="id_country">{{ field.label }}
+        <label for="id_image-{{ field.name }}">{{ field.label }}
         {% if field.name in required %}<sup title="This field is mandatory.">*</sup>{% endif %}
         <div class="form-help"> {% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
         </label>
         {{ field }}
     </div>
 {% endfor %}
+</div>
+{% endblock imageblock %}
     <div class="ym-fbox-button">
         <input type="submit" name="submit" value="Save" id="submit" class="ym-button">
     </div>
+</form>
+
 </form>
 {% endblock content %}
 

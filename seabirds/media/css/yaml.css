@@ -376,4 +376,10 @@ color: #fff;
         background-color: #ddd;
         text-shadow: None;
 }
-
+#image-form-headline {
+    color: #4D87C7;
+    cursor: pointer;
+}
+#image-form-headline:hover {
+    text-decoration: underline;
+}

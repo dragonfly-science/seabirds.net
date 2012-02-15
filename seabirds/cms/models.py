@@ -123,12 +123,15 @@ class Post(models.Model):
         help_text="Publication date")
     published = models.BooleanField(default=False,
         help_text="When this box is checked, the post will be visible on the site.")
+    retracted = models.BooleanField(default=False,
+        help_text="Check this box to retract this post")
     teaser = models.TextField(max_length = 300,
         help_text='Teaser text. Short text that appears in lists of posts. Must be less than 300 characters long. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     text = models.TextField(
         help_text='Post text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
+    seabird_families = models.ManyToManyField(SeabirdFamily, related_name='posts', null=True, blank=True, help_text="Optional. If this post is about a particular seabird or seabirds, please select the correct families.") 
     image = models.ForeignKey('Image', related_name = 'posts', null=True, blank=True,
-	help_text='Image associated with the post')
+	    help_text='Image associated with the post')
 	
     def __str__(self):
         return self.name

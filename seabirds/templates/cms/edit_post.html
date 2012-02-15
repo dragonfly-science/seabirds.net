@@ -1,21 +1,35 @@
-{% extends 'base.html' %}
+{% extends 'cms/edit_image.html' %}
 
-{% block content %}
-<form method="post" action="." class="ym-form ym-columnar" enctype="multipart/form-data">{% csrf_token %}
-{% for field in form %}
-    <div class="ym-fbox-text {% if field.errors %}ym-error{% endif %}">
+{% block extrahead %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('#image-form').addClass('hidden');
+  $('#image-form-headline').click(function(){
+    $('#image-form').slideToggle(300);
+    $('#image-form-headline').classToggle('expanded')
+  });
+});
+</script>
+<style>
+.hidden {display: none}
+</style>
+{% endblock extrahead %}
+
+{% block postblock %}
+<h4> Enter the text of your post </h4>
+{% for field in postform %}
+    <div class="{% ifequal field.name 'seabird_families' %}ym-fbox-select{% else %}ym-fbox-text{% endifequal %} {% if field.errors %}ym-error{% endif %}">
         <strong> {{ field.errors }} </strong>
-        <label for="id_country">{{ field.label }}
-            <div class="form-help"> {{ field.help_text }}</div>
+        <label for="id_post-{{ field.name }}">{{ field.label }}
+        {% if field.name in required %}<sup title="This field is mandatory.">*</sup>{% endif %}
+            <div class="form-help">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
         </label>
         {{ field }}
     </div>
 {% endfor %}
-    <div class="ym-fbox-button">
-        <input type="submit" name="submit" value="Save" id="submit" class="ym-button">
-    </div>
-</form>
-{% endblock content %}
+<h4 id="image-form-headline"> Add an image ... </h4>
+{% endblock %}
 
 
 

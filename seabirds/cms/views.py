@@ -1,3 +1,4 @@
+import datetime
 import types
 import os
 import re
@@ -16,7 +17,7 @@ from django.template.defaultfilters import slugify
 
 from PIL import Image as PILImage
 
-from cms.models import Page, File, Navigation, Image
+from cms.models import Page, File, Navigation, Image, Post
 from cms.forms import PostForm, ImageForm
 from bibliography.models import Reference
 from license.models import License
@@ -135,30 +136,27 @@ def get_base_navigation(request):
         return []
     return {'navigation': get_navigation(root.url)}
 
-@login_required
-def edit_post(request):
-    if request.method == 'POST': # If the form has been submitted...
-        form = PostForm(request.POST) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            form.save()
-            return HttpResponseRedirect(reverse('individual-post', args=(), kwargs={
-            'year': form.cleaned_data['date_published'].year,
-            'month': form.cleaned_data['date_published'].strftime('%m'), 
-            'day': form.cleaned_data['date_published'].strftime('%d'), 
-            'slug': form.cleaned_data['name']}))
+
+
+def get_initial_data(request):
+    if request.user:
+        initial = {'owner': '%s %s'%(request.user.first_name.capitalize(), request.user.last_name.capitalize()), 
+            'license': License.objects.get(name='BY-SA'), 
+            'author': request.user}
+        try:
+            profile = UserProfile.objects.get(user = request.user)
+            initial['owner_url'] = settings.SITE_URL + reverse('profiles_profile_detail', 
+                args=(), 
+                kwargs={'username': request.user.username})
+        except UserProfile.DoesNotExist:
+            pass
     else:
-        form = PostForm() # An unbound form
-    return render_to_response('cms/edit_post.html', {'form': form,}, 
-        context_instance=RequestContext(request))
+        initial = {}
+    return initial
 
-
-
-REQUIRED_FIELDS = ('image', 'title', 'owner')
-
-@login_required
-def edit_image(request):
+def process_image_form(request):
     if request.method == 'POST': # If the form has been submitted...
-        form = ImageForm(request.POST, request.FILES) # A form bound to the POST data
+        form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             # Get the key
             key = slugify(form.cleaned_data['title'])
@@ -175,27 +173,73 @@ def edit_image(request):
                         key = newkey
                         break
             new_image = form.save(commit=False)
+            form.cleaned_data['image'] = new_image
             new_image.key = key
             if not request.user:
                 raise ValidationError, 'User must be logged in'
             else:
                 new_image.uploaded_by = request.user
             new_image.save()
-            return HttpResponseRedirect(new_image.get_absolute_url())
+            form.redirect_url = new_image.get_absolute_url()
     else:
-        initial = {'owner': '%s %s'%(request.user.first_name.capitalize(), request.user.last_name.capitalize()),
-            'license': License.objects.get(name='BY-SA')}
-        try:
-            profile = UserProfile.objects.get(user = request.user)
-            initial['owner_url'] = settings.SITE_URL + reverse('profiles_profile_detail', 
-                args=(), 
-                kwargs={'username': request.user.username})
-        except UserProfile.DoesNotExist:
-            pass
-        form = ImageForm(initial=initial) # An unbound form
-    return render_to_response('cms/edit_image.html', 
-        {'form': form, 'required': REQUIRED_FIELDS}, 
-        context_instance=RequestContext(request)
-        )
+        form = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+    return form
 
+REQUIRED_FIELDS = ('image', 'title', 'owner', 'text', 'teaser')
+@login_required
+def edit_image(request):
+    imageform = process_image_form(request)
+    if hasattr(imageform, 'redirect_url'):
+        return HttpResponseRedirect(imageform.redirect_url)
+    else:
+        return render_to_response('cms/edit_image.html', 
+            {'imageform': imageform, 'required': REQUIRED_FIELDS}, 
+            context_instance=RequestContext(request)
+            )
 
+@login_required
+def edit_post(request, post_id = None):
+    if request.method == 'POST': # If the form has been submitted...
+        postform = PostForm(request.POST, request.FILES, prefix='post') # A form bound to the POST data
+        # check that the image form has been completed (look for a file path)
+        if request.FILES.has_key('image-image'):
+            imageform = process_image_form(request)
+        else:
+            imageform = None
+        if postform.is_valid(): # All validation rules pass
+            new_post = postform.save(commit=False)
+            if imageform:
+                new_post.image = imageform.cleaned_data['image']
+            else:
+                new_post.image = None
+            new_post.date_published =  datetime.date.today()
+            name = slugify(new_post.title)[:50]
+            try:
+                Post.objects.get(name=name)
+                count = 0
+                while True:
+                    count += 1
+                    newname = name[:(50 - 1 - len(str(count)))] + '-' + str(count)
+                    try:
+                        Post.objects.get(name=newname)
+                    except Post.DoesNotExist:
+                        name = newname
+            except Post.DoesNotExist:
+                pass
+            new_post.name = name
+            new_post.save()
+            return HttpResponseRedirect(new_post.get_absolute_url())
+    else:
+        if not post_id:
+            postform = PostForm(prefix='post') # An unbound form
+            imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+        else:
+            post = get_object_or_404(Post, id=post_id)
+            postform = PostForm(post, prefix='post')
+            if not post.image:
+                imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+            else:
+                imageform = ImageForm(post.image, initial=get_initial_data(request), prefix='image') # An unbound form
+                
+    return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 'required': REQUIRED_FIELDS,}, 
+        context_instance=RequestContext(request))
