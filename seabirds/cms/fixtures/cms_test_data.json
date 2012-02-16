@@ -1,0 +1,595 @@
+[
+    {
+        "pk": 2, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "wsu", 
+            "parent": null, 
+            "title": "Seabirds.net | WSU", 
+            "text": "## World Seabird Union Mission\r\nThe World Seabird Union's mission is to place seabird research, management, and conservation into a worldwide perspective. Our vision is to aid in creating global partnerships that will continue into the future by sharing research, knowledge, and ideas on a global level\r\n\r\n## World Seabird Union Transition Team\r\nThe World Seabird Union was founded during the 1st World Seabird Conference and the Transition Team has been meeting since January 2011. All meeting minutes and other documents pertaining to the progress of the WSUTT are available online:\r\n\r\n* <a href=\"http://seabirds.webfactional.com/wsu-documents.html\">WSUTT Documents</a> \r\n\r\n## Seabirds.net organizational committee\r\nA committee, headed by Grant Humphries, has been established for the Seabirds.Net website. The committee will oversee the design and development of Seabirds.Net and the World Seabird Union websites. The Working Plan is available in pdf format. Please contact <a href=mailto:humphries.grant@gmail.com>Grant Humphries</a> for more information.", 
+            "published": true, 
+            "sidebar": "# WSU Member Organizations\r\n\r\n* African Seabird Group\r\n* Agreement on the Conservation of Albatrosses and Petrels (ACAP)\r\n* American Bird Conservancy, Seabird Program\r\n* Argentine Seabird Group\r\n* Birdlife International, Global Seabird Programme\r\n* Dutch Seabird Group\r\n* European Seabirds at Sea Group\r\n* Indian Ocean Seabird Group\r\n* Japanese Seabird Group\r\n* Medmaravis\r\n* Pacific Seabird Group\r\n* Circumpolar Seabird Group (CBird)\r\n* Peruvian Association for the Conservation of Nature (APECO)\r\n* Pro Delphinus Peru\r\n* Research and Development Group, Department of Conservation\r\n* Royal Naval Birdwatching Society\r\n* Scientific Committee on Antarctic Research (SCAR)\r\n* Society for the Conservation and Study of Caribbean Birds (SCSCB)\r\n* The Northwest Atlantic Birds at Sea Conservation Cooperative\r\n* The Seabird Group\r\n* The Waterbird Society (WbS)\r\n* Waterbird Conservation for the Americas\r\n\r\n\r\n"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "resources", 
+            "parent": null, 
+            "title": "Resources", 
+            "text": "# Resources\r\n\r\nSeabirds.net offers a variety of services to the Seabird community; professionals, students and enthusiasts. \r\n\r\n## Seabird Information Network\r\n\r\nThe Seabird Information Network is a network of databases which contain important information about the status of seabirds worldwide. These databases represent a substantial step towards the sharing of information around the world, which will have direct benefits towards the study and conservation of seabirds.\r\n>Click <a href=\"http://seabirds.webfactional.com/sin.html\">HERE</a> to visit the Seabird Information Network\r\n\r\n## PETREL\r\nPETREL (PErsonnel TRacker and E-List) is a directory of Seabird professionals and students that will allow users to search for others studying similar subjects, or species. This system will increase the presence of individual seabird researchers, and through the use of the Featured Researchers function on the main page, individual research will be highlighted.  Users will also be able to upload photos and their own published articles that will be searchable. \r\n>Click <a href=\"http://seabirds.webfactional.com/accounts/login/\">HERE</a> to login to PETREL\r\n\r\n## Seabird News\r\nSeabirds.Net will offer a series of updates as News Articles pertaining to the World Seabird Union, the World Seabird Conference, and various other seabird related news. An RSS feed will be available, and will be linked with Facebook and Twitter. \r\n>Click HERE to view new Seabird News\r\n\r\n## Discussion Forum\r\nAlso available on Seabirds.net is a Discussion forum for discussions revolving around seabird science. These will be moderated for harassing messages, but will be relatively liberal to encourage open discussions about methods, analysis, or another matters pertaining to seabird research. Currently this forum is linked through DISQUS, and users may login using their Facebook, Twitter, or Gmail accounts. These posts can then be shared to your Facebook, Twitter or G+ walls.\r\n>Click <a href=\"http://seabirds.webfactional.com/posts/\" target=\"_blank\">HERE</a> to visit the Discussion forum\r\n", 
+            "published": true, 
+            "sidebar": "## Important External Links\r\n\r\n* www.pacificseabirdgroup.org"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "sin", 
+            "parent": 4, 
+            "title": "Seabird Information Network", 
+            "text": "# Seabird Information Network\r\n\r\nThe Seabird Information Network (S.I.N) is a network of databases from contributors around the world. \r\n\r\n### Circumpolar Seabird Data Portal\r\n<p><a href=\"http://axiom.seabirds.net/circumpolar_portal.php\"><img src=\"http://www.seabirds.net/Images/seabird-circumpolar-promo.large.png\" width=\"180\" height=\"111\" alt=\"Circump\" align=\"center\"/></a></p>\r\n### Global Seabird Colony Register\r\n<p><a href=\"http://axiom.seabirds.net/global_portal.php\"><img src=\"http://www.seabirds.net/Update2011/Images/Global_Colony_Register.png\" width=\"180\" height=\"111\" align=\"center\"/></a></p>\r\n\r\n### North Pacific Seabird Data Portal\r\n<p><a href=\"http://axiom.seabirds.net/portal.php\"><img src=\"http://www.seabirds.net/Images/portal-promo.png\" width=\"180\" height=\"111\" alt=\"NPPDP\" align=\"center\"/></a></p>\r\n\r\n### Global Metadata portal\r\n<p><a href=\"http://axiom.seabirds.net/forum.php\"><img src=\"http://www.seabirds.net/Update2011/Images/forum-portal-promo.png\" width=\"180\" height=\"111\" alt=\"Meta_map\" align=\"center\"/></a></p>\r\n\r\n### Pacific Seabird Monitoring Database\r\n<p><a href=\"http://seabirds.usgs.gov/\"><img src=\"http://www.seabirds.net/Update2011/Images/PMSD.gif\" width=\"180\" height=\"111\" align=\"center\"/></a></p>\r\n\r\n\r\n### World Seabird Monitoring Database\r\n\r\n### World Pelagic Surveys Database\r\n\r\n### World Seabird Tracking Database\r\n\r\n### World Seabird Trophic Studies Database", 
+            "published": true, 
+            "sidebar": "#Quick List\r\n\r\n* Circumpolar Seabird Data Portal\r\n* Global Seabird Colony Register\r\n* North Pacific Seabird Data Portal\r\n* World Seabird Monitoring Database\r\n* World Pelagic Surveys Database\r\n* World Seabird Tracking Database\r\n* World Seabird Trophic Studies Database"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "publications", 
+            "parent": 4, 
+            "title": "Publications", 
+            "text": "# Seabird Publications\r\n\r\n## Marine Ornithology\r\nMarine Ornithology is supported and published biannually by the African Seabird Group, the Pacific Seabird Group (PSG), the Australasian Seabird Group, the Seabird Group (U.K.), the Dutch Seabird Group, and the Japan Seabird Group.\r\n\r\n>Click for -><a href=\"http://www.marineornithology.org/\" target=\"_blank\"> MARINE ORNITHOLOGY</a>\r\n\r\n## Atlantic Seabirds\r\nAtlantic Seabirds was the official joint journal of the Seabird Group and Dutch Seabird Group (Nederlandse Zeevogelgroep, NZG). It was a continuance of their respective journals, Seabird (following no. 20, 1998) and Sula (following vol. 12 no. 4, 1998). Unfortunately, over the years, production of Atlantic Seabirds fell behind schedule. After discussion between the two groups and their members, it was decided to discontinue the joint publication, and the last issue of Atlantic Seabirds (Vol 8,3) was published in early 2008.\r\n\r\n>Click for -><a href=\"http://www.seabirdgroup.org.uk/?page=journalarchive\" target=\"_blank\"> ATLANTIC SEABIRDS ARCHIVE</a>\r\n\r\n## Pacific Seabirds\r\nPacific Seabirds is the official publication of the Pacific Seabird Group (PSG). Published in the spring and fall, content includes news of interest to PSG members, reports of regional seabird research, technical articles and reviews, a forum for the expression of views, conservation news, abstracts of papers presented at the meetings, book reviews, and artwork inspired by seabirds, and other marine-related topics.\r\n\r\n>Click for -><a href=\"http://pacificseabirdgroup.org/index.php?f=pub_pacificseabirds&t=Pacific%20Seabirds&s=1 target=\"_blank\"> PACIFIC SEABIRDS</a>\r\n\r\n", 
+            "published": true, 
+            "sidebar": "## Popular Journals for Seabird Science\r\n\r\n* Marine Biology\r\n* Marine Ecology Progress Series\r\n* Marine Biodiveristy\r\n* Etc..."
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "students", 
+            "parent": null, 
+            "title": "Students", 
+            "text": "# Student Resources\r\n\r\n> Seabirds.net encourages the development of students in the seabird community. Because students represent the next generation of seabird scientists, and the future of seabird conservation, it is important to cultivate a healthy student community. \r\n\r\n### <a href = \"#\" target=\"_blank\">Job Postings</a>\r\nIf you are finishing up your degree and looking for jobs in seabird science, you can click <a href=\"#\" target=\"_blank\">here </a> to look at job postings\r\n\r\n### <a href =\"#\" target=\"_blank\">Looking for a Post Graduate Opportunity?</a>\r\nAre you looking for a post graduate degree in seabird science? Click <a href=\"#\" target=\"_blank\"> here</a> to view postings for projects in various parts of the world. Get involved in an exciting field of research!\r\n\r\n### Getting involved with Seabirds.net and the World Seabird Union as a student\r\nThe World Seabird Union is looking for active students to help in future World Seabird Conference planning.  \r\nAlso, As Seabirds.net continues to develop, new and fresh ideas will be needed to ensure the website remains current and innovative.\r\n>To get involved with the World Seabird Union, please stay tuned to announcements.  \r\n>To get involved with Seabirds.net, please send an email to <a href=mailto:humphries.grant@gmail.com target=\"_blank\">Grant Humphries</a>\r\n\r\n### Seabirds.net: Facebook, Twitter and Social Media\r\nFollow us on <a href=\"#\" target=\"_blank\">Facebook</a>, <a href=\"#\" target=\"_blank\">Twitter</a>, or other Social media sites. \r\n\r\n", 
+            "published": true, 
+            "sidebar": "##See these links for other job opportunities\r\n\r\n* LINK 1\r\n* LINK 2\r\n* LINK 3\r\n* LINK 4\r\n* LINK 5"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "wsu-personnel", 
+            "parent": 2, 
+            "title": "WSU Personnel", 
+            "text": "# WSU Board\r\nThe following positions represent interim board members. Upon incorporation of the World Seabird Union, formal elections will take place.\r\n\r\n\r\n### Interim Chair,   David Irons\r\n\r\n\r\n### Interim Vice Chair,  John Croxall\r\n\r\n\r\n", 
+            "published": true, 
+            "sidebar": "# WSU Regional Representatives\r\n<table>\r\n<tr><td>Dave Irons </td><td>Circumpolar Seabird Group (CBird)</td></tr>\r\n<tr><td>John Croxall </td><td> Birdlife International</td></tr>\r\n<tr><td>Liliana Ayala</td><td> Peruvian Assn  for the Conservation of Nature</td></tr>\r\n<tr><td>Kees Camphuysen </td><td> Dutch Seabird Group</td></tr>\r\n<tr><td>Nicholas Carlile </td><td>Australasian Seabird Group</td></tr>\r\n<tr><td>Steve Copsey </td><td> Royal Naval Birdwatching Society</td></tr>\r\n<tr><td>Peter Dann </td><td> Australasian Seabird Group</td></tr>\r\n<tr><td>Stephan Garthe </td><td> European Seabirds at Sea Group</td></tr> \r\n<tr><td>Jessica Hardesty-Norris </td><td> American Bird Conservancy</td></tr>\r\n<tr><td>Grant Humphries </td><td> Seabirds.net Committee</td></tr>\r\n<tr><td>Pat Jodice </td><td> Pacific Seabird Group</td></tr>\r\n<tr><td>Ben Lascelles </td><td> BirdLife  International, Global Seabird Programme</td></tr>\r\n<tr><td>Matthieu Le Corre </td><td> Indian Ocean Seabird Group</td></tr>\r\n<tr><td>Ron LeValley </td><td> PSG Treasurer</td></tr>\r\n<tr><td>Carles Carboneras </td><td> Medmaravis</td></tr>\r\n<tr><td>Russell Wynn </td><td> The Seabird Group</td></tr>\r\n<tr><td>Melanie Steinkamp </td><td> NW Atlantic Marine Bird Cooperative</td></tr>\r\n<tr><td>Ben Sullivan </td><td> BirdLife  International, Global Seabird Programme</td></tr>\r\n<tr><td>Graeme Taylor </td><td> Dept. of Conservation, New Zealand</td></tr>\r\n<tr><td>George Wallace </td><td> American Bird Conservancy</td></tr>\r\n<tr><td>Ross Wanless </td><td> African Seabird Group</td></tr>\r\n<tr><td>Yutaka Watanuki </td><td> Japanese Seabird Group</td></tr>\r\n<tr><td>Jennifer Wheeler </td><td> Waterbird Conservation of the Americas, Society for the Conservation and Study of Caribbean Birds</td></tr>\r\n<tr><td>Pablo Yorio </td><td> Argentine Seabird Group</td></tr>\r\n</table>"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "home", 
+            "parent": null, 
+            "title": "Home page", 
+            "text": "# Welcome to Seabirds.net\r\n\r\nSeabirds.net is a gateway for research on the world's seabirds. \r\nSeabirds are diverse, including birds such as penguins, albatrosses, auks, cormorants, and gulls.\r\nThey are important, highly visible components of marine ecosystems. Seabirds are affected by \r\na wide range of human activities, including bycatch from fishing, climate change, and\r\nland based threats to their breeding sites. Seabird research contributes to their\r\nconservation, highlights changes in their populations, and is fundamental to a full\r\nunderstanding of marine ecosystems.\r\n\r\n# <a href=\"http://seabirds.webfactional.com/sin.html\">Seabird Information Network</a>  \r\nThe Seabird Information Network (S.I.N.) is a network of databases from contributors all over the world. Please click <a href=\"http://seabirds.webfactional.com/sin.html\"> here </a> to visit S.I.N.\r\n\r\n<p><a href=\"http://axiom.seabirds.net/portal.php\"><img src=\"http://www.seabirds.net/Images/portal-promo.png\" width=\"180\" height=\"111\" alt=\"NPPDP\" align=\"center\"/></a><a href=\"http://axiom.seabirds.net/circumpolar_portal.php\"><img src=\"http://www.seabirds.net/Images/seabird-circumpolar-promo.large.png\" width=\"180\" height=\"111\" alt=\"Circump\" align=\"center\"/><a href=\"http://axiom.seabirds.net/forum.php\"><img src=\"http://www.seabirds.net/Update2011/Images/forum-portal-promo.png\" width=\"180\" height=\"111\" alt=\"Meta_map\" align=\"center\"/></p>", 
+            "published": true, 
+            "sidebar": "# Featured Researchers\r\n\r\nThis section will be a 3x3 panel of images of researchers randomly drawn from PETREL\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nFACEBOOK LIKE BUTTON"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "wsu-documents", 
+            "parent": 2, 
+            "title": "WSU Documents", 
+            "text": "## WSU Documents\r\n<h3><a target= \"_blank\" href=\"http://www.seabirds.net/files/SeabirdTrackingDatabasePlans.pdf\">Seabird Tracking Database Plans</a></h3>\r\n    \t\t\t<p>A brief synopsis of plans for the Seabird Tracking Database </p>\r\n    \t\t<h3><a target= \"_blank\" href=\"http://www.seabirds.net/files/PostConferenceImplementationPlan.pdf\">Implementation Plan for Colony-oriented Seabird Monitoring Databases</a></h3>\r\n    \t\t\t<p>A synopsis of plans for various colony databases, including notes from WSC1</p>\r\n    \t\t<h3><a target= \"_blank\" href=\"http://www.seabirds.net/files/Seabirds.NetTentativeActionPlan.pdf\">Seabirds.Net Tentative Action Plan</a></h3>\r\n        \t\t<p>The tentative action plan for seabirds.net as of January 2011</p>\r\n\t\t<h3><a target= \"_blank\" href=\"http://www.seabirds.net/files/PostWSCSurveyResults.xls\">Post World Seabird Conference Survey Results (xls download)</a></h3>\r\n        \t\t<p>Results in XLS format from post WSC survey to describe conference demographics</p>\r\n\t\t<h3><a target= \"_blank\" href=\"http://www.seabirds.net/files/FutureWSCQuestionnaireSummary.pdf\">Future World Seabird Conference Questionnaire Summary</a></h3>\r\n        \t\t<p>PDF Results from WSC survey circulated to WSC attendees to assess interest in a WSC2 </p>\r\n\t\t<h3><a target= \"_blank\" href=\"http://www.seabirds.net/files/FutureWSCQuestionnaireResults.xls\">Future World Seabird Conference Questionnaire Results </a>(xls download)</h3>\r\n        \t\t<p>XLS Results from WSC survey circulated to WSC attendees to assess interest in a WSC2 </p>\r\n        \t<h3><a target= \"_blank\" href=\"http://www.seabirds.net/files/WSUTTannualreport2011.pdf\">WSUTT Annual Report 2011</a></h3>\r\n        \t\t<p>Annual Report of the World Seabird Union Transition Team for 2011 </p>", 
+            "published": true, 
+            "sidebar": "## WSUTT Meetings    \t\r\n<h3>Meeting Agendas</h3>\r\n<p style=\"font-size:24;\">\r\n<li><a href=\"http://www.seabirds.net/files/WSUTTAgendas/20110113.Agenda.pdf\" target= \"_blank\"> January 2011</a></li> \r\n<li><a href=\"http://www.seabirds.net/files/WSUTTAgendas/20110407.Agenda.pdf\" target= \"_blank\"> April 2011</a></li>\r\n<li><a href=\"http://www.seabirds.net/files/WSUTTAgendas/20110707.Agenda.pdf\" target= \"_blank\"> July 2011</a></li>\r\n<li><a href=\"http://www.seabirds.net/files/WSUTTAgendas/20111024.Agenda.pdf\" target= \"_blank\"> October 2011</a></li>\r\n<li><a href=\"http://www.seabirds.net/files/WSUTTAgendas/20120126.Agenda.pdf\" target= \"_blank\"> January 2012</a></li>\r\n</p>\r\n<h3>Meeting Minutes</h3>\r\n<p>\r\n<li><a target= \"_blank\" href=\"http://www.seabirds.net/files/WSUTTMinutes/20110113.Minutes.pdf\">January 2011</a></li> \r\n<li><a target= \"_blank\" href=\"http://www.seabirds.net/files/WSUTTMinutes/20110407.Agenda.pdf\">April 2011</a></li> \r\n<li><a target= \"_blank\" href=\"http://www.seabirds.net/files/WSUTTMinutes/20110707.Minutes.pdf\">July 2011</a></li> \r\n<li><a target= \"_blank\" href=\"http://www.seabirds.net/files/WSUTTMinutes/20111024.Minutes.pdf\">October 2011</a></li> \r\n<li><a target= \"_blank\" href=\"#\">January 2012</a></li> \r\n</p>\r\n"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "contact", 
+            "parent": 1, 
+            "title": "Contact", 
+            "text": "<h1><img src=\"http://www.seabirds.net/Update2011/Images/WSULOGOGIF.gif\" width=50px height=45px> Contact us </h1>\r\n\r\n\r\n<form action=\"mailto:wsuadmin@seabirds.net\" method=\"post\" enctype=\"text/plain\">\r\n<p>Name:  <input type=\"text\" id=\"name\" size=\"20\"></p>\r\n<p>Email:  <input type=\"text\" id=\"email\" size=\"20\"></p>\r\n<p>Enter your questions or comments: <br/><textarea style=\"width:40em;height:20em;\" id=\"comment\" cols=\"30\" wrap=\"virtual\" rows=\"4\"></textarea></p>\r\n\r\n\r\n<p><input style=\"width:5em;height:2em;\" type=\"submit\" value=\"Submit\">&nbsp; <input style=\"width:5em;height:2em;\" type=\"reset\" value=\"Reset\"></p>\r\n</form>", 
+            "published": true, 
+            "sidebar": "#Contact  \r\n\r\nAddress:  \r\n\r\nTel:  \r\n\r\nEmail:  wsuadmin@seabirds.net"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "cms.post", 
+        "fields": {
+            "retracted": false, 
+            "author": null, 
+            "text": "A description of my work with jumping jelly beans", 
+            "image": null, 
+            "title": "Jumping beans", 
+            "date_published": "2012-02-15", 
+            "teaser": "Jumping jelly beans", 
+            "published": false, 
+            "seabird_families": [], 
+            "name": "jumping-beans"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "cms.post", 
+        "fields": {
+            "retracted": false, 
+            "author": null, 
+            "text": "A short test post.", 
+            "image": null, 
+            "title": "A test post", 
+            "date_published": "2012-02-15", 
+            "teaser": "This is a short test post", 
+            "published": false, 
+            "seabird_families": [], 
+            "name": "a-test-post"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "cms.post", 
+        "fields": {
+            "retracted": false, 
+            "author": null, 
+            "text": "We all went fishing in Fighting Bay.", 
+            "image": 14, 
+            "title": "fighting bay", 
+            "date_published": "2012-02-15", 
+            "teaser": "Diving locations in fighting bay", 
+            "published": false, 
+            "seabird_families": [], 
+            "name": "fighting-bay"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "cms.post", 
+        "fields": {
+            "retracted": false, 
+            "author": 2, 
+            "text": "## Upcoming  [Image wsulogogif float=right]\r\n### Meetings\r\n#### April Phone Meeting\r\n> Pacific Call 5 April (2400 GMT) and Atlantic call 15 April (1700 GMT), 2012\r\n#### July Phone Meeting\r\n> TBA\r\n\r\n### WSUTT Progress\r\n#### Incorporation\r\n> WSU is currently in the process of incorporation as a non-profit organization and should be completed in February, 2012\r\n####Assigning of Board\r\n> Currently, David Irons, John Croxall and Nicolas Carlile are acting board members until a formal election process takes place", 
+            "image": 7, 
+            "title": "Upcoming for the WSU", 
+            "date_published": "2012-02-03", 
+            "teaser": "Upcoming World Seabird Union conference call times and Information about WSU", 
+            "published": true, 
+            "seabird_families": [], 
+            "name": "upcoming-wsu"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.post", 
+        "fields": {
+            "retracted": false, 
+            "author": 2, 
+            "text": "[Image john-croxall-and-david-irons place=center]\r\n\r\nThe 1st World Seabird Conference, led by the Pacific Seabird Group and an International Steering Committee of 26 other professional seabird and research organisations from around the world, was held in Victoria, BC, Canada in September 2010. Over 950 participants (including 850 registered conference attendees) from over 40 countries gathered together to comprehensively address the global issues and data needs for this diverse group of birds, most of which inhabit multiple countries and waters within their own ranges. Additional information on the conference program, conference outcomes, and photos are available on the [conference webpage](http://www.worldseabirdconference.com/)", 
+            "image": 1, 
+            "title": "World Seabird Conference", 
+            "date_published": "2011-10-01", 
+            "teaser": "The 1st World Seabird Conference, led by the Pacific Seabird Group and an International Steering Committee of 26 other professional seabird and research organisations from around the world, was held in Victoria, BC, Canada in September 2010.", 
+            "published": true, 
+            "seabird_families": [], 
+            "name": "world-seabird-conference"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.file", 
+        "fields": {
+            "name": "WSUTT Annual Report 2011.pdf", 
+            "file": "files/World_Seabird_Union_Transiton_Team_Report_for_2011.pdf", 
+            "title": "WSUTT Annual Report 2011"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.image", 
+        "fields": {
+            "license": null, 
+            "title": "John Croxall and david Irons", 
+            "image": "images/john-croxall-and-david-irons.jpg", 
+            "date_modified": "2012-02-02", 
+            "source_url": "", 
+            "caption": "John Croxall and David Irons at the 1st International World Seabird Conference", 
+            "key": "john-croxall-and-david-irons", 
+            "uploaded_by": 1, 
+            "owner": "Axiom", 
+            "date_created": "2012-02-02", 
+            "owner_url": "", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 1, 
+            "title": "Circumpolar-seabird-portal", 
+            "image": "images/circumpolar-seabird-portal.png", 
+            "date_modified": "2012-02-02", 
+            "source_url": "", 
+            "caption": "Circumpolar Seabird Data Portal", 
+            "key": "circumpolar-seabird-portal", 
+            "uploaded_by": 2, 
+            "owner": "Axiom", 
+            "date_created": "2012-02-02", 
+            "owner_url": "http://www.axiomalaska.com/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 1, 
+            "title": "Global-metadata-portal", 
+            "image": "images/global-metadata-portal_1.png", 
+            "date_modified": "2012-02-02", 
+            "source_url": "", 
+            "caption": "Global Metadata Portal", 
+            "key": "global-metadata-portal", 
+            "uploaded_by": 2, 
+            "owner": "Axiom", 
+            "date_created": "2012-02-02", 
+            "owner_url": "http://www.axiomalaska.com/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 1, 
+            "title": "North-Pacific-Seabird-Data-Portal", 
+            "image": "images/north-pacific-seabird-data-portal.png", 
+            "date_modified": "2012-02-02", 
+            "source_url": "", 
+            "caption": "North Pacific Seabird Data Portal", 
+            "key": "north-pacific-seabird-data-portal", 
+            "uploaded_by": 2, 
+            "owner": "Axiom", 
+            "date_created": "2012-02-02", 
+            "owner_url": "http://www.axiomalaska.com/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 2, 
+            "title": "WSUlogo", 
+            "image": "images/wsulogo.jpg", 
+            "date_modified": "2012-02-03", 
+            "source_url": "", 
+            "caption": "", 
+            "key": "wsulogo", 
+            "uploaded_by": 2, 
+            "owner": "World Seabird Union", 
+            "date_created": "2012-02-03", 
+            "owner_url": "", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 5, 
+            "title": "WSULOGOGIF", 
+            "image": "images/wsulogogif.gif", 
+            "date_modified": "2012-02-03", 
+            "source_url": "", 
+            "caption": "", 
+            "key": "wsulogogif", 
+            "uploaded_by": 2, 
+            "owner": "World Seabird Union", 
+            "date_created": "2012-02-03", 
+            "owner_url": "", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 2, 
+            "title": "Not a penguin", 
+            "image": "images/not-a-penguin-1", 
+            "date_modified": "2012-02-15", 
+            "source_url": "", 
+            "caption": "This is not a penguin", 
+            "key": "not-a-penguin-1", 
+            "uploaded_by": 1, 
+            "owner": "Edward Abraham", 
+            "date_created": "2012-02-15", 
+            "owner_url": "http://localhost:8000/petrel/edward-abraham/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 2, 
+            "title": "Buller albatross and cape petrel", 
+            "image": "images/buller-albatross-and-cape-petrel-1.jpg", 
+            "date_modified": "2012-02-15", 
+            "source_url": "", 
+            "caption": "Buller's albatross and a Cape petrel", 
+            "key": "buller-albatross-and-cape-petrel-1", 
+            "uploaded_by": 1, 
+            "owner": "Dominique Fillippi", 
+            "date_created": "2012-02-15", 
+            "owner_url": "http://localhost:8000/petrel/edward-abraham/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 2, 
+            "title": "Angry sunbird", 
+            "image": "images/angry-sunbird-1.jpg", 
+            "date_modified": "2012-02-15", 
+            "source_url": "", 
+            "caption": "", 
+            "key": "angry-sunbird-1", 
+            "uploaded_by": 1, 
+            "owner": "Edward Abraham", 
+            "date_created": "2012-02-15", 
+            "owner_url": "http://localhost:8000/petrel/edward-abraham/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 2, 
+            "title": "foo", 
+            "image": "images/foo-1.jpg", 
+            "date_modified": "2012-02-15", 
+            "source_url": "", 
+            "caption": "", 
+            "key": "foo-1", 
+            "uploaded_by": 1, 
+            "owner": "Edward Abraham", 
+            "date_created": "2012-02-15", 
+            "owner_url": "http://localhost:8000/petrel/edward-abraham/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 2, 
+            "title": "foo", 
+            "image": "images/foo-2.jpg", 
+            "date_modified": "2012-02-15", 
+            "source_url": "", 
+            "caption": "", 
+            "key": "foo-2", 
+            "uploaded_by": 1, 
+            "owner": "Edward Abraham", 
+            "date_created": "2012-02-15", 
+            "owner_url": "http://localhost:8000/petrel/edward-abraham/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "cms.image", 
+        "fields": {
+            "license": 2, 
+            "title": "Pretty birds", 
+            "image": "images/pretty-birds-1.jpg", 
+            "date_modified": "2012-02-15", 
+            "source_url": "", 
+            "caption": "", 
+            "key": "pretty-birds-1", 
+            "uploaded_by": 1, 
+            "owner": "Edward Abraham", 
+            "date_created": "2012-02-15", 
+            "owner_url": "http://localhost:8000/petrel/edward-abraham/", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 24, 
+            "name": "Home", 
+            "parent": null, 
+            "title": "Home page", 
+            "url": "/home.html", 
+            "level": 0, 
+            "lft": 1, 
+            "tree_id": 1, 
+            "order": 0
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 7, 
+            "name": "World Seabird Union", 
+            "parent": 1, 
+            "title": "World Seabird Union", 
+            "url": "/wsu.html", 
+            "level": 1, 
+            "lft": 2, 
+            "tree_id": 1, 
+            "order": 100
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 4, 
+            "name": "WSU Documents", 
+            "parent": 2, 
+            "title": "World seabird union documents", 
+            "url": "/wsu-documents.html", 
+            "level": 2, 
+            "lft": 3, 
+            "tree_id": 1, 
+            "order": 110
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 6, 
+            "name": "WSU Personnel", 
+            "parent": 2, 
+            "title": "WSU Personnel", 
+            "url": "/wsu-personnel.html", 
+            "level": 2, 
+            "lft": 5, 
+            "tree_id": 1, 
+            "order": 111
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 9, 
+            "name": "People", 
+            "parent": 1, 
+            "title": "Seabird researchers", 
+            "url": "/petrel/", 
+            "level": 1, 
+            "lft": 8, 
+            "tree_id": 1, 
+            "order": 150
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 11, 
+            "name": "Students", 
+            "parent": 1, 
+            "title": "Students", 
+            "url": "/students.html", 
+            "level": 1, 
+            "lft": 10, 
+            "tree_id": 1, 
+            "order": 220
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 19, 
+            "name": "Resources", 
+            "parent": 1, 
+            "title": "Resources", 
+            "url": "/resources.html", 
+            "level": 1, 
+            "lft": 12, 
+            "tree_id": 1, 
+            "order": 300
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 14, 
+            "name": "S.I.N.", 
+            "parent": 5, 
+            "title": "Seabird Information Network", 
+            "url": "/sin.html", 
+            "level": 2, 
+            "lft": 13, 
+            "tree_id": 1, 
+            "order": 310
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 16, 
+            "name": "Publication Links", 
+            "parent": 5, 
+            "title": "Publication Links", 
+            "url": "/publications.html", 
+            "level": 2, 
+            "lft": 15, 
+            "tree_id": 1, 
+            "order": 320
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 18, 
+            "name": "Petrel", 
+            "parent": 5, 
+            "title": "Petrel", 
+            "url": "/petrel/", 
+            "level": 2, 
+            "lft": 17, 
+            "tree_id": 1, 
+            "order": 330
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 21, 
+            "name": "Discussion", 
+            "parent": 1, 
+            "title": "News and discussion", 
+            "url": "/posts/", 
+            "level": 1, 
+            "lft": 20, 
+            "tree_id": 1, 
+            "order": 400
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 23, 
+            "name": "Contact", 
+            "parent": 1, 
+            "title": "Contact", 
+            "url": "/contact.html", 
+            "level": 1, 
+            "lft": 22, 
+            "tree_id": 1, 
+            "order": 500
+        }
+    }
+]
