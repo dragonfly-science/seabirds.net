@@ -66,6 +66,7 @@ urlpatterns += patterns('django.views.generic.date_based',
 
 urlpatterns += patterns('',
     #The top pages
+    (r'^grappelli/', include('grappelli.urls')),
     (r'^admin/tagging/(.*)$', 'bibliography.views.tagging'),
     (r'^admin/', include(admin.site.urls)),
     #(r'^login',   'django.contrib.auth.views.login',    {'template_name': 'account/login.html'}),
