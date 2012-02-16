@@ -165,9 +165,9 @@ The website is written in Django, a python web-framework. All code used for the
 website (with the exception of private information API keys, passwords, etc.) 
 will be released under a license that permits free reuse (specifcally,
 the permissive MIT/X license), and will be made available through a repository
-on Github. Reflecting the authorship, the code will be copyright
+on Github. The code will be copyright
 of World Seabird Union, but note that because of the permissive license this will not
-restrict the reuse of the code by the WSU or by any other party, in any way, 
+restrict the reuse of the code by any other party, in any way, 
 provided that the original contributions are suitably acknowledged.
 
 The website will be hosted on a third-party server, with WSU staff having 
