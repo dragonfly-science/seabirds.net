@@ -37,7 +37,6 @@ MEDIA_URL = ''
 
 #ADMIN_MEDIA_PREFIX = '/am/'
 
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -78,6 +77,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'cms',
     'bibliography',
+    'grappelli',
     'django.contrib.admin',
     'profiles', #Django profiles
     'profile', #App for storing user info
@@ -130,5 +130,6 @@ LOGIN_URL = '/accounts/login/'
 AVATAR_CROP_MIN_SIZE = 20
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
+ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
 
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
