@@ -1,16 +1,15 @@
-# Website for seabirds.net
 
 Seabirds.net is the website of the World Seabird Union, an umbrella
-organisation that supports smaller seabird research organisations. 
+organisation focused on seabird research. 
 They require a website to disseminate information, manage membership,
 and to communicate with their members.
 
-# Content
+# Components
 
 ## Static content
 
 Allow for pages with static content (text, images, etc.), arranged in a navigation
-hierarchy. Static will be edited using the markdown syntax. This format is
+hierarchy. Static text will be edited using the markdown syntax. This format is
 chosen as it makes it more difficult to produce syntactically incorrect html,
 and it discourages the use of complex formatting that will break the
 look of the web site. Extensions to the markdown are included, in particular
@@ -27,10 +26,10 @@ Members of the site fall in three categories:
     
 * Users (no access to the administration screens, can post, comment, upload photographs,
         and edit their own information)
-* Staff (in addition, staff can access the administration screens, and edit the static
+* Staff (staff can access the administration screens, and edit the static
         content of the site, or alter the layout)
-* Superusers (People with a  technical understanding of how the site works,
-        who can do anything they want)
+* Superusers (people with a  technical understanding of how the site works,
+        with full control)
 
 ## Researcher profiles
 
@@ -41,7 +40,7 @@ the following information
 * Institutional information (institution, institution website)
 * Research interests (a free text section describing their research)
 * Seabird interests (selection of seabird families of interest)
-* Research field (e.g., ecology, taxonomy, I am not a researcher)
+* Research field (e.g., ecology, taxonomy, `I am not a researcher')
 * Latest posts (title and teaser of most recent posts made to the site)
 * Seabird photographs (gallery of seabird photographs uploaded by the user)
 * Twitter feed (recent tweets by the user)
@@ -50,7 +49,7 @@ The design of the profile page will degrade gracefully, with content only
 appearing if it is entered in the profile page. For example, a user that does
 not have a twitter account, or that does not want twitter to appear on their page,
 will simply not include it in their profile. The display of email addresses is
-optional. Otherwise
+optional. 
 
 ### Opting out
 
@@ -123,7 +122,7 @@ email lists that may be subscribed too
     
 * WSU news and announcements 
 * Posts relevant to your seabird families
-* all WSU news, and all posts
+* All WSU news, and all posts
 
 By default, the first two options will be checked.  The subscriptions will be 
 managed by users from the profile page. Emails will be plain text,
@@ -141,8 +140,8 @@ Bibliographic references will be entered using the bibtex format. This is one of
 that is made available by Google scholar, and citation management software often allows 
 for export of references in the bibtex format.
 
-It will also be possible to upload PDFs, providing check a box is checked 
-asserting that they have the right to do so. This will allow for people to 
+It will also be possible to upload PDFs, providing the user asserts 
+that they have the right to do so. This will allow for people to 
 share publications, posters, and presentations. A size limit will be placed on 
 the uploaded files (say 10 MB).
 
@@ -156,17 +155,22 @@ posted via googleplus.
 # Administration
 
 The website comes with an administration site that allows for
-authorized users full administrative control over all the content.
+authorized users administrative control over all the content.
 
 
 # Hosting and code
 
-The website is written in Django, a python web-framework. All code used for the 
-website (with the exception of private information API keys, passwords, etc.) 
-will be released under a license that permits free reuse (specifically,
+The website is written in Django, a python web-framework. No
+proprietary code is used, and so there are no 
+software licensing costs. All code used for the 
+website (with the exception of private information API keys, passwords, etc.,
+that must necessarily remain confidential to Seabirds.net)  will be 
+released under a license that permits free reuse (specifically,
 the permissive MIT/X license), and will be made available through a repository
-on Github. Reflecting the authorship and prior art, the code will be copyright
-of Dragonfly Limited. Because of the permissive license this will not
+on Github. Components that are specific to Seabirds.net will be
+copyright the WSU. Reflecting prior art, generic components that may
+be re-used on other projects will be copyright
+of Dragonfly Limited. Because of the permissive license, this will not
 restrict the reuse of the code by the WSU or any other party, in any way, 
 provided that the original contributions are suitably acknowledged.
 
@@ -182,6 +186,7 @@ maintaining the registration of the domain name.
 * User profiles
 * Petrel database
 * Uploading posts, announcements, and images
+* Preliminary design
 
 ## Stage 2
 
@@ -189,13 +194,16 @@ maintaining the registration of the domain name.
 * Publications
 * Image gallery
 * Twitter and social sharing
+* Minor design changes
+* Testing of function across browsers (IE8+, Chrome, Firefox)
+* Testing of W3C HTML compliance
     
 ## The future
 
 * Site wide search
-* Internationalization (allow translation of all content)
+* Internationalization (allowing translation of all content)
 * Seabird organisations (page for each organisation)
 * Metadata (description of seabird data-sets)
 * Species specific information (tagging of content by species, and associated species pages)
-* Conference administration
-
+* Functionality for conference administration
+* Implement OAuth to allow databases to authenticate researchers via Seabirds.net

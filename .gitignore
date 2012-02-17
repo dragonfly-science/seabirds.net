@@ -13,3 +13,5 @@ sitesettings.py
 seabirds/secrets.py
 static/*
 seabirds/htmlcov/*
+proposal.*
+README.tex
