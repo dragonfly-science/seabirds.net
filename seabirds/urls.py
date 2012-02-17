@@ -55,14 +55,15 @@ info_dict = {
     'queryset': Post.objects.all(),
     'date_field': 'date_published',
 }
+urlpatterns += patterns('', 
+        url(r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/$', 'cms.views.individual_post', name='individual-post'),
+    )
 urlpatterns += patterns('django.views.generic.date_based',
-    url(r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/$', 'object_detail', 
-        dict(info_dict, slug_field='name',template_name='cms/post.html',month_format='%m'), name='individual-post'),
-    (r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$','archive_day',dict(info_dict,template_name='cms/list.html')),
-    (r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/$','archive_month', dict(info_dict, template_name='cms/list.html')),
-    (r'^posts/(?P<year>\d{4})/$','archive_year', dict(info_dict, template_name='cms/list.html')),
-    (r'^posts/$','archive_index', dict(info_dict, template_name='cms/list.html')),
-)
+        (r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$','archive_day',dict(info_dict,template_name='cms/list.html')),
+        (r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/$','archive_month', dict(info_dict, template_name='cms/list.html')),
+        (r'^posts/(?P<year>\d{4})/$','archive_year', dict(info_dict, template_name='cms/list.html')),
+        (r'^posts/$','archive_index', dict(info_dict, template_name='cms/list.html')),
+    )
 
 urlpatterns += patterns('',
     #The top pages
@@ -77,7 +78,7 @@ urlpatterns += patterns('',
     url(r'^petrel/(?P<username>[\w.@+-]+)/$', 'profiles.views.profile_detail', name='profiles_profile_detail'),
     url(r'^petrel/$', 'profile.views.custom_list', name='profile_custom_list'),
     url(r'^petrel/', include('profiles.urls')),
-    url('^edit/post/$', 'cms.views.edit_post'),
+    url('^edit/post/(?P<post_id>\d*)/$', 'cms.views.edit_post', name='edit-post'),
     url('^edit/image/$', 'cms.views.edit_image'),
     url(r'^accounts/register/$',
         register,
