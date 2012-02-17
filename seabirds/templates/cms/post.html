@@ -4,37 +4,37 @@
 {% set_disqus_identifier "post_" object.id %}
 {% disqus_dev %}
 {% block content %}
-<br>
-{% if object.published and not object.retracted or user.is_authenticated and perms.website.administration %}
-  {% if not object.published %}
-    <div class="pagedraft">
-  {% endif %}
-{% if user == object.author or user.is_authenticated and perms.website.administration %}
-  <p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>
-{% endif %}
-  {% autoescape off %}
+    <br>
+    {% if form %}
+    <form name='edit-post' action={{ object.get_absolute_url }} method='POST' class='ym-form'>{% csrf_token %}
+        <input type="submit" name="edit" value="Edit" id="edit"></input>
+        {% if not object.published %}<input type="submit" name="publish" value="Publish" id="publish"></input>{% endif %}
+        {% if object.published and not object.retracted %}<input type="submit" name="retract" value="Retract" id="retract"></input>{% endif %}
+    </form>
+    {% endif %}
     <div class="grid_8 firstrow">
-	 <div class="textbox">
-  <h2>{{ object.title|capfirst }}</h2>
-  <p class="byline"><!--{% if object.author %}<a href="{{ object.author.get_absolute_url }}">{{ object.author.firstname }} {{ object.author.lastname }}</a>, 
-    {% endif %}-->{{ object.date_published|date:"F j, Y" }}</p>
-  {{ object.markdown_text }}
-  <div class="comments">
-  <h3> Comments </h3>
-  {% endautoescape %}
-  {% if debug %} {% set_disqus_developer 1 %}{% endif %}
-  {% with "http://seabirds.net"|add:object.get_absolute_url as url %}
-  {% set_disqus_url url %}
-  {% endwith %}
-  {% disqus_show_comments %}
-  </div>
-  </div>
-  </div>
-  {% if not object.published %}
+	    <div class="textbox">
+            <h2>{{ object.title|capfirst }}</h2>
+            <p class="byline">
+                <!--{% if object.author %}
+                    <a href="{{ object.author.get_absolute_url }}">{{ object.author.firstname }} {{ object.author.lastname }}</a>, 
+                {% endif %}-->
+                {{ object.date_published|date:"F j, Y" }}
+            </p>
+            {% autoescape off %}
+                {{ object.markdown_text }}
+            {% endautoescape %}
+            <div class="comments">
+                <h3> Comments </h3>
+                {% if debug %} {% set_disqus_developer 1 %}{% endif %}
+                {% with "http://seabirds.net"|add:object.get_absolute_url as url %}
+                    {% set_disqus_url url %}
+                {% endwith %}
+                {% disqus_show_comments %}
+            </div>
+        </div>
     </div>
-  {% endif %}
-{% endif %}
-<br>
+    <br>
 {% endblock %}
 
 {% block sidebar %}
