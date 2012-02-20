@@ -6,7 +6,7 @@
 {% block content %}
     <br>
     {% if form %}
-    <form name='edit-post' action={{ object.get_absolute_url }} method='POST' class='ym-form'>{% csrf_token %}
+    <form name='post-options' action={{ object.get_absolute_url }} method='POST' class='ym-form'>{% csrf_token %}
         <input type="submit" name="edit" value="Edit" id="edit"></input>
         {% if not object.published %}<input type="submit" name="publish" value="Publish" id="publish"></input>{% endif %}
         {% if object.published and not object.retracted %}<input type="submit" name="retract" value="Retract" id="retract"></input>{% endif %}
