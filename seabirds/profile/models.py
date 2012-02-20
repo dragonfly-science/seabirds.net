@@ -35,8 +35,8 @@ class UserProfile(models.Model):
     photograph = models.ImageField(upload_to=get_photo_path, null=True, blank=True)
     seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True) 
     accept_terms = models.BooleanField(default=False)
-    #date_created = models.DateField(auto_now_add = True, null=True, blank=True)
-    #date_updated = models.DateField(auto_now = True, null=True, blank=True)
+    date_created = models.DateField(auto_now_add = True)
+    date_updated = models.DateField(auto_now = True)
 
     def __str__(self):
         return "%s %s"%(self.user.first_name, self.user.last_name)

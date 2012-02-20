@@ -12,7 +12,7 @@ class PostForm(forms.ModelForm):
     
     class Meta:
         model = Post
-        exclude = ('author', 'name', 'date_published', 'published', 'image', 'retracted')
+        exclude = ('author', 'name', 'date_published', 'published', 'image', 'date_created', 'date_updated')
         widgets = {
             'teaser': forms.Textarea(attrs={'rows': 6}),
             'text': forms.Textarea(attrs={'rows': 27}),
@@ -29,5 +29,5 @@ class ImageForm(forms.ModelForm):
 
     class Meta:
         model = Image
-        exclude = ('key', 'uploaded_by')
+        exclude = ('key', 'uploaded_by', 'date_created', 'date_updated')
 
