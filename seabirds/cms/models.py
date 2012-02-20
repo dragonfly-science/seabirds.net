@@ -96,10 +96,19 @@ class Page(models.Model):
         help_text='Page text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     sidebar = models.TextField(null=True, blank=True, 
         help_text='Sidebar text. Appears at the top of the right sidebar. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
+    date_published = models.DateField(
+        help_text="Publication date", null=True, blank=True)
+    date_created = models.DateField(auto_now_add=True)
+    date_updated = models.DateField(auto_now=True)
      
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if self.published and not self.date_published:
+            self.date_published = datetime.date.today()
+        super(Page, self).save(*args, **kwargs)
+    
     @property   
     def markdown_text(self):
         return markdownplus(self, self.text)
@@ -119,12 +128,10 @@ class Post(models.Model):
         help_text="Name used to refer to the post in the URL. Must be only letters, numbers, underscores, or hyphens.")
     author = models.ForeignKey(User, null=True, blank=True,
         help_text="Optional. User who made the post, leave blank for anonymous posts.")
-    date_published = models.DateField(
+    date_published = models.DateField(null=True, blank=True,
         help_text="Publication date")
     published = models.BooleanField(default=False,
         help_text="When this box is checked, the post will be visible on the site.")
-    retracted = models.BooleanField(default=False,
-        help_text="Check this box to retract this post")
     teaser = models.TextField(max_length = 300,
         help_text='Teaser text. Short text that appears in lists of posts. Must be less than 300 characters long. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     text = models.TextField(
@@ -132,6 +139,8 @@ class Post(models.Model):
     seabird_families = models.ManyToManyField(SeabirdFamily, related_name='posts', null=True, blank=True, help_text="Optional. If this post is about a particular seabird or seabirds, please select the correct families.") 
     image = models.ForeignKey('Image', related_name = 'posts', null=True, blank=True,
 	    help_text='Image associated with the post')
+    date_created = models.DateField(auto_now_add=True)
+    date_updated = models.DateField(auto_now=True)
 	
     def __str__(self):
         return self.name
@@ -152,8 +161,13 @@ class Post(models.Model):
             'day': self.date_published.strftime('%d'), 
             'slug': self.name})
 
+    def save(self, *args, **kwargs):
+        if self.published and not self.date_published:
+            self.date_published = datetime.date.today()
+        super(Post, self).save(*args, **kwargs)
+
     class Meta:
-        ordering = ['-date_published']
+        ordering = ['-date_published', '-date_created']
 
 
 class File(models.Model):
@@ -193,7 +207,7 @@ class Image(models.Model):
     uploaded_by = models.ForeignKey(User, 
         help_text="The user who uploaded the image")
     date_created = models.DateField(auto_now_add=True)
-    date_modified = models.DateField(auto_now=True)
+    date_updated = models.DateField(auto_now=True)
 
     def thumbnail(self, width=100, max_height=300):
         width, height = self.get_dimensions(width=width, max_height=max_height)

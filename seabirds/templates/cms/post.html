@@ -8,8 +8,10 @@
     {% if form %}
     <form name='post-options' action={{ object.get_absolute_url }} method='POST' class='ym-form'>{% csrf_token %}
         <input type="submit" name="edit" value="Edit" id="edit"></input>
-        {% if not object.published %}<input type="submit" name="publish" value="Publish" id="publish"></input>{% endif %}
-        {% if object.published and not object.retracted %}<input type="submit" name="retract" value="Retract" id="retract"></input>{% endif %}
+        {% if not object.published and not object.date_published %}<input type="submit" name="publish" value="Publish" id="publish"></input>
+        {% else %} {% if not object.published and object.date_published %}<input type="submit" name="restore" value="Publish" id="publish"></input>
+        {% else %} <input type="submit" name="retract" value="Retract" id="retract"></input>
+        {% endif %}{% endif %}
     </form>
     {% endif %}
     <div class="grid_8 firstrow">

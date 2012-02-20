@@ -218,13 +218,12 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
         elif 'publish' in request.POST:
             post.published = True
-            post.retracted = False
             post.save()
         elif 'retract' in request.POST:
-            post.retracted = True
+            post.published = False
             post.save()
         elif 'restore' in request.POST:
-            post.retracted = False
+            post.published = True
             post.save()
         elif 'delete' in request.POST:
             profile = UserProfile.objects.get(user = post.author)
@@ -232,12 +231,14 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                 del post
             return HttpResponseRedirect(profile.get_absolute_url())
         return HttpResponseRedirect(post.get_absolute_url())
-    # Check that we are allowed to view this
-    if not request.user and post.published and not post.retracted: #Publically viewable to an anonymous user
-        return render_to_response('cms/post.html', {'object': post, 'form': False})
-    elif request.user and (request.user == post.author or request.user.is_staff):
+    # Either we are priviledged
+    if request.user and (request.user == post.author or request.user.is_staff):
         return render_to_response('cms/post.html', {'object': post, 'form': True},
             context_instance=RequestContext(request))
+    # Or it is publically viewable
+    elif post.date_published:
+        return render_to_response('cms/post.html', {'object': post, 'form': False})
+    # Or we shouldn't know it exists
     else:
         raise Http404
 
@@ -267,7 +268,6 @@ def edit_post(request, post_id=None):
                 post.image = imageform.cleaned_data['image']
             else:
                 post.image = None
-            post.date_published =  datetime.date.today()
             if not post_id:
                 name = slugify(post.title)[:50]
                 try:

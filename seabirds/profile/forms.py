@@ -23,7 +23,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        exclude = ('user',)
+        exclude = ('user', 'date_created', 'date_updated')
         widgets = { 'photograph': ImageWidget }
 
 #    def clean_image(self):
