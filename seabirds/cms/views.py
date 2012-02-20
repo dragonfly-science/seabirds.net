@@ -154,35 +154,45 @@ def get_initial_data(request):
         initial = {}
     return initial
 
-def process_image_form(request):
+def process_image_form(request, image_id=None):
     if request.method == 'POST': # If the form has been submitted...
         form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-            # Get the key
-            key = slugify(form.cleaned_data['title'])
-            try:
-                Image.objects.get(key=key)
-            except Image.DoesNotExist:
-                count = 1
-                while True:
-                    newkey = '%s-%s'%(key, count)
-                    try:
-                        Image.objects.get(key=newkey)
-                        count += 1
-                    except Image.DoesNotExist:
-                        key = newkey
-                        break
-            new_image = form.save(commit=False)
-            form.cleaned_data['image'] = new_image
-            new_image.key = key
-            if not request.user:
-                raise ValidationError, 'User must be logged in'
+            if not image_id:
+                new_image = form.save(commit=False)
             else:
-                new_image.uploaded_by = request.user
+                new_image = get_object_or_404(Image, id=image_id)
+                new_image = form.save(commit=False, instance=new_image)
+            form.cleaned_data['image'] = new_image
+            # Get the key
+            if not image_id:
+                key = slugify(form.cleaned_data['title'])
+                try:
+                    Image.objects.get(key=key)
+                except Image.DoesNotExist:
+                    count = 1
+                    while True:
+                        newkey = '%s-%s'%(key, count)
+                        try:
+                            Image.objects.get(key=newkey)
+                            count += 1
+                        except Image.DoesNotExist:
+                            key = newkey
+                            break
+                new_image.key = key
+            if not image_id:
+                if not request.user:
+                    raise ValidationError, 'User must be logged in'
+                else:
+                    new_image.uploaded_by = request.user
             new_image.save()
             form.redirect_url = new_image.get_absolute_url()
-    else:
-        form = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+    else: #unbound forms
+        if not image_id:
+            form = ImageForm(initial=get_initial_data(request), prefix='image')
+        else:
+            image = get_object_or_404(Image, id=image_id)
+            form = ImageForm(initial=get_initial_data(request), prefix='image', instance=image) 
     return form
 
 REQUIRED_FIELDS = ('image', 'title', 'owner', 'text', 'teaser')
@@ -197,62 +207,18 @@ def edit_image(request):
             context_instance=RequestContext(request)
             )
 
-@login_required
-def edit_post(request, post_id = None):
-    if request.method == 'POST': # If the form has been submitted...
-        postform = PostForm(request.POST, request.FILES, prefix='post') # A form bound to the POST data
-        # check that the image form has been completed (look for a file path)
-        if request.FILES.has_key('image-image'):
-            imageform = process_image_form(request)
-        else:
-            imageform = None
-        if postform.is_valid(): # All validation rules pass
-            new_post = postform.save(commit=False)
-            if imageform:
-                new_post.image = imageform.cleaned_data['image']
-            else:
-                new_post.image = None
-            new_post.date_published =  datetime.date.today()
-            name = slugify(new_post.title)[:50]
-            try:
-                Post.objects.get(name=name)
-                count = 0
-                while True:
-                    count += 1
-                    newname = name[:(50 - 1 - len(str(count)))] + '-' + str(count)
-                    try:
-                        Post.objects.get(name=newname)
-                    except Post.DoesNotExist:
-                        name = newname
-            except Post.DoesNotExist:
-                pass
-            new_post.name = name
-            new_post.save()
-            return HttpResponseRedirect(new_post.get_absolute_url())
-    else:
-        if not post_id:
-            postform = PostForm(prefix='post') # An unbound form
-            imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
-        else:
-            post = get_object_or_404(Post, id=post_id)
-            postform = PostForm(post, prefix='post')
-            if not post.image:
-                imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
-            else:
-                imageform = ImageForm(post.image, initial=get_initial_data(request), prefix='image')
-    print postform           
-    return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 'required': REQUIRED_FIELDS,}, 
-        context_instance=RequestContext(request))
 
 @login_required
 def individual_post(request, year=None, month=None, day=None, slug=None):
-    post = Post.objects.get(name=slug)
+    if not slug:
+        return Http404
+    post = get_object_or_404(Post, name=slug)
     if request.method == 'POST':
         if 'edit' in request.POST:
             return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
         elif 'publish' in request.POST:
-            print 'publish'
             post.published = True
+            post.retracted = False
             post.save()
         elif 'retract' in request.POST:
             post.retracted = True
@@ -274,3 +240,65 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             context_instance=RequestContext(request))
     else:
         raise Http404
+
+
+@login_required
+def edit_post(request, post_id=None):
+    # Get the post
+    post = None
+    image_id = None
+    if post_id:
+        post = get_object_or_404(Post, id=post_id)
+        if post.image:
+            image_id = post.image.id
+    if request.method == 'POST': # If the form has been submitted...
+        if post:
+            postform = PostForm(request.POST, request.FILES, prefix='post', instance=post)
+        else:
+            postform = PostForm(request.POST, request.FILES, prefix='post') 
+        # check that the image form has been completed (look for a file path)
+        if request.FILES.has_key('image-image'):
+            imageform = process_image_form(request, image_id=image_id)
+        else:
+            imageform = None
+        if postform.is_valid(): # All validation rules pass
+            post = postform.save(commit=False)
+            if imageform:
+                post.image = imageform.cleaned_data['image']
+            else:
+                post.image = None
+            post.date_published =  datetime.date.today()
+            if not post_id:
+                name = slugify(post.title)[:50]
+                try:
+                    Post.objects.get(name=name)
+                    count = 0
+                    while True:
+                        count += 1
+                        newname = name[:(50 - 1 - len(str(count)))] + '-' + str(count)
+                        try:
+                            Post.objects.get(name=newname)
+                        except Post.DoesNotExist:
+                            name = newname
+                except Post.DoesNotExist:
+                    pass
+                post.name = name
+            post.save()
+            return HttpResponseRedirect(post.get_absolute_url())
+    else:
+        if not post_id:
+            postform = PostForm(prefix='post') # An unbound form
+            imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+        else:
+            post = get_object_or_404(Post, id=post_id)
+            postform = PostForm(instance=post, prefix='post')
+            if not post.image:
+                imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+            else:
+                imageform = ImageForm(post.image, initial=get_initial_data(request), prefix='image')
+    if post_id:
+        action = reverse('edit-post', args=(), kwargs={'post_id': post.id})
+    else:
+        action = reverse('new-post')
+    return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 'required': REQUIRED_FIELDS, 'action': action}, 
+        context_instance=RequestContext(request))

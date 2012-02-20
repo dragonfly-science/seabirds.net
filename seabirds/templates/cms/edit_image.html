@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="post" action="." class="ym-form ym-columnar" enctype="multipart/form-data">{% csrf_token %}
+<form method="post" action="{{ action }}" class="ym-form ym-columnar" enctype="multipart/form-data">{% csrf_token %}
     <div class="ym-fbox-button float-right">
         <input type="submit" name="submit" value="Save" id="submit" class="ym-button">
     </div>
