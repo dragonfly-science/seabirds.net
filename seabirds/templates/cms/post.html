@@ -40,10 +40,23 @@
                 {% endwith %}
                 </div>
                 {% endfor %}
-                {% if user.is_authenticated %}
-                    {% with object.get_absolute_url as next %}
-                        {% render_comment_form for object %}
-                    {% endwith %}
+                {% if add_comment %}
+                <h4> Add a comment </h4>
+                <form method="POST" action="" class="ym-form ym-columnar">{% csrf_token %}
+                    <div class="ym-fbox-text {% if commentform.comment.errors %}ym-error{% endif %}">
+                        <strong> {{ commentform.comment.errors }} </strong>
+                        <label for="id_title">{{ commentform.comment.label }}
+                            <sup title="This field is mandatory.">*</sup>
+                        </label>
+                        {{ commentform.comment }}
+                    </div>
+                <input type="submit" name="edit_comment" value="Comment" id="comment">
+                {% if commentform.id.value %}
+                    <input type="hidden" name="comment-id" value={{ commentform.id.value }}>
+                {% else %}
+                    <input type="hidden" name="comment-id" value=-1>
+                {% endif %}
+                </form>
                 {% endif %}
             </div>
         </div>
