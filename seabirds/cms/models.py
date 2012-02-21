@@ -142,7 +142,7 @@ class Post(models.Model):
     date_created = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now=True)
     enable_comments = models.BooleanField()
-    section = models.ManyToManyField('Section', related_name = 'posts',
+    section = models.ForeignKey('Section', related_name = 'posts', default=1,
         help_text='Section of the website that the post is published in')
 
 	
@@ -296,4 +296,7 @@ class Section(models.Model):
     staff_only_write = models.BooleanField()
     staff_only_read = models.BooleanField()
     allow_comments = models.BooleanField()
+
+    def __unicode__(self):
+        return self.description
     

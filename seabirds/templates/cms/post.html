@@ -1,8 +1,27 @@
 {% extends 'base.html' %}
 {% load thumbnail %}
 {% load comments %}
-{% block content %}
 {% load markup %}
+
+{% if add_comment %}
+{% block extrahead %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('#edit-comment').addClass('hidden');
+  $('#edit-comment-headline').click(function(){
+    $('#edit-comment').slideToggle(300);
+    $('#edit-comment-headline').classToggle('expanded')
+  });
+});
+</script>
+<style>
+.hidden {display: none}
+</style>
+{% endblock extrahead %}
+{% endif %}
+
+{% block content %}
     <br>
     {% if form %}
     <form name='post-options' action={{ object.get_absolute_url }} method='POST' class='ym-form'>{% csrf_token %}
@@ -34,14 +53,15 @@
                 {% thumbnail profile.photograph "40"  as im %}
                     <img src="/{{ im.url }}" width="40" class="float-left"alt="{{ comment.user.first_name|capfirst }} {{ comment.user.last_name|capfirst }}"></a>  
                     {% endthumbnail %}   
-                    <h4><a href="{{ profile.get_absolute_url }}">{{ comment.name }}</a></h4>
+                    <h4><a href="{{ profile.get_absolute_url }}" id="comment-{{ comment.id }}" name="comment-{{ comment.id }}">{{ comment.name }}</a></h4>
                     <div class="byline">{{ comment.submit_date|timesince }} ago</div>
                     <p> {{ comment.comment|markdown }}</p>
                 {% endwith %}
                 </div>
                 {% endfor %}
                 {% if add_comment %}
-                <h4> Add a comment </h4>
+                <h4 id="edit-comment-headline"> {% if commentform.initial.id %} Edit comment {% else %} Add a comment {% endif %} </h4>
+                <div id="edit-comment">
                 <form method="POST" action="" class="ym-form ym-columnar">{% csrf_token %}
                     <div class="ym-fbox-text {% if commentform.comment.errors %}ym-error{% endif %}">
                         <strong> {{ commentform.comment.errors }} </strong>
@@ -50,13 +70,15 @@
                         </label>
                         {{ commentform.comment }}
                     </div>
-                <input type="submit" name="edit_comment" value="Comment" id="comment">
+                <input type="submit" name="edit_comment" value="Post" id="comment">
                 {% if commentform.id.value %}
+                    <input type="submit" name="delete_comment" value="Delete" id="comment">
                     <input type="hidden" name="comment-id" value={{ commentform.id.value }}>
                 {% else %}
                     <input type="hidden" name="comment-id" value=-1>
                 {% endif %}
                 </form>
+                </div>
                 {% endif %}
             </div>
         </div>

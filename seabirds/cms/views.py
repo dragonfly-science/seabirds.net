@@ -212,8 +212,9 @@ def edit_image(request):
 # Process comments
 @login_required
 def process_comment(request, commentform, post):
+    print commentform.cleaned_data
     try:
-        comment = Comment.objects.get(id=commentform.cleaned_data.get('comment-id', -1))
+        comment = Comment.objects.get(id=commentform.cleaned_data.get('id', None))
     except Comment.DoesNotExist:
         comment = Comment()
     comment.content_object = post
@@ -230,6 +231,7 @@ def process_comment(request, commentform, post):
     comment.is_public = True
     comment.is_removed = False
     comment.save()
+    return comment
 
 # View an individual post
 @login_required
@@ -238,17 +240,23 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
         return Http404
     post = get_object_or_404(Post, name=slug)
     if request.method == 'POST':
-        if 'edit_comment' in request.POST:
-            comment_id = request.POST.get('comment-id', None)
-            try:
-                comment = Comment.objects.get(id=comment_id)
-                commentform = SimpleComment(request.POST, instance=comment, prefix='comment')
-            except Comment.DoesNotExist:
-                commentform = SimpleComment(request.POST, prefix='comment')
-            if commentform.is_valid():
-                process_comment(request, commentform, post)
-            print commentform.is_valid()
-            return HttpResponseRedirect(post.get_absolute_url()) 
+        if 'edit_comment' in request.POST or 'delete_comment' in request.POST:
+            commentform = SimpleComment(request.POST, prefix='comment')
+            comment_id = commentform.data.get('comment-id', None)
+            if 'edit_comment' in request.POST:
+                if commentform.is_valid():
+                    comment = process_comment(request, commentform, post)
+                    comment_id = comment.id
+                if comment_id:
+                    anchor = '#comment-%s'%comment_id
+                else:
+                    anchor = ''
+                return HttpResponseRedirect(post.get_absolute_url() + anchor) 
+            else:
+                try:
+                    Comment.objects.get(id=comment_id).delete()
+                except Comment.DoesNotExist:
+                    pass
         elif 'edit' in request.POST:
             return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
         elif 'publish' in request.POST:
@@ -268,10 +276,19 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
         return HttpResponseRedirect(post.get_absolute_url())
     #Logic to decide whether or not to allow comment to be added
     add_comment =  post.enable_comments and post.published and request.user.is_authenticated()
+    # Is there an existing comment by this user that should be edited or should we get a new one?
+    commentset = Comment.objects.for_model(Post).filter(object_pk=post.id).filter(user=request.user)
+    commentset = commentset.filter(submit_date__gt=datetime.datetime.now() - datetime.timedelta(seconds=60*10)).order_by('-submit_date')[0:1]
+    if commentset:
+        latest_comment = commentset[0]
+        initial = {'comment': latest_comment.comment, 'id': latest_comment.id }
+    else:
+        latest_comment = None
+        initial = None
     # Logic to decide whether to allow editing of the form
     if request.user.is_authenticated() and (request.user == post.author or request.user.is_staff):
         return render_to_response('cms/post.html', {'object': post, 'form': True,
-            'add_comment': add_comment, 'commentform': SimpleComment(prefix='comment')},
+            'add_comment': add_comment, 'commentform': SimpleComment(prefix='comment', initial=initial)},
             context_instance=RequestContext(request))
     # Or it is publicly viewable
     elif post.date_published:
@@ -280,7 +297,6 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
     # Or we shouldn't know it exists
     else:
         raise Http404
-
 
 @login_required
 def edit_post(request, post_id=None):
