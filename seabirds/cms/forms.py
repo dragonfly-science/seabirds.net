@@ -31,3 +31,10 @@ class ImageForm(forms.ModelForm):
         model = Image
         exclude = ('key', 'uploaded_by', 'date_created', 'date_updated')
 
+class SimpleComment(forms.Form):
+    comment = forms.CharField(
+        help_text='Comment text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
+    id = forms.IntegerField(required=True)
+        
+
+

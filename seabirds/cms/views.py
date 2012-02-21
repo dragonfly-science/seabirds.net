@@ -13,14 +13,15 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template.defaultfilters import slugify
-from django.contrib.comments.signals import comment_will_be_posted
+from django.contrib.comments.models import Comment
 from django.dispatch import receiver
-
+from django.contrib.sites.models import Site
+from django.utils.html import strip_tags
 
 from PIL import Image as PILImage
 
 from cms.models import Page, File, Navigation, Image, Post
-from cms.forms import PostForm, ImageForm
+from cms.forms import PostForm, ImageForm, SimpleComment
 from bibliography.models import Reference
 from license.models import License
 from profile.models import UserProfile
@@ -139,9 +140,8 @@ def get_base_navigation(request):
     return {'navigation': get_navigation(root.url)}
 
 
-
 def get_initial_data(request):
-    if request.user:
+    if request.user.is_authenticated():
         initial = {'owner': '%s %s'%(request.user.first_name.capitalize(), request.user.last_name.capitalize()), 
             'license': License.objects.get(name='BY-SA'), 
             'author': request.user}
@@ -183,7 +183,7 @@ def process_image_form(request, image_id=None):
                             break
                 new_image.key = key
             if not image_id:
-                if not request.user:
+                if not request.user.is_authenticated():
                     raise ValidationError, 'User must be logged in'
                 else:
                     new_image.uploaded_by = request.user
@@ -209,14 +209,47 @@ def edit_image(request):
             context_instance=RequestContext(request)
             )
 
+# Process comments
+@login_required
+def process_comment(request, commentform, post):
+    try:
+        comment = Comment.objects.get(id=commentform.cleaned_data.get('comment-id', -1))
+    except Comment.DoesNotExist:
+        comment = Comment()
+    comment.content_object = post
+    comment.site = Site.objects.get_current()
+    comment.user = request.user
+    try:
+        profile = UserProfile.objects.get(user = request.user)
+        comment.user_url = profile.get_absolute_url()
+    except UserProfile.DoesNotExist:
+        pass
+    comment.comment = strip_tags(commentform.cleaned_data['comment'])
+    comment.submit_date = datetime.datetime.now()
+    comment.ip_address = request.META['REMOTE_ADDR']
+    comment.is_public = True
+    comment.is_removed = False
+    comment.save()
 
+# View an individual post
 @login_required
 def individual_post(request, year=None, month=None, day=None, slug=None):
     if not slug:
         return Http404
     post = get_object_or_404(Post, name=slug)
     if request.method == 'POST':
-        if 'edit' in request.POST:
+        if 'edit_comment' in request.POST:
+            comment_id = request.POST.get('comment-id', None)
+            try:
+                comment = Comment.objects.get(id=comment_id)
+                commentform = SimpleComment(request.POST, instance=comment, prefix='comment')
+            except Comment.DoesNotExist:
+                commentform = SimpleComment(request.POST, prefix='comment')
+            if commentform.is_valid():
+                process_comment(request, commentform, post)
+            print commentform.is_valid()
+            return HttpResponseRedirect(post.get_absolute_url()) 
+        elif 'edit' in request.POST:
             return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
         elif 'publish' in request.POST:
             post.published = True
@@ -233,13 +266,17 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                 del post
             return HttpResponseRedirect(profile.get_absolute_url())
         return HttpResponseRedirect(post.get_absolute_url())
-    # Either we are priviledged
-    if request.user and (request.user == post.author or request.user.is_staff):
-        return render_to_response('cms/post.html', {'object': post, 'form': True},
+    #Logic to decide whether or not to allow comment to be added
+    add_comment =  post.enable_comments and post.published and request.user.is_authenticated()
+    # Logic to decide whether to allow editing of the form
+    if request.user.is_authenticated() and (request.user == post.author or request.user.is_staff):
+        return render_to_response('cms/post.html', {'object': post, 'form': True,
+            'add_comment': add_comment, 'commentform': SimpleComment(prefix='comment')},
             context_instance=RequestContext(request))
-    # Or it is publically viewable
+    # Or it is publicly viewable
     elif post.date_published:
-        return render_to_response('cms/post.html', {'object': post, 'form': False})
+        return render_to_response('cms/post.html', {'object': post, 'form': False,
+            'add_comment': add_comment})
     # Or we shouldn't know it exists
     else:
         raise Http404
@@ -309,18 +346,5 @@ def edit_post(request, post_id=None):
 
 
 
-# Process comments
-@receiver(comment_will_be_posted)
-def process_comments(sender, **kwargs):
-    request = kwargs['request']
-    comment = kwargs['comment']
-    if request.user.is_authenticated():
-        comment.is_public = True
-        comment.user = request.user
-        try:
-            profile = UserProfile.objects.get(user = request.user)
-            comment.user_url = profile.get_absolute_url()
-        except UserProfile.DoesNotExist:
-            pass
 
 
