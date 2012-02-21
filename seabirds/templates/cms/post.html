@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
-{% load disqus_tags %}
 {% load thumbnail %}
-{% set_disqus_identifier "post_" object.id %}
-{% disqus_dev %}
+{% load comments %}
 {% block content %}
+{% load markup %}
     <br>
     {% if form %}
     <form name='post-options' action={{ object.get_absolute_url }} method='POST' class='ym-form'>{% csrf_token %}
@@ -18,9 +17,9 @@
 	    <div class="textbox">
             <h2>{{ object.title|capfirst }}</h2>
             <p class="byline">
-                <!--{% if object.author %}
-                    <a href="{{ object.author.get_absolute_url }}">{{ object.author.firstname }} {{ object.author.lastname }}</a>, 
-                {% endif %}-->
+                {% if object.author %}
+                    <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }}</a>, 
+                {% endif %}
                 {{ object.date_published|date:"F j, Y" }}
             </p>
             {% autoescape off %}
@@ -28,11 +27,24 @@
             {% endautoescape %}
             <div class="comments">
                 <h3> Comments </h3>
-                {% if debug %} {% set_disqus_developer 1 %}{% endif %}
-                {% with "http://seabirds.net"|add:object.get_absolute_url as url %}
-                    {% set_disqus_url url %}
+                {% get_comment_list for object as comment_list %}
+                {% for comment in comment_list %}
+                <div class="comment ym-clearfix">
+                {% with comment.user.profile.get as profile %}
+                {% thumbnail profile.photograph "40"  as im %}
+                    <img src="/{{ im.url }}" width="40" class="float-left"alt="{{ comment.user.first_name|capfirst }} {{ comment.user.last_name|capfirst }}"></a>  
+                    {% endthumbnail %}   
+                    <h4><a href="{{ profile.get_absolute_url }}">{{ comment.name }}</a></h4>
+                    <div class="byline">{{ comment.submit_date|timesince }} ago</div>
+                    <p> {{ comment.comment|markdown }}</p>
                 {% endwith %}
-                {% disqus_show_comments %}
+                </div>
+                {% endfor %}
+                {% if user.is_authenticated %}
+                    {% with object.get_absolute_url as next %}
+                        {% render_comment_form for object %}
+                    {% endwith %}
+                {% endif %}
             </div>
         </div>
     </div>
