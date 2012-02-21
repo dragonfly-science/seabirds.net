@@ -13,6 +13,8 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template.defaultfilters import slugify
+from django.contrib.comments.signals import comment_will_be_posted
+from django.dispatch import receiver
 
 
 from PIL import Image as PILImage
@@ -283,6 +285,8 @@ def edit_post(request, post_id=None):
                 except Post.DoesNotExist:
                     pass
                 post.name = name
+                if not post.author:
+                    post.author = request.user
             post.save()
             return HttpResponseRedirect(post.get_absolute_url())
     else:
@@ -302,3 +306,21 @@ def edit_post(request, post_id=None):
         action = reverse('new-post')
     return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 'required': REQUIRED_FIELDS, 'action': action}, 
         context_instance=RequestContext(request))
+
+
+
+# Process comments
+@receiver(comment_will_be_posted)
+def process_comments(sender, **kwargs):
+    request = kwargs['request']
+    comment = kwargs['comment']
+    if request.user.is_authenticated():
+        comment.is_public = True
+        comment.user = request.user
+        try:
+            profile = UserProfile.objects.get(user = request.user)
+            comment.user_url = profile.get_absolute_url()
+        except UserProfile.DoesNotExist:
+            pass
+
+

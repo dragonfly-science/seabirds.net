@@ -141,6 +141,10 @@ class Post(models.Model):
 	    help_text='Image associated with the post')
     date_created = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now=True)
+    enable_comments = models.BooleanField()
+    section = models.ManyToManyField('Section', related_name = 'posts',
+        help_text='Section of the website that the post is published in')
+
 	
     def __str__(self):
         return self.name
@@ -164,6 +168,8 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if self.published and not self.date_published:
             self.date_published = datetime.date.today()
+        if not self.enable_comments: #Default to the value for the section unless overridden
+            self.enable_comments = self.section.allow_comments
         super(Post, self).save(*args, **kwargs)
 
     class Meta:
@@ -284,4 +290,10 @@ class Navigation(MPTTModel):
     class Meta:
         verbose_name_plural = 'navigation'
         
-
+class Section(models.Model):
+    key = models.SlugField(max_length=50)
+    description = models.TextField()
+    staff_only_write = models.BooleanField()
+    staff_only_read = models.BooleanField()
+    allow_comments = models.BooleanField()
+    

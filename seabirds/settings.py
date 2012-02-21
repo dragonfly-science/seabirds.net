@@ -94,6 +94,7 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'cuckoo',
     'django_coverage',
+    'django.contrib.comments',
 )
 
 AUTHENTICATION_BACKENDS = (
