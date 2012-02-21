@@ -35,6 +35,7 @@
                 <div id="top-navigation" class='ym-contain-fl ym-clearfix'>
                     <ul class="float-right">
                         {% if user.is_authenticated %}
+                        <li><a href='/edit/post/' {% block post-discussion %}{% endblock %}>Post discussion</a><li>
                         <li><a href='/petrel/{{ user.username }}/' {% block view-active %}{% endblock %}>View profile</a><li>
                         <li><a href='/petrel/edit' {% block edit-active %}{% endblock %}>Edit profile</a><li>
                         {% if perms.website.administration %}
