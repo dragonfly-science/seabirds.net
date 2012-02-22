@@ -202,7 +202,8 @@ def process_image_form(request, image_id=None):
             form = ImageForm(initial=get_initial_data(request), prefix='image')
         else:
             image = get_object_or_404(Image, id=image_id)
-            form = ImageForm(initial=get_initial_data(request), prefix='image', instance=image) 
+            #form = ImageForm(initial=get_initial_data(request), prefix='image', instance=image) 
+            form = ImageForm(prefix='image', instance=image) 
     return form
 
 REQUIRED_FIELDS = ('image', 'title', 'owner', 'text', 'teaser')
