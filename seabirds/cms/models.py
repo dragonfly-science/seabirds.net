@@ -159,10 +159,14 @@ class Post(models.Model):
 
     @permalink
     def get_absolute_url(self):
+        if self.date_published:
+            date = self.date_published
+        else:
+            date = self.date_created
         return ('individual-post', (), {
-            'year': self.date_published.year,
-            'month': self.date_published.strftime('%m'), 
-            'day': self.date_published.strftime('%d'), 
+            'year': date.year,
+            'month': date.strftime('%m'), 
+            'day': date.strftime('%d'), 
             'slug': self.name})
 
     def save(self, *args, **kwargs):
@@ -194,7 +198,7 @@ def get_image_path(instance, filename):
     return os.path.join('images', '%s%s'%(instance.key, ext))
 
 class Image(models.Model):
-    image = models.ImageField(upload_to = get_image_path)
+    image = models.ImageField(upload_to = get_image_path, blank=True)
     title = models.CharField(max_length = 100, 
         help_text="The title is displayed when you mouse over the image")
     source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
@@ -217,11 +221,11 @@ class Image(models.Model):
 
     def thumbnail(self, width=100, max_height=300):
         width, height = self.get_dimensions(width=width, max_height=max_height)
-        return "<img src='/%s' title='%s'>"%(self.get_qualified_url(width, height), self.title)
+        return "<img src='%s' title='%s'>"%(self.get_qualified_url(width, height), self.title)
     thumbnail.allow_tags=True
 
     def render(self, width=None, height=None, caption=None, place=None):
-        width, height = self.get_dimensions(widt=width, height=height)
+        width, height = self.get_dimensions(width=width, height=height)
         url = self.get_qualified_url(width, height)
         if not caption:
             caption=self.caption
@@ -250,7 +254,7 @@ class Image(models.Model):
 	if not width or not height or max_height:
 	    width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
         base, ext = os.path.splitext(os.path.split(self.image.path)[1])
-        return os.path.join('images', '%s-%ix%i%s'%(base, width, height, ext))
+        return os.path.join('/images', '%s-%ix%i%s'%(base, width, height, ext))
 
     @permalink
     def get_image_url(self):

@@ -12,7 +12,7 @@
 {% endif %}
   {% autoescape off %}
         <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3><p class="byline">{{ object.date_published|date:"F j, Y" }}</p>
-        <img src="/{{ object.image.get_qualified_url }}" class="flexible float-right" width=100px>
+        <img src="{{ object.image.get_qualified_url }}" class="flexible float-right" width=100px>
 	<div class="teaser"> {{ object.markdown_teaser }}</p>
         <p><a href="{{ object.get_absolute_url }}"> Read more </a></p>
   {% endautoescape %}

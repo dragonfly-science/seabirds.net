@@ -91,7 +91,14 @@ def image(request, filename):
 @login_required
 def imagepage(request, key):
     image = get_object_or_404(Image, key=key)
-    return render_to_response('cms/imagepage.html', {'image': image})
+    if request.user.is_authenticated() and (request.user == image.uploaded_by or request.user.is_staff):
+        editform = True
+        action = reverse('edit-image', args=(), kwargs={'image_id': image.id})
+    else:
+        editform = False
+        action = None
+    return render_to_response('cms/imagepage.html', {'image': image, 'editform': editform, 'action':action},
+        context_instance=RequestContext(request))
 
 @login_required
 def reference(request, key):
@@ -157,15 +164,16 @@ def get_initial_data(request):
     return initial
 
 def process_image_form(request, image_id=None):
-    if request.method == 'POST': # If the form has been submitted...
-        form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
+    if request.method == 'POST': # If the form has been submitted..
+        if not image_id:
+            form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
+        else:
+            image = get_object_or_404(Image, id=image_id)
+            form = ImageForm(request.POST, request.FILES, prefix='image', instance=image)
         if form.is_valid(): # All validation rules pass
-            if not image_id:
-                new_image = form.save(commit=False)
-            else:
-                new_image = get_object_or_404(Image, id=image_id)
-                new_image = form.save(commit=False, instance=new_image)
-            form.cleaned_data['image'] = new_image
+            image = form.save(commit=False)
+            if image_id:
+                form.cleaned_data['image'] = image
             # Get the key
             if not image_id:
                 key = slugify(form.cleaned_data['title'])
@@ -181,14 +189,14 @@ def process_image_form(request, image_id=None):
                         except Image.DoesNotExist:
                             key = newkey
                             break
-                new_image.key = key
+                image.key = key
             if not image_id:
                 if not request.user.is_authenticated():
                     raise ValidationError, 'User must be logged in'
                 else:
-                    new_image.uploaded_by = request.user
-            new_image.save()
-            form.redirect_url = new_image.get_absolute_url()
+                    image.uploaded_by = request.user
+            image.save()
+            form.redirect_url = image.get_absolute_url()
     else: #unbound forms
         if not image_id:
             form = ImageForm(initial=get_initial_data(request), prefix='image')
@@ -199,8 +207,8 @@ def process_image_form(request, image_id=None):
 
 REQUIRED_FIELDS = ('image', 'title', 'owner', 'text', 'teaser')
 @login_required
-def edit_image(request):
-    imageform = process_image_form(request)
+def edit_image(request, image_id=None):
+    imageform = process_image_form(request, image_id=image_id)
     if hasattr(imageform, 'redirect_url'):
         return HttpResponseRedirect(imageform.redirect_url)
     else:
