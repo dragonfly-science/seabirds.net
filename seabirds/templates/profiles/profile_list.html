@@ -44,7 +44,7 @@
 {% if p.photograph  %}
 <div class="ym-g33 ym-gl">
 {% thumbnail p.photograph "100x100" crop="center" as im %}
-    <a href="{{ p.get_absolute_url }}" title="{{ p.user.first_name|capfirst }} {{ p.user.last_name|capfirst }}"><img src="/{{ im.url }}" width="{{ im.width }}"  class="flexible"></a>
+    <a href="{{ p.get_absolute_url }}" title="{{ p.user.first_name|capfirst }} {{ p.user.last_name|capfirst }}"><img src="{{ im.url }}" width="{{ im.width }}"  class="flexible"></a>
 {% endthumbnail %}
 </div>
 {% endif %}

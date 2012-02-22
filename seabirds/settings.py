@@ -33,7 +33,7 @@ TIME_ZONE = 'Pacific/Auckland'
 LANGUAGE_CODE = 'en-nz'
 USE_I18N = True
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media/')
-MEDIA_URL = ''
+MEDIA_URL = '/'
 
 #ADMIN_MEDIA_PREFIX = '/am/'
 

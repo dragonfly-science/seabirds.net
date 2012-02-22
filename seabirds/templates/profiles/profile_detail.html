@@ -32,10 +32,10 @@
 {% if profile.photograph %}
 {% if profile.photograph.width > 255 %}
     {% thumbnail profile.photograph "255"  as im %}
-    <img src="/{{ im.url }}" width="255"  class="flexible" alt="{{ profile.user.first_name|capfirst }} {{profile.user.last_name|capfirst }}"></a>
+    <img src="{{ im.url }}" width="255"  class="flexible" alt="{{ profile.user.first_name|capfirst }} {{profile.user.last_name|capfirst }}"></a>
     {% endthumbnail %}
 {% else %}
-    <img src="/{{ profile.photograph.url }}" width="{{ profile.photograph.width }}"  class="flexible" alt="{{ profile.user.first_name|capfirst }} {{profile.user.last_name|capfirst }}"></a>
+    <img src="{{ profile.photograph.url }}" width="{{ profile.photograph.width }}"  class="flexible" alt="{{ profile.user.first_name|capfirst }} {{profile.user.last_name|capfirst }}"></a>
 {% endif %}
 {% endif %}
 {% if profile.seabirds.all %}

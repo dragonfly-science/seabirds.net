@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% if editform %}
+        <form name='image-options' action={{ action }} method='POST' class='ym-form'>{% csrf_token %}
+        <input type="submit" name="edit" value="Edit" id="edit"></input>
+        </form>
+   {% endif %}
 <h2> {{ image.title }} </h2>
 <a href="{{ image.get_image_url }}">
 <img src="{{ image.get_image_url }}" alt="{{ image.title }}" title="{{ image.title }}" class="flexible">

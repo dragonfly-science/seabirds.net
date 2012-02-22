@@ -376,10 +376,14 @@ color: #fff;
         background-color: #ddd;
         text-shadow: None;
 }
-#image-form-headline {
+#image-form-headline, #edit-comment-headline {
     color: #4D87C7;
     cursor: pointer;
 }
-#image-form-headline:hover {
+#image-form-headline:hover, #edit-comment-headline:hover {
     text-decoration: underline;
+}
+#image-form-headline, #edit-comment-headline {
+    color: #4D87C7;
+    cursor: pointer;
 }

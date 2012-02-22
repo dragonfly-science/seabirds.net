@@ -30,6 +30,9 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
         exclude = ('key', 'uploaded_by', 'date_created', 'date_updated')
+        widgets = {
+            'image': ImageWidget(),
+            }
 
 class SimpleComment(forms.Form):
     comment = forms.CharField(
