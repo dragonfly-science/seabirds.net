@@ -114,7 +114,7 @@ DISQUS_WEBSITE_SHORTNAME = 'seabirds'
 
 EMAIL_USE_TLS = True
 try:
-    from secrets import EMAIL_HOST_PASSWORD, EMAIL HOST, EMAIL_HOST_USER, EMAIL_PORT
+    from secrets import EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_HOST_USER, EMAIL_PORT
 except ImportError:
     EMAIL_HOST_PASSWORD = ''
     EMAIL_HOST = ''
