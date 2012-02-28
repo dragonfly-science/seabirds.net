@@ -47,6 +47,6 @@ class ImageAdmin(admin.ModelAdmin):
 admin.site.register(Image, ImageAdmin)
 
 class FileAdmin(admin.ModelAdmin):
-	list_display = ('title','file')
+    list_display = ('title','file')
 admin.site.register(File, FileAdmin)
 

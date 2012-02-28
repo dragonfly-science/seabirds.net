@@ -113,13 +113,13 @@ INTERNAL_IPS = ('127.0.0.1',)
 DISQUS_WEBSITE_SHORTNAME = 'seabirds'
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'edward@dragonfly.co.nz'
-EMAIL_PORT = 587
 try:
-    from secrets import EMAIL_HOST_PASSWORD
+    from secrets import EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_HOST_USER, EMAIL_PORT
 except ImportError:
     EMAIL_HOST_PASSWORD = ''
+    EMAIL_HOST = ''
+    EMAIL_HOST_USER = ''
+    EMAIL_PORT = 0
 SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
 
