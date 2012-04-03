@@ -3,8 +3,8 @@
 {% load comments %}
 {% load markup %}
 
-{% if add_comment %}
 {% block extrahead %}
+{% if add_comment %}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
@@ -15,52 +15,61 @@ $(document).ready(function(){
   });
 });
 </script>
-<style>
-.hidden {display: none}
-</style>
-{% endblock extrahead %}
+<style> .hidden {display: none} </style>
 {% endif %}
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4f7a64797e1ad3a8"></script>
+<meta property="og:title" content="{{ object.title|capfirst }}" /> 
+<meta property="og:description" name="description" content="{{ object.teaser }}" />
+<meta property="og:site_name" content="seabirds.net" />
+{% if object.image %}<meta property="og:image" content="{{ object.image.get_absolute_url }}" /> {% endif %}
+<meta property="og:type" content="article" />
+{% if object.author %}<meta property="article:author" content="{{ object.author.first_name }} {{ object.author.last_name}}" />{% endif %}
+<meta property="article:published_time" content="{{ object.date_published|date:"c" }}" />
+<meta property="article:section" content="Nature" />
+{% endblock extrahead %}
+
+{% block title %}
+{{ object.title|capfirst }}
+{% endblock %}
 
 {% block content %}
-    <br>
-    {% if form %}
-    <form name='post-options' action={{ object.get_absolute_url }} method='POST' class='ym-form'>{% csrf_token %}
-        <input type="submit" name="edit" value="Edit" id="edit"></input>
-        {% if not object.published and not object.date_published %}<input type="submit" name="publish" value="Publish" id="publish"></input>
-        {% else %} {% if not object.published and object.date_published %}<input type="submit" name="restore" value="Publish" id="publish"></input>
-        {% else %} <input type="submit" name="retract" value="Retract" id="retract"></input>
-        {% endif %}{% endif %}
-    </form>
-    {% endif %}
-    <div class="grid_8 firstrow">
-	    <div class="textbox">
-            <h2>{{ object.title|capfirst }}</h2>
-            <p class="byline">
-                {% if object.author %}
-                    <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }}</a>, 
-                {% endif %}
-                {{ object.date_published|date:"F j, Y" }}
-            </p>
-            {% autoescape off %}
-                {{ object.markdown_text }}
-            {% endautoescape %}
-            <div class="comments">
-                {% get_comment_count for object as comment_count %}
-                {% if comment_count %}<h3> Comments </h3>{% endif %}
-                {% get_comment_list for object as comment_list %}
-                {% for comment in comment_list %}
-                <div class="comment ym-clearfix">
-                {% with comment.user.profile.get as profile %}
-                {% thumbnail profile.photograph "40"  as im %}
-                    <img src="{{ im.url }}" width="40" class="float-left"alt="{{ comment.user.first_name|capfirst }} {{ comment.user.last_name|capfirst }}"></a>  
-                    {% endthumbnail %}   
-                    <h4><a href="{{ profile.get_absolute_url }}" id="comment-{{ comment.id }}" name="comment-{{ comment.id }}">{{ comment.name }}</a></h4>
-                    <div class="byline">{{ comment.submit_date|timesince }} ago</div>
-                    <p> {{ comment.comment|markdown }}</p>
-                {% endwith %}
-                </div>
-                {% endfor %}
-                {% if add_comment %}
+    <div class="ym-grid">
+      <div class="ym-g75 ym-gl">
+            {% if object.author %}
+            <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }}</a>, 
+            {% endif %}
+            {{ object.date_published|date:"F j, Y" }}
+          </div>
+<div class="ym-g25 ym-gr">
+<div class="addthis_toolbox addthis_default_style ">
+<a class="addthis_button_preferred_1"></a>
+<a class="addthis_button_preferred_2"></a>
+<a class="addthis_button_preferred_3"></a>
+<a class="addthis_button_preferred_4"></a>
+<a class="addthis_button_compact"></a>
+<a class="addthis_counter addthis_bubble_style"></a>
+</div></div>
+<div class="ym-clearfix">&nbsp;</div>
+    {% autoescape off %}
+       {{ object.markdown_text }}
+    {% endautoescape %}
+    <div class="comments">
+       {% get_comment_count for object as comment_count %}
+       {% if comment_count %}<h3> Comments </h3>{% endif %}
+       {% get_comment_list for object as comment_list %}
+            {% for comment in comment_list %}
+            <div class="comment ym-clearfix">
+            {% with comment.user.profile.get as profile %}
+               {% thumbnail profile.photograph "40"  as im %}
+                <img src="{{ im.url }}" width="40" class="float-left"alt="{{ comment.user.first_name|capfirst }} {{ comment.user.last_name|capfirst }}"></a>  
+               {% endthumbnail %}   
+               <h4><a href="{{ profile.get_absolute_url }}" id="comment-{{ comment.id }}" name="comment-{{ comment.id }}">{{ comment.name }}</a></h4>
+               <div class="byline">{{ comment.submit_date|timesince }} ago</div>
+               <p> {{ comment.comment|markdown }}</p>
+            {% endwith %}
+            </div>
+            {% endfor %}
+            {% if add_comment %}
                 <h4 id="edit-comment-headline"> {% if commentform.initial.id %} Edit comment ... {% else %}Add a comment ... {% endif %} </h4>
                 <div id="edit-comment">
                 <form method="POST" action="" class="ym-form ym-columnar">{% csrf_token %}
@@ -102,4 +111,16 @@ $(document).ready(function(){
 {% if object.image.caption %}<p>{{ object.image.caption }} </p>{% endif %}
 {% endif %}
 {% endif %}
+{% if form %}
+    <div>
+        <form name='post-options' action={{ object.get_absolute_url }} method="POST" class="ym-form ym-full">{% csrf_token %}
+        <h3>Article Admin</h3>
+            <input type="submit" name="edit" value="Edit" id="edit"></input>
+            {% if not object.published and not object.date_published %}<input type="submit" name="publish" value="Publish" id="publish"></input>
+            {% else %} {% if not object.published and object.date_published %}<input type="submit" name="restore" value="Publish" id="publish"></input>
+            {% else %} <input type="submit" name="retract" value="Retract" id="retract"></input>
+            {% endif %}{% endif %}
+        </form>
+    </div>
+    {% endif %}
 {% endblock sidebar %}
