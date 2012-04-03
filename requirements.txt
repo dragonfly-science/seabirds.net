@@ -20,3 +20,4 @@ git+https://github.com/praekelt/django-recaptcha
 hg+https://bitbucket.org/ubernostrum/django-registration
 django-coverage
 django-grappelli==2.3.7
+coverage
