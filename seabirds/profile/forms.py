@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from PIL import Image as PILImage
 from form_utils.widgets import ImageWidget
@@ -7,11 +8,26 @@ from profile.models import UserProfile
 
 attrs_dict = {'class': 'required'}
 
+class TwitterField(forms.CharField):
+    def to_python(self, value):
+        if value:
+            return value.strip()
+
+    def validate(self, value):
+        super(TwitterField, self).validate(value)
+        if value:
+            if not value.startswith('@'):
+                raise ValidationError('Prefix your username with @.')
+
+            if len(value.strip().split()) > 1:
+                raise ValidationError('There must be no spaces in your user name.') 
+
 class ProfileForm(forms.ModelForm):
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
-                                                               maxlength=75)))
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict, maxlength=75)))
     first_name = forms.CharField(label="First name",help_text='', max_length=30)
     last_name = forms.CharField(label="Last name",help_text='', max_length=30)
+    twitter = TwitterField(label="Twitter user name", max_length=15)
+
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
         try:

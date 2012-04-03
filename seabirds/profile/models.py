@@ -34,6 +34,8 @@ class UserProfile(models.Model):
     research = models.TextField(null=True, blank=True)
     photograph = models.ImageField(upload_to=get_photo_path, null=True, blank=True)
     seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True) 
+    twitter = models.CharField(max_length=15, null=True, blank=True)
+    display_twitter = models.BooleanField(default=False)
     accept_terms = models.BooleanField(default=False)
     date_created = models.DateField(auto_now_add = True)
     date_updated = models.DateField(auto_now = True)

@@ -8,7 +8,7 @@
 {% if profile.webpage %}<a href="{{ profile.webpage}}">{% endif %}
 {% if profile.title %}{{ profile.title }} {% endif %}{{ profile.user.first_name|capfirst}} {{ profile.user.last_name|capfirst }}
 {% if profile.webpage %}</a>{% endif %}
-</h2>
+/h2>
 {% if profile.user.email and profile.display_email %}
 <a href=mailto:{{ profile.user.email }}>{{ profile.user.email }}</a>
 {% endif %}
@@ -27,6 +27,8 @@
 {% endif %}
 </div>
 {% endblock content %}
+
+
 {% block sidebar %}
 <div class="profile">
 {% if profile.photograph %}

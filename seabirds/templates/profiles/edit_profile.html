@@ -37,10 +37,10 @@
         {{ form.email }}
     </div>
     <div class="ym-fbox-check {% if form.display_email.errors %}ym-error{% endif %}">
-        <strong> {{ form.display_email.errors }} </strong>
-        <label for="id_display_email">Check to show your email address on your profile page:
-        </label>
         {{ form.display_email }}
+        <strong> {{ form.display_email.errors }} </strong>
+        <label for="id_display_email">Display email address on your profile page
+        </label>
     </div>
     <div class="ym-fbox-text {% if form.country.errors %}ym-error{% endif %}">
         <strong> {{ form.country.errors }} </strong>
@@ -59,11 +59,23 @@
     <div class="ym-fbox-text {% if form.photograph.errors %}ym-error{% endif %}">
         <strong> {{ form.photograph.errors }} </strong>
         <label for="id_webpage">{{ form.photograph.label }}       
-        <div class="form-help"> Photograph used on your profile page.</div>
-</label>
-<div class="flexible">{{ form.photograph }}</div>
+            <div class="form-help"> Photograph used on your profile page.</div>
+        </label>
+        <div class="flexible">{{ form.photograph }}</div>
     </div>
 
+    <div class="ym-fbox-text {% if form.twitter.errors %}ym-error{% endif %}">
+        <strong>{{ form.twitter.errors }}</strong>
+        <label for="id_twitter">Twitter
+        <div class="form-help">Your username, e.g. <a href="http://twitter.com/#!/seabirds">@seabirds</a></div>
+        </label>
+        {{ form.twitter }}
+    </div>
+    <div class="ym-fbox-check {% if form.display_twitter.errors %}ym-error{% endif %}">
+        {{ form.display_twitter }}
+        <strong>{{ form.display_twitter.errors }}</strong>
+        <label for="id_display_twitter">Display your Twitter feed on your profile page</label>
+    </div>
     <h6> Professional information </h6>
     <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
         <strong> {{ form.institution.errors }} </strong>
