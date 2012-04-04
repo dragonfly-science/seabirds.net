@@ -109,6 +109,16 @@
         </label>
         {{ form.seabirds }}
     </div>
+    <div class="ym-fbox-select">
+        <label for="id_collaboration_choices">Looking for
+        <div class="form-help">Select members that you are interested in receiving collaboration offers from.</div>
+       </label>
+        {{ form.collaboration_choices }} 
+        {% for choice in form.get_collaboration_choices %}
+          <div> {{ choice.1 }} </div>
+          <div>{{ choice.label }} </div><p>{{ choice.description }}</p>
+        {% endfor %} 
+    </div>
 {% block terms %}
 {% endblock %}
 {% block password %}

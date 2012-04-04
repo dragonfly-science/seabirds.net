@@ -49,6 +49,12 @@
 {% endif %}
 </div>
 
+{% if profile.collaboration_choices %}
+  <h4>Seeking collaborators</h4>
+  {% for choice in profile.collaboration_choices.all %}<span class="badge inactivebadge">{{ choice.label }}</span>{% endfor %}
+{% endif %}
+
+
 {% if profile.twitter and profile.display_twitter %}
 <h4>&nbsp;</h4>
 <script charset="utf-8" src="http://widgets.twimg.com/j/2/widget.js"></script>

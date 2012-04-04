@@ -22,6 +22,13 @@ def get_photo_path(instance, filename):
 	    print 'Upload image', '%s'%instance.user.id
 	    return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(str(instance).lower()), ext))
 
+class CollaborationChoice(models.Model):
+    label = models.CharField(max_length=50)
+    description = models.TextField()
+
+    def __unicode__(self):
+        return self.label
+
 class UserProfile(models.Model):
     user = models.ForeignKey(User, related_name = 'profile', unique=True)
     title = models.CharField(max_length=5, choices=zip(TITLES, TITLES), null=True, blank=True)
@@ -33,9 +40,10 @@ class UserProfile(models.Model):
     country = CountryField(null=True, blank=True)
     research = models.TextField(null=True, blank=True)
     photograph = models.ImageField(upload_to=get_photo_path, null=True, blank=True)
-    seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True) 
+    seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True)
     twitter = models.CharField(max_length=15, null=True, blank=True)
     display_twitter = models.BooleanField(default=False)
+    collaboration_choices = models.ManyToManyField(CollaborationChoice)
     accept_terms = models.BooleanField(default=False)
     date_created = models.DateField(auto_now_add = True)
     date_updated = models.DateField(auto_now = True)

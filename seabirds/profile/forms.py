@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from PIL import Image as PILImage
 from form_utils.widgets import ImageWidget
 
-from profile.models import UserProfile
+from profile.models import UserProfile, CollaborationChoice
 
 attrs_dict = {'class': 'required'}
 
@@ -27,6 +27,7 @@ class ProfileForm(forms.ModelForm):
     first_name = forms.CharField(label="First name",help_text='', max_length=30)
     last_name = forms.CharField(label="Last name",help_text='', max_length=30)
     twitter = TwitterField(label="Twitter user name", max_length=15)
+    collaboration_choices = forms.ModelMultipleChoiceField(queryset=CollaborationChoice.objects.order_by("label"), required=False)
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
