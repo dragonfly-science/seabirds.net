@@ -10,103 +10,102 @@
 {% csrf_token %}
     <h6> Personal information </h6>
     <div class="ym-fbox-text {% if form.title.errors %}ym-error{% endif %}">
-        <strong> {{ form.title.errors }} </strong>
-        <label for="id_title">{{ form.title.label }}</label>
+        <label for="id_title">{{ form.title.label }}{{ form.title.errors }}</label>
         {{ form.title }}
     </div>
     <div class="ym-fbox-text {% if form.first_name.errors %}ym-error{% endif %}">
-        <strong> {{ form.first_name.errors }} </strong>
         <label for="id_first_name">{{ form.first_name.label }}
-        <sup title="This field is mandatory.">*</sup>
+          <sup title="This field is mandatory.">*</sup>{{ form.first_name.errors }}
         </label>
         {{ form.first_name }}
     </div>
     <div class="ym-fbox-text {% if form.last_name.errors %}ym-error{% endif %}">
-        <strong> {{ form.last_name.errors }} </strong>
+        <strong></strong>
         <label for="id_last_name">{{ form.last_name.label }}
-        <sup title="This field is mandatory.">*</sup>
+        <sup title="This field is mandatory.">*</sup>{{ form.last_name.errors }}
         </label>
 
         {{ form.last_name }}
     </div>
     <div class="ym-fbox-text {% if form.email.errors %}ym-error{% endif %}">
-        <strong> {{ form.email.errors }} </strong>
         <label for="id_email">{{ form.email.label }}
-        <sup title="This field is mandatory.">*</sup> 
+        <sup title="This field is mandatory.">*</sup> {{ form.email.errors }} 
         </label>
         {{ form.email }}
     </div>
     <div class="ym-fbox-check {% if form.display_email.errors %}ym-error{% endif %}">
         {{ form.display_email }}
-        <strong> {{ form.display_email.errors }} </strong>
+        {{ form.display_email.errors }} 
         <label for="id_display_email">Display email address on your profile page
         </label>
     </div>
     <div class="ym-fbox-text {% if form.country.errors %}ym-error{% endif %}">
-        <strong> {{ form.country.errors }} </strong>
         <label for="id_country">{{ form.country.label }}
         <div class="form-help"> Country of residence</div>
+        {{ form.country.errors }}
         </label>
         {{ form.country }}
     </div>
     <div class="ym-fbox-text {% if form.webpage.errors %}ym-error{% endif %}">
-        <strong> {{ form.webpage.errors }} </strong>
         <label for="id_webpage">{{ form.webpage.label }}
         <div class="form-help"> Webpage with more information about you (e.g., http://www.foo.com/me.html)</div>
+        {{ form.webpage.errors }} 
         </label>
         {{ form.webpage }}
     </div>
     <div class="ym-fbox-text {% if form.photograph.errors %}ym-error{% endif %}">
-        <strong> {{ form.photograph.errors }} </strong>
         <label for="id_webpage">{{ form.photograph.label }}       
             <div class="form-help"> Photograph used on your profile page.</div>
+            {{ form.photograph.errors }} 
         </label>
         <div class="flexible">{{ form.photograph }}</div>
     </div>
 
     <div class="ym-fbox-text {% if form.twitter.errors %}ym-error{% endif %}">
-        <strong>{{ form.twitter.errors }}</strong>
         <label for="id_twitter">Twitter
         <div class="form-help">Your username, e.g. <a href="http://twitter.com/#!/seabirds">@seabirds</a></div>
+        {{ form.twitter.errors }}
         </label>
         {{ form.twitter }}
     </div>
     <div class="ym-fbox-check {% if form.display_twitter.errors %}ym-error{% endif %}">
         {{ form.display_twitter }}
-        <strong>{{ form.display_twitter.errors }}</strong>
+        {{ form.display_twitter.errors }}
         <label for="id_display_twitter">Display your Twitter feed on your profile page</label>
     </div>
     <h6> Professional information </h6>
     <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
-        <strong> {{ form.institution.errors }} </strong>
         <label for="id_institution">{{ form.institution.label }}
         <div class="form-help"> Leave blank if you are not associated with a research organisation.</div>
+        {{ form.institution.errors }}
         </label>
         {{ form.institution }}
     </div>
     <div class="ym-fbox-select {% if form.institution_type.errors %}ym-error{% endif %}">
-        <strong> {{ form.institution_type.errors }} </strong>
-        <label for="id_institution_type">{{ form.institution_type.label }}</label>
+        <label for="id_institution_type">
+        {{ form.institution_type.label }}
+        {{ form.institution_type.errors }}
+        </label>
         {{ form.institution_type }}
     </div>
     <div class="ym-fbox-text {% if form.institution_website.errors %}ym-error{% endif %}">
-        <strong> {{ form.institution_website.errors }} </strong>
         <label for="id_institution_website">{{ form.institution_website.label }} 
         <div class="form-help"> e.g., http://seabirds.noaa.gov/</div>
+        {{ form.institution_website.errors }}
         </label>
         {{ form.institution_website }}
     </div>
     <div class="ym-fbox-text {% if form.research.errors %}ym-error{% endif %}">
-        <strong> {{ form.research.errors }} </strong>
         <label for="id_research">{{ form.research.label }}        
         <div class="form-help"> Describe your research from a first point of view ("I am a ..."). You can use <a href="http://www.daringfireball.net/projects/markdown/syntax">Markdown</a> to format the text, or to include images.</div>
+        {{ form.research.errors }}
        </label>
        {{ form.research }}
     </div>
     <div class="ym-fbox-select {% if form.seabirds.errors %}ym-error{% endif %}">
-        <strong> {{ form.seabirds.errors }} </strong>
         <label for="id_seabirds">{{ form.seabirds.label }}
         <div class="form-help"> Select the families of the seabirds you primarily study. Use the Ctrl or Command key to select more than one. </div>
+        {{ form.seabirds.errors }}
         </label>
         {{ form.seabirds }}
     </div>
