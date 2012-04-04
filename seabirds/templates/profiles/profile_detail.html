@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load markup %}
 {% load thumbnail %}
+{% load profile_filters %}
 
 {% block content %}
 <div class="profile">
@@ -8,7 +9,7 @@
 {% if profile.webpage %}<a href="{{ profile.webpage}}">{% endif %}
 {% if profile.title %}{{ profile.title }} {% endif %}{{ profile.user.first_name|capfirst}} {{ profile.user.last_name|capfirst }}
 {% if profile.webpage %}</a>{% endif %}
-/h2>
+</h2>
 {% if profile.user.email and profile.display_email %}
 <a href=mailto:{{ profile.user.email }}>{{ profile.user.email }}</a>
 {% endif %}
@@ -47,6 +48,39 @@
 {% endfor %}
 {% endif %}
 </div>
+
+{% if profile.twitter and profile.display_twitter %}
+<h4>&nbsp;</h4>
+<script charset="utf-8" src="http://widgets.twimg.com/j/2/widget.js"></script>
+<script>
+new TWTR.Widget({
+  version: 2,
+  type: 'profile',
+  rpp: 5,
+  interval: 30000,
+  width: 'auto',
+  height: 300,
+  theme: {
+    shell: {
+      background: '#dddddd',
+      color: '#464b61'
+    },
+    tweets: {
+      background: '#ffffff',
+      color: '#444444',
+      links: '#464b61'
+    }
+  },
+  features: {
+    scrollbar: false,
+    loop: false,
+    live: false,
+    behavior: 'all'
+  }
+}).render().setUser('{{ profile.twitter|twitter }}').start();
+</script>
+{% endif %}
+
 {% endblock sidebar %}
 
 
