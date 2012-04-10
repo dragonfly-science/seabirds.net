@@ -26,7 +26,8 @@ class TestPages(unittest.TestCase):
     def test_can_opt_out_of_twitter_feed_being_displayed(self):
         response = self.c.get('/accounts/register')
         twitter_optout_in_form = 'Display your Twitter feed on your profile page' in response.content.lower()
-
+        self.assertTrue(twitter_optout_in_form)
+ 
 class TestCustomListView(unittest.TestCase):
     fixtures = ['testdata.json']
 
@@ -39,39 +40,63 @@ class TestCustomListView(unittest.TestCase):
         assert response.status_code is not 200
 
     def test_logged_in_users_can_visit_page(self):
-        response1 = self.c.get('/petrel', follow=True)
-        response2 = self.c.get('/petrel/', follow=True)
-        assert response1.status_code ==  200, response.status_code
-        assert response2.status_code ==  200, response.status_code
+        assert self.c.get('/petrel', follow=True).status_code == 200
+        assert self.c.get('/petrel/', follow=True).status_code == 200
 
     def test_default_listing(self):
         response = self.c.get('/petrel/', follow=True)
         assert 'activebadge' not in response.content
-        assert 'activebadge' not in response.content
 
     def test_country_no_seabirds_nor_collab_choices(self):
-        response = self.c.get('/petrel/?c=GB')
-        assert '<a href="/petrel/?c=SE" class="badge linkbadge">Sweden</a>' in response.content
-        assert '<a href="/petrel/" class="badge activebadge">United Kingdom</a>' in response.content
+        link =  '/petrel/?c=GB'
+        response = self.c.get(link)
+       
+        desired = [
+          '<a href="/petrel/?c=SE" class="badge linkbadge">Sweden</a>',
+          '<a href="/petrel/" class="badge activebadge">United Kingdom</a>'
+        ]
+        for s in desired:
+            content = response.content
+            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
+
         
     def test_country_seabirds_but_no_collab_choices(self):
-        response = self.c.get('/petrel/?c=GB&s=alb')
-        assert '<a href="/petrel/?c=SE&s=alb" class="badge linkbadge">Sweden</a>' in response.content
-        assert '<a href="/petrel/?s=alb" class="badge activebadge">United Kingdom</a>' in response.content
-        assert '<a href="/petrel/?c=GB" class="badge activebadge">Albatrosses</a>' in response.content
-        assert '<a href="/petrel/?c=GB&s=auk" class="badge linkbadge">Auks</a>' in response.content
+        link = '/petrel/?c=GB&s=alb'
+        response = self.c.get(link)
+
+        desired = [
+          '<a href="/petrel/?c=SE&s=alb" class="badge linkbadge">Sweden</a>',
+          '<a href="/petrel/?s=alb" class="badge activebadge">United Kingdom</a>',
+          '<a href="/petrel/?c=GB" class="badge activebadge">Albatrosses</a>',
+          '<a href="/petrel/?c=GB&s=auk" class="badge linkbadge">Auks</a>'
+        ]
+        for s in desired:
+            content = response.content
+            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
 
     def test_country_seabirds_and_collab_choices(self):
-        response = self.c.get('/petrel/?c=GB&s=alb&r=graduate+student')
-        assert '<a href="/petrel/?c=SE&s=alb&r=graduate+student" class="badge linkbadge">Sweden</a>' in response.content
-        assert '<a href="/petrel/?s=alb&r=graduate+student" class="badge activebadge">United Kingdom</a>' in response.content
-        assert '<a href="/petrel/?c=GB&r=graduate+student" class="badge activebadge">Albatrosses</a>' in response.content
-        assert '<a href="/petrel/?c=GB&s=auk&r=graduate+student" class="badge linkbadge">Auks</a>' in response.content
+        link = '/petrel/?c=GB&s=alb&r=graduate+student'
+        response = self.c.get(link) 
+        desired = [
+          '<a href="/petrel/?c=SE&s=alb&r=graduate+student" class="badge linkbadge">Sweden</a>',
+          '<a href="/petrel/?s=alb&r=graduate+student" class="badge activebadge">United Kingdom</a>',
+          '<a href="/petrel/?c=GB&r=graduate+student" class="badge activebadge">Albatrosses</a>',
+          '<a href="/petrel/?c=GB&s=auk&r=graduate+student" class="badge linkbadge">Auks</a>'
+        ]
+        for s in desired:
+            content = response.content
+            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
 
     def test_seabirds_no_countries_nor_collab_choices(self):
-        response = self.c.get('/petrel/?s=alb')
-        assert '<a href="/petrel/?c=SE&s=alb" class="badge linkbadge">Sweden</a>' in response.content
-        assert '<a href="/petrel/" class="badge activebadge">Albatrosses</a>' in response.content
+        link = '/petrel/?s=alb'
+        response = self.c.get(link)
+        desired = [
+          '<a href="/petrel/?c=SE&s=alb" class="badge linkbadge">Sweden</a>',
+          '<a href="/petrel/" class="badge activebadge">Albatrosses</a>'
+        ]
+        for s in desired:
+            content = response.content
+            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
         
 
     def test_seabirds_countries_and_collab_choices(self):
