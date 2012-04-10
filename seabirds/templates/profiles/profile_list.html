@@ -53,34 +53,20 @@
 {% endblock leftbar%}
                                     
 {% block sidebar %}
+<h3>Filters</h3>
 
-<h4>Filter by country</h4>
+<h4>Country</h4>
 {% for pc in profile_countries %}
-{% if pc.name %}
-{% if pc.name == country %}
-<a href="/petrel/{% if seabird %}?s={{ seabird.choice|slice:"3"|lower }}{% endif %}" class="badge activebadge">{{ pc.name }}</a> 
-{% else %}
-{% if pc.records > 0 %}
-<a href="/petrel/?c={{ pc }}{% if seabird %}&s={{ seabird.choice|slice:"3"|lower }}{% endif %}" class="badge linkbadge">{{ pc.name }}</a> 
-{% else %}
-<span class="badge smallbadge inactivebadge">{{ pc.name }}</span>
-{% endif %}
-{% endif %}
-{% endif %}
+  <{{p.tag}} {{p.href}} class="{{ p.classes }}">{{ p.name }}</{{ p.tag }}>
 {% endfor %}
 
-<h4>Filter by seabird family</h4>
-{% for bird in profile_birds %}
-{% if bird == seabird %}
-<a href="/petrel/{% if country_tag %}?c={{ country_tag }}{% endif %}" class="badge activebadge">{{ bird.choice }}</a>
-{% else %}
-{% if bird.records > 0 %}
-<a href="/petrel/?s={{ bird.choice|slice:":3"|lower }}{% if country_tag %}&c={{ country_tag }}{% endif %}" class="badge linkbadge">{{ bird.choice }}</a>
-{% else %}
-<span class="badge smallbadge inactivebadge">{{ bird.choice }}</span>
-{% endif %}
-{% endif %}
+<h4>Seabird Family</h4>
+{% for b in profile_birds %}
+  <{{b.tag}} {{b.href}} class="{{ b.classes }}">{{ b.name }}</{{ b.tag }}>
 {% endfor %}
 
-
+<h4>Seeking Collaborators</h4>
+{% for c in profile_collaboration_choices %}
+  <{{c.tag}} {{c.href}} class="{{ c.classes }}" title="{{ c.description }}">{{ c.label }}</{{ c.tag }}>
+{% endfor %}
 {% endblock sidebar %}
