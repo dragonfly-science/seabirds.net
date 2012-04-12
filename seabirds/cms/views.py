@@ -47,7 +47,10 @@ def page(request, name):
     c = dict(
             page = page, 
             navigation = get_navigation(navigation),
+            twitter_widget = False
             )
+    if name == u'wsu':
+        c['twitter_widget'] = True
     return render_to_response('index.html', c, context_instance)
 
 @login_required
