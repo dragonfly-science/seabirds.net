@@ -56,17 +56,17 @@
 <h3>Filters</h3>
 
 <h4>Country</h4>
-{% for pc in profile_countries %}
-  <{{p.tag}} {{p.href}} class="{{ p.classes }}">{{ p.name }}</{{ p.tag }}>
+{% for p in profile_countries %}
+  {%if p.name %}<{{p.tag}} {{ p.href|safe }} class="{{ p.classes }}">{{ p.name }}</{{ p.tag }}>{% endif %}
 {% endfor %}
 
 <h4>Seabird Family</h4>
 {% for b in profile_birds %}
-  <{{b.tag}} {{b.href}} class="{{ b.classes }}">{{ b.name }}</{{ b.tag }}>
+  <{{b.tag}} {{ b.href|safe }} class="{{ b.classes }}">{{ b.choice }}</{{ b.tag }}>
 {% endfor %}
 
 <h4>Seeking Collaborators</h4>
 {% for c in profile_collaboration_choices %}
-  <{{c.tag}} {{c.href}} class="{{ c.classes }}" title="{{ c.description }}">{{ c.label }}</{{ c.tag }}>
+  <{{c.tag}} {{ c.href|safe }} class="{{ c.classes }}" title="{{ c.description }}">{{ c.label }}</{{ c.tag }}>
 {% endfor %}
 {% endblock sidebar %}
