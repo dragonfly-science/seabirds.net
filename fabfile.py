@@ -27,8 +27,7 @@ def _virtualenv():
 # Commands for  getting data from the server
 def git_pull():
     "Make sure that any commits are synchronised with the server"
-    with cd("%(path)s" % env):
-        run('git pull')
+    local('git pull')
 
 def get_secrets():
     "Get files that aren't in the checkout, such as sitesettings.py"
