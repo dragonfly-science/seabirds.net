@@ -47,6 +47,7 @@ class UserProfile(models.Model):
     accept_terms = models.BooleanField(default=False)
     date_created = models.DateField(auto_now_add = True)
     date_updated = models.DateField(auto_now = True)
+    wid = models.IntegerField(null=True, blank=True, editable=False)
 
     def __str__(self):
         return "%s %s"%(self.user.first_name, self.user.last_name)
