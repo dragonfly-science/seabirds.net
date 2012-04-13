@@ -199,7 +199,7 @@ def get_image_path(instance, filename):
     return os.path.join('images', '%s%s'%(instance.key, ext))
 
 class Image(models.Model):
-    image = models.ImageField(upload_to = get_image_path, blank=True)
+    image = models.ImageField(upload_to = get_image_path)
     title = models.CharField(max_length = 100, 
         help_text="The title is displayed when you mouse over the image")
     source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
