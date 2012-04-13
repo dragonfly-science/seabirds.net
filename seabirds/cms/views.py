@@ -5,7 +5,7 @@ import re
 import logging
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response, get_list_or_404
+from django.shortcuts import get_object_or_404, render_to_response, get_list_or_404, redirect
 from django.template import RequestContext
 from django.conf import settings
 from django.views.static import serve
@@ -20,7 +20,7 @@ from django.utils.html import strip_tags
 
 from PIL import Image as PILImage
 
-from cms.models import Page, File, Navigation, Image, Post
+from cms.models import Page, File, Navigation, Image, Post, Section
 from cms.forms import PostForm, ImageForm, SimpleComment
 from bibliography.models import Reference
 from license.models import License
@@ -372,7 +372,16 @@ def edit_post(request, post_id=None):
     return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 'required': REQUIRED_FIELDS, 'action': action}, 
         context_instance=RequestContext(request))
 
-
-
-
-
+def jobs(request):
+    max_days = request.GET.get('max_days_since_creation', None)
+    try:
+       max_days = int(max_days)
+    except (TypeError, ValueError):
+        return redirect('/jobs/?max_days_since_creation=90')
+    now = datetime.datetime.now()
+    delta = datetime.timedelta(days=max_days)
+    target_time = now - delta
+    
+    jobs = Post.objects.filter(date_created__gt=target_time, section=Section.objects.get(key='jobs'))
+    ctx = RequestContext(request)
+    return render_to_response('cms/jobs.html', dict(jobs=jobs),  context_instance=ctx)

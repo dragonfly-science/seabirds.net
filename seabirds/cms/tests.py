@@ -1,9 +1,11 @@
-from django.utils import unittest
+from datetime import datetime
+
+from django.utils.unittest import TestCase
 from django.test.client import Client
-from cms.models import Page, Navigation
+from cms.models import Page, Post, Navigation
 
 
-class TestPages(unittest.TestCase):
+class TestPages(TestCase):
     def setUp(self):
         self.client = Client()
         try:
@@ -27,4 +29,12 @@ class TestPages(unittest.TestCase):
     def test_posts(self):
         response = self.client.get('/posts/')
         self.assertEqual(response.status_code, 200)
-        
+
+class TestJobs(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_redirect(self):
+        response = self.client.get('/jobs/')
+        TestCase.assertRedirects(response, '/jobs/?max_days_since_creation=90', status_code=302, target_status_code=200)
+      
