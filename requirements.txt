@@ -13,7 +13,7 @@ sorl-thumbnail
 Markdown==2.0.3
 #PIL==1.1.7
 #psycopg2==2.4.1
-Fabric
+#Fabric
 #pycrypto==2.5
 #ssh
 git+https://github.com/praekelt/django-recaptcha
