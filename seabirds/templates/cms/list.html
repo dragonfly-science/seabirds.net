@@ -1,25 +1,26 @@
 {% extends 'base.html' %}
+{% load cms_filters %}
+
+{% block title %}Recent discussion{% endblock %}
+
 {% block content %}
-<br>
-    <h2> Recent discussion </h2>
 {% for object in latest %}
-{% if object.published or user.is_authenticated and perms.website.administration %}
-  {% if not object.published %}
-    <div class="pagedraft">
+  {% if object.published or user.is_authenticated and perms.website.administration %}
+    {% if not object.published %}<div class="pagedraft">{% endif %}
+    {% if user.is_authenticated and perms.website.administration %}
+      <p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>
+    {% endif %}
+    {% autoescape off %}
+      <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3><p class="byline">{{ object.date_published|date:"F j, Y" }}</p>
+      <img src="{{ object.image.get_qualified_url }}" class="flexible float-right" width=100px>
+      <div class="teaser"> {{ object.markdown_teaser }}</div>
+      <p><a href="{{ object.get_absolute_url }}"> Read more </a></p>
+    {% endautoescape %}
+    {% if not object.published %}</div>{% endif %}
   {% endif %}
-{% if user.is_authenticated and perms.website.administration %}
-  <p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>
-{% endif %}
-  {% autoescape off %}
-        <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3><p class="byline">{{ object.date_published|date:"F j, Y" }}</p>
-        <img src="{{ object.image.get_qualified_url }}" class="flexible float-right" width=100px>
-	<div class="teaser"> {{ object.markdown_teaser }}</p>
-        <p><a href="{{ object.get_absolute_url }}"> Read more </a></p>
-  {% endautoescape %}
-  {% if not object.published %}
-    </div>
-  {% endif %}
-{% endif %}
 {% endfor  %}
-<br>
 {% endblock %}
+
+{% block sidebar %}
+  {% if twitter %}{{ twitter|twitter_widget|safe }}{% endif %}
+{% endblock sidebar %}

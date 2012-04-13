@@ -2,6 +2,7 @@
 {% load markup %}
 {% load thumbnail %}
 {% load profile_filters %}
+{% load cms_filters %}
 
 {% block content %}
 <div class="profile">
@@ -55,37 +56,7 @@
 {% endif %}
 
 
-{% if profile.twitter and profile.display_twitter %}
-<h4>&nbsp;</h4>
-<script charset="utf-8" src="http://widgets.twimg.com/j/2/widget.js"></script>
-<script>
-new TWTR.Widget({
-  version: 2,
-  type: 'profile',
-  rpp: 5,
-  interval: 30000,
-  width: 'auto',
-  height: 300,
-  theme: {
-    shell: {
-      background: '#dddddd',
-      color: '#464b61'
-    },
-    tweets: {
-      background: '#ffffff',
-      color: '#444444',
-      links: '#464b61'
-    }
-  },
-  features: {
-    scrollbar: false,
-    loop: false,
-    live: false,
-    behavior: 'all'
-  }
-}).render().setUser('{{ profile.twitter|twitter }}').start();
-</script>
-{% endif %}
+{% if profile.twitter and profile.display_twitter %}{{ profile.twitter|twitter_widget|safe }}{% endif %}
 
 {% endblock sidebar %}
 

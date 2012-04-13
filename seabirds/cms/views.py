@@ -47,10 +47,10 @@ def page(request, name):
     c = dict(
             page = page, 
             navigation = get_navigation(navigation),
-            twitter_widget = False
+            twitter = False
             )
-    if name == u'wsu':
-        c['twitter_widget'] = True
+    if name in (u'home',):
+        c['twitter'] = 'seabirders'
     return render_to_response('index.html', c, context_instance)
 
 @login_required

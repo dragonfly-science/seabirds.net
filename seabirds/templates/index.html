@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load markup %}
+{% load cms_filters %}
+
 {% block content %}
 {% if user.is_authenticated and perms.website.administration %}
   <p><a class="pageedit" href="{% url admin:cms_page_change page.id %}">Edit page</a></p>
@@ -18,38 +20,6 @@
 
 {% block sidebar %}
   {{ page.markdown_sidebar }}
-  {% if twitter_widget %}
-  <div id="twitter">
-    <h4>&nbsp;</h4>
-      <script charset="utf-8" src="http://widgets.twimg.com/j/2/widget.js"></script>
-      <script>
-new TWTR.Widget({
-  version: 2,
-  type: 'profile',
-  rpp: 5,
-  interval: 30000,
-  width: 'auto',
-  height: 300,
-  theme: {
-    shell: {
-      background: '#dddddd',
-      color: '#464b61'
-    },
-    tweets: {
-      background: '#ffffff',
-      color: '#444444',
-      links: '#464b61'
-    }
-  },
-  features: {
-    scrollbar: false,
-    loop: false,
-    live: false,
-    behavior: 'all'
-  }
-}).render().setUser('seabirders').start();
-</script>
-  </div>
-  {% endif %}
+  {% if twitter %}{{ twitter|twitter_widget|safe }}{% endif %}
 {% endblock sidebar %}
 
