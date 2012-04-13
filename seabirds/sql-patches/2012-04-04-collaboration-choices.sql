@@ -1,10 +1,10 @@
 BEGIN;
-CREATE TABLE "profile_collaborationchoice" (
-    "id" serial NOT NULL PRIMARY KEY,
-    "label" varchar(50) NOT NULL,
-    "description" text NOT NULL
-)
-;
+--CREATE TABLE "profile_collaborationchoice" (
+--    "id" serial NOT NULL PRIMARY KEY,
+--    "label" varchar(50) NOT NULL,
+--    "description" text NOT NULL
+--)
+--;
 CREATE TABLE "profile_userprofile_collaboration_choices" (
     "id" serial NOT NULL PRIMARY KEY,
     "userprofile_id" integer NOT NULL,
