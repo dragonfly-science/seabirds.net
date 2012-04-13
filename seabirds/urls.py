@@ -62,7 +62,7 @@ urlpatterns += patterns('django.views.generic.date_based',
         (r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$','archive_day',dict(info_dict,template_name='cms/list.html')),
         (r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/$','archive_month', dict(info_dict, template_name='cms/list.html')),
         (r'^posts/(?P<year>\d{4})/$','archive_year', dict(info_dict, template_name='cms/list.html')),
-        (r'^posts/$','archive_index', dict(info_dict, template_name='cms/list.html')),
+        (r'^posts/$','archive_index', dict(info_dict, template_name='cms/list.html', extra_context={"twitter" : "seabirders"})),
     )
 
 urlpatterns += patterns('',
