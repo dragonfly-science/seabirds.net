@@ -106,5 +106,6 @@ urlpatterns += patterns('',
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^static/(?P<path>.*)$',   'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     url(r'^(?P<name>[-\w]+)\.html',           'cms.views.page', name='page'),
+    url(r'^jobs/$', 'cms.views.jobs', name='jobs'),
 )
 

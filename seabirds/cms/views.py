@@ -382,6 +382,6 @@ def jobs(request):
     delta = datetime.timedelta(days=max_days)
     target_time = now - delta
     
-    jobs = Post.objects.filter(date_created__gt=target_time, section=Section.objects.get(key='jobs'))
+    jobs = Post.objects.filter(date_created__gt=target_time, published=True, section=Section.objects.get(key='jobs'))
     ctx = RequestContext(request)
-    return render_to_response('cms/jobs.html', dict(jobs=jobs),  context_instance=ctx)
+    return render_to_response('cms/jobs.html', dict(jobs=jobs), context_instance=ctx)
