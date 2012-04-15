@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load cms_filters %}
+
+{% block title %}Gallery {% if seabird_family %}: {{ seabird_family }}{% endif %}{% endblock %}
+
+{% block content %}
+  {% for image in images %}
+    <img width="200" height="200" src="{{ img.get_image_url }}" title="{{ img.title }}" />
+  {% endfor  %}
+{% endblock %}
+
+{% block sidebar %}
+  {% for family in seabird_families %}
+    {% if family.choice == seabird_family.choice %}
+      <a href="/gallery/" title="{{ family.family }}" class="badge activebadge">{{ family.choice }}</a>
+    {% else %}
+      <a href="/gallery/{{ family.choice|slugify }}" title="{{ family.family }}" class="badge linkbadge">{{ family.choice }}</a>
+    {% endif %}
+  {% endfor %}
+{% endblock sidebar %}
