@@ -591,5 +591,50 @@
             "tree_id": 1, 
             "order": 500
         }
+    },
+    {
+        "pk": 1, 
+        "model": "cms.section", 
+        "fields": {
+            "key": "discussion", 
+            "description": "Member discussion",
+            "staff_only_write": false,
+            "staff_only_read": false,
+            "allow_comments": true
+        }
+    },
+    {
+        "pk": 2, 
+        "model": "cms.section", 
+        "fields": {
+            "key": "news", 
+            "description": "WSU news",
+            "staff_only_write": true,
+            "staff_only_read": false,
+            "allow_comments": true
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "cms.section", 
+        "fields": {
+            "key": "staff", 
+            "description": "Staff only discussion",
+            "staff_only_write": true,
+            "staff_only_read": true,
+            "allow_comments": true
+        }
+    },
+    {
+        "pk": 4, 
+        "model": "cms.section", 
+        "fields": {
+            "key": "jobs", 
+            "description": "Job postings",
+            "staff_only_write": false,
+            "staff_only_read": false,
+            "allow_comments": false
+        }
     }
 ]
+

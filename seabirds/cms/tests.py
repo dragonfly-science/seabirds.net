@@ -2,6 +2,9 @@ from datetime import datetime
 
 from django.utils.unittest import TestCase
 from django.test.client import Client
+from django.template.defaultfilters import slugify
+
+from categories.models import SeabirdFamily
 from cms.models import Page, Post, Navigation
 
 
@@ -35,6 +38,19 @@ class TestJobs(TestCase):
         self.client = Client()
 
     def test_redirect(self):
-        response = self.client.get('/jobs/')
-        TestCase.assertRedirects(response, '/jobs/?max_days_since_creation=90', status_code=302, target_status_code=200)
-      
+        response = self.client.get('/jobs/', follow=True)
+        assert response.redirect_chain[-1] == ('/jobs/?max_days_since_creation=90', 302)
+
+
+class TestGallery(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_gallery_url(self):
+        r = self.client.get('/gallery')
+        assert r.status_code == 200
+
+    def test_seabird_families_urls(self):
+        for s in SeabirdFamily.objects.all():
+            r = self.client.get('/gallery/' + slugify(str(s)))
+            assert r.status_code == 200
