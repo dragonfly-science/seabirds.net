@@ -3,6 +3,7 @@ import types
 import os
 import re
 import logging
+from random import shuffle
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, get_list_or_404, redirect
@@ -20,6 +21,7 @@ from django.utils.html import strip_tags
 
 from PIL import Image as PILImage
 
+from categories.models import SeabirdFamily
 from cms.models import Page, File, Navigation, Image, Post, Section
 from cms.forms import PostForm, ImageForm, SimpleComment
 from bibliography.models import Reference
@@ -384,4 +386,19 @@ def jobs(request):
     
     jobs = Post.objects.filter(date_created__gt=target_time, published=True, section=Section.objects.get(key='jobs'))
     ctx = RequestContext(request)
-    return render_to_response('cms/jobs.html', dict(jobs=jobs), context_instance=ctx)
+    return render_to_response('cms/jobs.html', dict(jobs=jobs, max_days=max_days), context_instance=ctx)
+
+def gallery(request, seabird_family=None):
+    if seabird_family:
+        try:
+            seabird_family = seabird_family.replace('-', ' ')
+            seabird_family = SeabirdFamily.objects.get(choice__iexact=seabird_family)
+            images = seabird_family.images.all()
+        except SeabirdFamily.DoesNotExist:
+            raise Http404
+    else:
+        images = Image.objects.filter(seabird_families__in=SeabirdFamily.objects.all())
+    shuffle(images)
+    seabird_families = SeabirdFamily.objects.all()
+    d = dict(images=images, seabird_family=seabird_family, seabird_families=seabird_families)
+    return render_to_response('cms/gallery.html', d, RequestContext(request))
