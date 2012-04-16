@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block sidebar %}
+  <h3>Filter by seabird family</h3>
   {% for family in seabird_families %}
     {% if family.choice == seabird_family.choice %}
       <a href="/gallery/" title="{{ family.family }}" class="badge activebadge">{{ family.choice }}</a>
@@ -17,4 +18,8 @@
       <a href="/gallery/{{ family.choice|slugify }}" title="{{ family.family }}" class="badge linkbadge">{{ family.choice }}</a>
     {% endif %}
   {% endfor %}
+  <h3>Add an Image</h3>
+  <div class="ym-fbox-button">
+    <input type="button" class="ym-button" name="button1" onclick="location.href='/gallery/create';" value="Click here"/>
+  </div>
 {% endblock sidebar %}

@@ -54,3 +54,6 @@ class TestGallery(TestCase):
         for s in SeabirdFamily.objects.all():
             r = self.client.get('/gallery/' + slugify(str(s)))
             assert r.status_code == 200
+
+    def test_can_add_image(self):
+        self.client.('/')

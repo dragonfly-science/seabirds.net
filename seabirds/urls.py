@@ -107,7 +107,7 @@ urlpatterns += patterns('',
     (r'^static/(?P<path>.*)$',   'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     url(r'^(?P<name>[-\w]+)\.html',           'cms.views.page', name='page'),
     url(r'^jobs/$', 'cms.views.jobs', name='jobs'),
-    #url(r'^gallery/$', 'cms.views.gallery', name='gallery'),
+    url(r'^gallery/create$', 'cms.views.edit_image', name='new-image'),
     url(r'^gallery/(?P<seabird_family>.*)$', 'cms.views.gallery', name='gallery')
 )
 

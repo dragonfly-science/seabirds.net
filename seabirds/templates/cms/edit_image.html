@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}
+{% if request.path_info == '/gallery/create' %}Gallery : Add Image{% endif %}
+{% endblock %}
+
 {% block content %}
 <form method="post" action="{{ action }}" class="ym-form ym-columnar" enctype="multipart/form-data">{% csrf_token %}
     <!--<div class="ym-fbox-button float-right">
