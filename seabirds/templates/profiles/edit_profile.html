@@ -24,7 +24,6 @@
         <label for="id_last_name">{{ form.last_name.label }}
         <sup title="This field is mandatory.">*</sup>{{ form.last_name.errors }}
         </label>
-
         {{ form.last_name }}
     </div>
     <div class="ym-fbox-text {% if form.email.errors %}ym-error{% endif %}">
@@ -74,6 +73,13 @@
         <label for="id_display_twitter">Display your Twitter feed on your profile page</label>
     </div>
     <h6> Professional information </h6>
+    <div class="ym-fbox-select {% if form.research_field.errors %}ym-error{% endif %}">
+        <label for="id_research_field">{{ form.research_field.label }}
+        <div class="form-help"></div>
+        {{ form.research_field.errors }}
+        </label>
+        {{ form.research_field }}
+    </div>
     <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
         <label for="id_institution">{{ form.institution.label }}
         <div class="form-help"> Leave blank if you are not associated with a research organisation.</div>

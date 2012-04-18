@@ -21,3 +21,9 @@ class RoleType(models.Model):
     
     def __str__(self):
         return self.choice
+
+class ResearchField(models.Model):
+    choice = models.CharField(max_length=60)
+
+    def __unicode__(self):
+        return self.choice

@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
 
-from categories.models import SeabirdFamily, InstitutionType
+from categories.models import SeabirdFamily, InstitutionType, ResearchField
 
 TITLES = ('Mr', 'Ms', 'Mrs', 'Miss', 'Dr', 'Prof')
 
@@ -39,6 +39,7 @@ class UserProfile(models.Model):
     institution_website = models.URLField(null=True, blank=True)
     country = CountryField(null=True, blank=True)
     research = models.TextField(null=True, blank=True)
+    research_field = models.ManyToManyField(ResearchField)
     photograph = models.ImageField(upload_to=get_photo_path, null=True, blank=True)
     seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True)
     twitter = models.CharField(max_length=15, null=True, blank=True)
