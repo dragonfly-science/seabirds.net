@@ -44,7 +44,7 @@ class UserProfile(models.Model):
     seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True)
     twitter = models.CharField(max_length=15, null=True, blank=True)
     display_twitter = models.BooleanField(default=False)
-    collaboration_choices = models.ManyToManyField(CollaborationChoice)
+    collaboration_choices = models.ManyToManyField(CollaborationChoice, null=True, blank=True)
     accept_terms = models.BooleanField(default=False)
     date_created = models.DateField(auto_now_add = True)
     date_updated = models.DateField(auto_now = True)
