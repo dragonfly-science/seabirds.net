@@ -30,7 +30,7 @@ class ProfileForm(forms.ModelForm):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict, maxlength=75)))
     first_name = forms.CharField(label="First name",help_text='', max_length=30)
     last_name = forms.CharField(label="Last name",help_text='', max_length=30)
-    twitter = TwitterField(label="Twitter user name", max_length=15)
+    twitter = TwitterField(label="Twitter user name", max_length=15, required=False)
     collaboration_choices = forms.ModelMultipleChoiceField(queryset=CollaborationChoice.objects.order_by("label"), required=False)
     research_field = forms.ModelMultipleChoiceField(
         queryset=ResearchField.objects.all(),
