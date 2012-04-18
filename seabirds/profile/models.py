@@ -3,9 +3,8 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django_countries import CountryField
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
 from django.template.defaultfilters import slugify
-
 
 from categories.models import SeabirdFamily, InstitutionType, ResearchField
 
@@ -40,6 +39,7 @@ class UserProfile(models.Model):
     country = CountryField(null=True, blank=True)
     research = models.TextField(null=True, blank=True)
     research_field = models.ManyToManyField(ResearchField)
+    is_researcher = models.BooleanField(default=True)
     photograph = models.ImageField(upload_to=get_photo_path, null=True, blank=True)
     seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True)
     twitter = models.CharField(max_length=15, null=True, blank=True)
@@ -66,4 +66,10 @@ def create_user_profile(sender, instance, created, **kwargs):
             UserProfile.objects.create(user=instance)
 post_save.connect(create_user_profile, sender=User)
 
-
+def toggle_research_field(sender, instance, created, **kwargs):
+    profile = UserProfile.objects.get(user=instance)
+    if ResearchField.objects.get(choice='Not a researcher') in profile.research_field.all():
+        if profile.is_researcher:
+            profile.is_researcher = False
+            profile.save()
+post_save.connect(toggle_research_field, sender=User)
