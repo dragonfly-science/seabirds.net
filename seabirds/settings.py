@@ -25,6 +25,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'seabirds',
+        'USER':  'seabirds',
     }
 }
 
@@ -76,7 +77,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'cms',
-    'bibliography',
+    #'bibliography',
     'grappelli',
     'django.contrib.admin',
     'profiles', #Django profiles
