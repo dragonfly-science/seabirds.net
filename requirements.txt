@@ -11,11 +11,11 @@ django-profiles
 django-passwords
 sorl-thumbnail
 Markdown==2.0.3
-#PIL==1.1.7
-#psycopg2==2.4.1
-#Fabric
-#pycrypto==2.5
-#ssh
+PIL
+psycopg2
+Fabric
+pycrypto
+ssh
 git+https://github.com/praekelt/django-recaptcha
 hg+https://bitbucket.org/ubernostrum/django-registration
 django-coverage
