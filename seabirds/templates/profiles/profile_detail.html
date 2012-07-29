@@ -49,11 +49,6 @@
 {% endif %}
 </div>
 
-{% if profile.collaboration_choices %}
-  <h4>Seeking collaborators</h4>
-  {% for choice in profile.collaboration_choices.all %}<span class="badge inactivebadge">{{ choice.label }}</span>{% endfor %}
-{% endif %}
-
 
 {% if profile.twitter and profile.display_twitter %}{{ profile.twitter|twitter_widget|safe }}{% endif %}
 

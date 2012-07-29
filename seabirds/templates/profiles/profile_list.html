@@ -65,8 +65,4 @@
   <{{b.tag}} {{ b.href|safe }} class="{{ b.classes }}">{{ b.choice }}</{{ b.tag }}>
 {% endfor %}
 
-<h4>Seeking Collaborators</h4>
-{% for c in profile_collaboration_choices %}
-  <{{c.tag}} {{ c.href|safe }} class="{{ c.classes }}" title="{{ c.description }}">{{ c.label }}</{{ c.tag }}>
-{% endfor %}
 {% endblock sidebar %}
