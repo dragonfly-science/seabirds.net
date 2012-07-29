@@ -3,7 +3,7 @@ import types
 import os
 import re
 import logging
-from random import shuffle
+import random
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, get_list_or_404, redirect
@@ -53,6 +53,9 @@ def page(request, name):
             )
     if name in (u'home',):
         c['twitter'] = 'seabirders'
+        c['seabirders'] = random.sample(
+            [profile for profile in UserProfile.objects.all() if hasattr(profile.photograph, 'file')],
+            9)
     return render_to_response('index.html', c, context_instance)
 
 @login_required
@@ -398,7 +401,7 @@ def gallery(request, seabird_family=None):
             raise Http404
     else:
         images = Image.objects.filter(seabird_families__in=SeabirdFamily.objects.all())
-    shuffle(images)
+    random.shuffle(images)
     seabird_families = SeabirdFamily.objects.all()
     d = dict(images=images, seabird_family=seabird_family, seabird_families=seabird_families)
     return render_to_response('cms/gallery.html', d, RequestContext(request))

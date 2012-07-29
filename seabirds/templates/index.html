@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load markup %}
+{% load thumbnail %}
 {% load cms_filters %}
 
 {% block content %}
@@ -20,7 +21,21 @@
 
 {% block sidebar %}
   {{ page.markdown_sidebar }}
-  {% if twitter %}{{ twitter|twitter_widget|safe }}
+ 
+ {% if seabirders %}
+    <div class="ym-grid">
+    {% for p in seabirders %}
+        <div class="ym-g33 ym-gl">
+        {% thumbnail p.photograph "100x100" crop="center" as im %}
+            <a href="{{ p.get_absolute_url }}" title="{{ p.user.first_name|capfirst }} {{ p.user.last_name|capfirst }}"><img src="{{ im.url }}" width="{{ im.width }}"  class="flexible"></a>
+        {% endthumbnail %}
+        </div>
+    {% endfor %}
+    </div>
+ {% endif %}
+  
+  {% if twitter %} 
+  {{ twitter|twitter_widget|safe }}
   <a href="http://www.facebook.com/World.Seabird.Union" target="_TOP"><img src="/images/facebook.png" width="100%"></a> 
 {% endif %}
 
