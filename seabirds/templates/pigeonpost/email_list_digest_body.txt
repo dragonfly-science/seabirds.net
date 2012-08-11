@@ -1,0 +1,12 @@
+{% for p in posts.items %}{% for i in p.1 %}{{ i.title }} 
+By {{ i.author.first_name }} {{ i.author.last_name }}, {{ site }}{{ i.get_absolute_url }}
+----------------------------------------------
+
+{% if i.teaser|length >= 20 %}{{ i.teaser }}{% else %}{{ i.text }}{% endif %}
+
+{% endfor %}{% endfor %}
+
+----------------------------------------------
+You are receiving this email because you are a member of Seabirds.net. To change your subscriptions, update your preferences
+on your profile page {{ site}}/petrel/edit/
+

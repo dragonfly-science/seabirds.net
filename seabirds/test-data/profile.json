@@ -1,0 +1,723 @@
+[
+    {
+        "pk": 1, 
+        "model": "sites.site", 
+        "fields": {
+            "domain": "seabirds.webfactional.com", 
+            "name": "Seabirds.net"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.page", 
+        "fields": {
+            "name": "home", 
+            "parent": null, 
+            "title": "Home page", 
+            "date_updated": "2012-07-31", 
+            "text": "# Draft website\r\n\r\nThis is the draft website of seabirds.net. It will remain password protected until it \r\nhas sufficient functionality to be useful. Planned features include:\r\n\r\n  * Registration of seabird researchers\r\n  * Posts by researchers\r\n  * Uploading of photographs\r\n  * Comments and discussion\r\n  * Emailing of WSU news and notices\r\n\r\nSeabirds.net is a gateway for research on the world's seabirds. \r\nSeabirds are diverse, including birds such as penguins, albatrosses, auks, cormorants, and gulls.\r\nThey are important, highly visible components of marine ecosystems. Seabirds are affected by \r\na wide range of human activities, including bycatch from fishing, climate change, and\r\nland based threats to their breeding sites. Seabird research contributes to their\r\nconservation, highlights changes in their populations, and is fundamental to a full\r\nunderstanding of marine ecosystems.\r\n\r\n\r\n\r\n# <a href=\"http://seabirds.webfactional.com/seabirdinfonetwork.html\">Seabird Information Network</a>  \r\nThe Seabird Information Network is a network of databases from contributors all over the world. Please  <a href=\"http://seabirds.webfactional.com/seabirdinfonetwork.html\"> click here </a> to visit the Seabird Information Network\r\n\r\n<p><a href=\"http://axiom.seabirds.net/portal.php\"><img src=\"/images/north-pacific-seabird-data-portal.png\" width=\"180\" height=\"111\" alt=\"NPPDP\" style=\"position:relative; left:0px\"/></a><a href=\"http://axiom.seabirds.net/circumpolar_portal.php\"><img src=\"/images/circumpolar-seabird-portal.png\" width=\"180\" height=\"111\" alt=\"Circump\" style=\"position:relative; left:20px\"/><a href=\"http://axiom.seabirds.net/forum.php\"><img src=\"/images/global-metadata-portal_1.png\" width=\"180\" height=\"111\" alt=\"Meta_map\" style=\"position:relative; right:-40px\"/></p>", 
+            "date_published": "2012-07-27", 
+            "published": true, 
+            "date_created": "2012-01-01", 
+            "sidebar": "## [Our members](/petrel/)\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 24, 
+            "name": "Home", 
+            "parent": null, 
+            "title": "Home page", 
+            "url": "/home.html", 
+            "level": 0, 
+            "lft": 1, 
+            "tree_id": 1, 
+            "order": 0
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 7, 
+            "name": "World Seabird Union", 
+            "parent": 1, 
+            "title": "World Seabird Union", 
+            "url": "/wsu.html", 
+            "level": 1, 
+            "lft": 2, 
+            "tree_id": 1, 
+            "order": 100
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 4, 
+            "name": "WSU Documents", 
+            "parent": 2, 
+            "title": "World seabird union documents", 
+            "url": "/wsu-documents.html", 
+            "level": 2, 
+            "lft": 3, 
+            "tree_id": 1, 
+            "order": 110
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 6, 
+            "name": "WSU Personnel", 
+            "parent": 2, 
+            "title": "WSU Personnel", 
+            "url": "/wsu-personnel.html", 
+            "level": 2, 
+            "lft": 5, 
+            "tree_id": 1, 
+            "order": 111
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 9, 
+            "name": "People", 
+            "parent": 1, 
+            "title": "Seabird researchers", 
+            "url": "/petrel/", 
+            "level": 1, 
+            "lft": 8, 
+            "tree_id": 1, 
+            "order": 150
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 11, 
+            "name": "Students", 
+            "parent": 1, 
+            "title": "Students", 
+            "url": "/students.html", 
+            "level": 1, 
+            "lft": 10, 
+            "tree_id": 1, 
+            "order": 220
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 19, 
+            "name": "Resources", 
+            "parent": 1, 
+            "title": "Resources", 
+            "url": "/resources.html", 
+            "level": 1, 
+            "lft": 12, 
+            "tree_id": 1, 
+            "order": 300
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 14, 
+            "name": "Seabird Info Network", 
+            "parent": 5, 
+            "title": "Seabird Information Network", 
+            "url": "/seabirdinfonetwork.html", 
+            "level": 2, 
+            "lft": 13, 
+            "tree_id": 1, 
+            "order": 310
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 16, 
+            "name": "Publication Links", 
+            "parent": 5, 
+            "title": "Publication Links", 
+            "url": "/publications.html", 
+            "level": 2, 
+            "lft": 15, 
+            "tree_id": 1, 
+            "order": 320
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 18, 
+            "name": "Petrel", 
+            "parent": 5, 
+            "title": "Petrel", 
+            "url": "/petrel/", 
+            "level": 2, 
+            "lft": 17, 
+            "tree_id": 1, 
+            "order": 330
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 21, 
+            "name": "Discussion", 
+            "parent": 1, 
+            "title": "News and discussion", 
+            "url": "/posts/", 
+            "level": 1, 
+            "lft": 20, 
+            "tree_id": 1, 
+            "order": 400
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "cms.navigation", 
+        "fields": {
+            "rght": 23, 
+            "name": "Contact", 
+            "parent": 1, 
+            "title": "Contact", 
+            "url": "/contact.html", 
+            "level": 1, 
+            "lft": 22, 
+            "tree_id": 1, 
+            "order": 500
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.listing", 
+        "fields": {
+            "allow_comments": true, 
+            "description": "Member discussion", 
+            "staff_only_write": false, 
+            "staff_only_read": false, 
+            "key": "discussion", 
+            "optional_list": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "cms.listing", 
+        "fields": {
+            "allow_comments": true, 
+            "description": "WSU news", 
+            "staff_only_write": true, 
+            "staff_only_read": false, 
+            "key": "news", 
+            "optional_list": true
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "cms.listing", 
+        "fields": {
+            "allow_comments": false, 
+            "description": "Job postings", 
+            "staff_only_write": true, 
+            "staff_only_read": true, 
+            "key": "jobs", 
+            "optional_list": true
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "cms.listing", 
+        "fields": {
+            "allow_comments": true, 
+            "description": "Staff only discussion", 
+            "staff_only_write": true, 
+            "staff_only_read": true, 
+            "key": "staff", 
+            "optional_list": false
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "profile.collaborationchoice", 
+        "fields": {
+            "description": "Student currently active within an advanced research degree", 
+            "label": "Graduate Student"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "profile.collaborationchoice", 
+        "fields": {
+            "description": "Student currently undertaking an undergraduate degree", 
+            "label": "Undergraduate Student"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "profile.collaborationchoice", 
+        "fields": {
+            "description": "Academic researcher available to supervise research programmes", 
+            "label": "Research adviser"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "license.license", 
+        "fields": {
+            "url": "http://creativecommons.org/licenses/publicdomain/", 
+            "text": "Public domain", 
+            "symbol": "pd.png", 
+            "name": "PD", 
+            "description": "Public domain"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "license.license", 
+        "fields": {
+            "url": "http://creativecommons.org/licenses/by-nc/3.0/", 
+            "text": "Creative commons BY-NC", 
+            "symbol": "by-nc.png", 
+            "name": "BY-NC", 
+            "description": "Attribution non-commercial"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "license.license", 
+        "fields": {
+            "url": "http://creativecommons.org/licenses/by-nd/3.0/", 
+            "text": "Creative commons BY-ND", 
+            "symbol": "by-nd.png", 
+            "name": "BY-ND", 
+            "description": "Attribution no-derivatives"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "license.license", 
+        "fields": {
+            "url": "http://creativecommons.org/licenses/by-nc-sa/3.0/", 
+            "text": "Creative commons BY-NC-SA", 
+            "symbol": "by-nc-sa.png", 
+            "name": "BY-NC-SA", 
+            "description": "Attribution non-commercial share-alike"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "license.license", 
+        "fields": {
+            "url": "http://creativecommons.org/licenses/by-nc-nd/3.0/", 
+            "text": "Creative commons BY-NC-ND", 
+            "symbol": "by-nc-nd.png", 
+            "name": "BY-NC-ND", 
+            "description": "Attribution non-commercial no-derivatives"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "license.license", 
+        "fields": {
+            "url": "http://creativecommons.org/licenses/by-sa/3.0/", 
+            "text": "Creative commons BY-SA", 
+            "symbol": "by-sa.png", 
+            "name": "BY-SA", 
+            "description": "Attribution share-alike"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Diomedeidae", 
+            "choice": "Albatrosses"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Alcidae", 
+            "choice": "Auks"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Phalacrocoracidae", 
+            "choice": "Cormorants"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Pelecanoididae", 
+            "choice": "Diving petrels"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Fregatidae", 
+            "choice": "Frigatebirds"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Sulidae", 
+            "choice": "Gannets and boobies"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Laridae", 
+            "choice": "Gulls and kittiwakes"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Pelecanidae", 
+            "choice": "Pelicans"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Spheniscidae", 
+            "choice": "Penguins"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Procellariidae", 
+            "choice": "Petrels"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Rhynchopidae", 
+            "choice": "Skimmers"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Sterocorariidae", 
+            "choice": "Skuas"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Hydrobatidae", 
+            "choice": "Storm petrels"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Sternidae", 
+            "choice": "Terns"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "categories.seabirdfamily", 
+        "fields": {
+            "family": "Phaethonidae", 
+            "choice": "Tropicbirds"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "categories.institutiontype", 
+        "fields": {
+            "choice": "Academic (e.g., university, polytechnic)"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "categories.institutiontype", 
+        "fields": {
+            "choice": "Government (e.g., federal or local authority)"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "categories.institutiontype", 
+        "fields": {
+            "choice": "NGO (e.g., non-profit, community group)"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "categories.institutiontype", 
+        "fields": {
+            "choice": "Private (e.g., consultancy, freelance)"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "categories.roletype", 
+        "fields": {
+            "choice": "Student"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "categories.roletype", 
+        "fields": {
+            "choice": "Researcher"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "categories.roletype", 
+        "fields": {
+            "choice": "Technician"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "categories.roletype", 
+        "fields": {
+            "choice": "Manager"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "categories.roletype", 
+        "fields": {
+            "choice": "Not currently working"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Not a researcher"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Behaviour"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Ecology"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Evolution"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Genetics"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Parasitology"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Physiology"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "categories.researchfield", 
+        "fields": {
+            "choice": "Taxonomy"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "cms.post", 
+        "fields": {
+            "listing": 1, 
+            "enable_comments": true, 
+            "name": "world-seabird-conference", 
+            "author": 1, 
+            "date_updated": "2012-01-01", 
+            "text": "[Image john-croxall-and-david-irons place=center]\r\n\r\nThe 1st World Seabird Conference, led by the Pacific Seabird Group and an International Steering Committee of 26 other professional seabird and research organisations from around the world, was held in Victoria, BC, Canada in September 2010. Over 950 participants (including 850 registered conference attendees) from over 40 countries gathered together to comprehensively address the global issues and data needs for this diverse group of birds, most of which inhabit multiple countries and waters within their own ranges. Additional information on the conference program, conference outcomes, and photos are available on the [conference webpage](http://www.worldseabirdconference.com/)", 
+            "image": 1, 
+            "title": "World Seabird Conference", 
+            "date_published": "2011-10-01", 
+            "teaser": "The 1st World Seabird Conference, led by the Pacific Seabird Group and an International Steering Committee of 26 other professional seabird and research organisations from around the world, was held in Victoria, BC, Canada in September 2010.", 
+            "published": true, 
+            "date_created": "2012-01-01", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "cms.image", 
+        "fields": {
+            "license": null, 
+            "title": "John Croxall and david Irons", 
+            "date_updated": "2012-02-02", 
+            "image": "images/john-croxall-and-david-irons.jpg", 
+            "source_url": "", 
+            "caption": "John Croxall and David Irons at the 1st International World Seabird Conference", 
+            "key": "john-croxall-and-david-irons", 
+            "uploaded_by": 1, 
+            "owner": "Axiom", 
+            "date_created": "2012-02-02", 
+            "owner_url": "", 
+            "seabird_families": []
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "profile.userprofile", 
+        "fields": {
+            "wid": null, 
+            "display_email": true, 
+            "webpage": "http://seabirds.net/petrel/albert-ross", 
+            "twitter": "@seabirders", 
+            "seabirds": [
+                1, 
+                10
+            ], 
+            "research_field": [], 
+            "is_researcher": false, 
+            "display_twitter": true, 
+            "collaboration_choices": [], 
+            "title": "Dr", 
+            "research": "Albatross stuff", 
+            "date_updated": "2012-08-10", 
+            "subscriptions": [
+                1, 
+                2, 
+                4
+            ], 
+            "is_moderator": true, 
+            "user": 1, 
+            "accept_terms": false, 
+            "institution": "Dragonfly Science", 
+            "photograph": "users/1/albert-ross.jpg", 
+            "country": "NZ", 
+            "institution_type": 4, 
+            "institution_website": "http://www.dragonfly.co.nz/", 
+            "date_created": "2012-01-01"
+        }
+    },
+    {
+        "pk": 2, 
+        "model": "profile.userprofile", 
+        "fields": {
+            "wid": null, 
+            "display_email": true, 
+            "webpage": "http://seabirds.net/petrel/albert-ross", 
+            "twitter": "@seabirders", 
+            "seabirds": [
+                1, 
+                10
+            ], 
+            "research_field": [], 
+            "is_researcher": false, 
+            "display_twitter": true, 
+            "collaboration_choices": [], 
+            "title": "Dr", 
+            "research": "Albatross stuff", 
+            "date_updated": "2012-08-10", 
+            "subscriptions": [
+                1 
+            ], 
+            "is_moderator": false, 
+            "user": 2, 
+            "accept_terms": false, 
+            "institution": "Dragonfly Science", 
+            "photograph": "users/2/sooty-shearwater.jpg", 
+            "country": "NZ", 
+            "institution_type": 4, 
+            "institution_website": "http://www.dragonfly.co.nz/", 
+            "date_created": "2012-01-01"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "albert-ross", 
+            "first_name": "Albert", 
+            "last_name": "Ross", 
+            "is_active": true, 
+            "is_superuser": true, 
+            "is_staff": true, 
+            "last_login": "2012-08-04T12:50:14.507", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "pbkdf2_sha256$10000$QmbqH6lAOzzV$WVPuaJML42NYn8KJudFkvODyCNIkqySklbMGFPloFh0=", 
+            "email": "albert@seabirds.net", 
+            "date_joined": "2012-01-31T12:55:16"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "sooty-shearwater", 
+            "first_name": "Sooty", 
+            "last_name": "Shearwater", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": false, 
+            "last_login": "2012-08-04T12:50:14.507", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "pbkdf2_sha256$10000$QmbqH6lAOzzV$WVPuaJML42NYn8KJudFkvODyCNIkqySklbMGFPloFh0=", 
+            "email": "sooty@seabirds.net", 
+            "date_joined": "2012-01-31T12:55:16"
+        }
+    }
+]

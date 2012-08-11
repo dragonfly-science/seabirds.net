@@ -1,10 +1,12 @@
 from django import forms
+from django.forms.widgets import CheckboxSelectMultiple
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from PIL import Image as PILImage
 from form_utils.widgets import ImageWidget
 
 from profile.models import UserProfile, CollaborationChoice, ResearchField
+from cms.models import Listing
 
 attrs_dict = {'class': 'required'}
 
@@ -30,8 +32,8 @@ class ProfileForm(forms.ModelForm):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict, maxlength=75)))
     first_name = forms.CharField(label="First name",help_text='', max_length=30)
     last_name = forms.CharField(label="Last name",help_text='', max_length=30)
-    twitter = TwitterField(label="Twitter user name", max_length=15, required=False)
     collaboration_choices = forms.ModelMultipleChoiceField(queryset=CollaborationChoice.objects.order_by("label"), required=False)
+    subscriptions = forms.ModelMultipleChoiceField(queryset=Listing.objects.filter(optional_list=True), required=False)
     research_field = forms.ModelMultipleChoiceField(
         queryset=ResearchField.objects.all(),
         required=False,
@@ -52,13 +54,6 @@ class ProfileForm(forms.ModelForm):
         exclude = ('user', 'date_created', 'date_updated')
         widgets = { 'photograph': ImageWidget }
 
-#    def clean_image(self):
-#        image = self.cleaned_data.get('image', False)
-#        if image:
-#            if image._size > 4*1024*1024: #4MB size limit
-#                raise ValidationError("Image file too large (must be less than 4MB)")
-#            else:
-#                return image
 
     def save(self, *args, **kwargs):
         """

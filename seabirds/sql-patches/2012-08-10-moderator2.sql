@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE cms_post ADD COLUMN "_sent_to_list" boolean NOT NULL DEFAULT FALSE;
+COMMIT;

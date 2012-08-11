@@ -50,6 +50,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
     'seabirds.cms.views.get_base_navigation',
+    'seabirds.cms.context_processors.site',
     'seabirds.admin.context_processors.whereami',
 )
 
@@ -94,8 +95,10 @@ INSTALLED_APPS = (
     'form_utils',
     'sorl.thumbnail',
     'cuckoo',
+    'pigeonpost',
     'django_coverage',
     'django.contrib.comments',
+    'test_utils',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -121,6 +124,7 @@ except ImportError:
     EMAIL_HOST = ''
     EMAIL_HOST_USER = ''
     EMAIL_PORT = 0
+EMAIL_NOREPLY = 'noreply@seabirds.net'
 SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
 
@@ -135,3 +139,5 @@ STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
 ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
 
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
+
+PIGEONPOST_DEFER_POST_MODERATOR = 30*60 #10 minutes

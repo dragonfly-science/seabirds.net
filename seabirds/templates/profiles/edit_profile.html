@@ -115,15 +115,25 @@
         </label>
         {{ form.seabirds }}
     </div>
-    <div class="ym-fbox-select">
+    <!--<div class="ym-fbox-select">
         <label for="id_collaboration_choices">Looking for
         <div class="form-help">Select members that you are interested in receiving collaboration offers from.</div>
+        {{ form.collaboration_choices.errors }} 
        </label>
         {{ form.collaboration_choices }} 
-        {% for choice in form.get_collaboration_choices %}
-          <div> {{ choice.1 }} </div>
-          <div>{{ choice.label }} </div><p>{{ choice.description }}</p>
-        {% endfor %} 
+    </div>-->
+    <h6> Mailing lists </h6>
+    <p> Members of Seabird.net may choose to be  sent emails from a number of different seabirds.net mailing lists.
+    To receive these emails, please select the lists you would like to follow below.</p>
+    <div class="ym-fbox-select {% if form.subscriptions.errors %}ym-error{% endif %}">
+        <label for="id_subscriptions">Mailing lists
+        <div class="form-help"> Select the mailing lists that you would like to subscribe to.
+        Use the Ctrl or Command key to select more than one.
+        </div>
+        {{ form.subscriptions.errors }}
+        </label>
+        <div id="subscriptions">
+        {{ form.subscriptions }}</div>
     </div>
 {% block terms %}
 {% endblock %}

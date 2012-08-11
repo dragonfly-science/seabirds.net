@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
-from cms.models import Page, Image, File, Post, Navigation
+from cms.models import Page, Image, File, Post, Navigation, Listing
 from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
 from mptt.admin import MPTTModelAdmin
@@ -49,4 +49,10 @@ admin.site.register(Image, ImageAdmin)
 class FileAdmin(admin.ModelAdmin):
     list_display = ('title','file')
 admin.site.register(File, FileAdmin)
+
+class ListingAdmin(admin.ModelAdmin):
+    list_display = ('key', 'description', 'staff_only_write', 'staff_only_read', 
+        'allow_comments', 'optional_list')
+admin.site.register(Listing, ListingAdmin)
+    
 

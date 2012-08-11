@@ -22,7 +22,7 @@ from django.utils.html import strip_tags
 from PIL import Image as PILImage
 
 from categories.models import SeabirdFamily
-from cms.models import Page, File, Navigation, Image, Post, Section
+from cms.models import Page, File, Navigation, Image, Post, Listing
 from cms.forms import PostForm, ImageForm, SimpleComment
 from bibliography.models import Reference
 from license.models import License
@@ -276,14 +276,15 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                     pass
         elif 'edit' in request.POST:
             return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
-        elif 'publish' in request.POST:
+        elif 'publish' in request.POST or 'restore' in request.POST:
             post.published = True
+            if request.user.is_authenticated() and request.user.profile.get().is_moderator:
+                post._notify_moderator = False
+            else:
+                post._notify_moderator = True
             post.save()
         elif 'retract' in request.POST:
             post.published = False
-            post.save()
-        elif 'restore' in request.POST:
-            post.published = True
             post.save()
         elif 'delete' in request.POST:
             profile = UserProfile.objects.get(user = post.author)
@@ -303,7 +304,8 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
         latest_comment = None
         initial = None
     # Logic to decide whether to allow editing of the form
-    if request.user.is_authenticated() and (request.user == post.author or request.user.is_staff):
+    if request.user.is_authenticated() and (request.user == post.author or request.user.is_staff or \
+            request.user.profile.get().is_moderator):
         return render_to_response('cms/post.html', {'object': post, 'form': True,
             'add_comment': add_comment, 'commentform': SimpleComment(prefix='comment', initial=initial)},
             context_instance=RequestContext(request))
@@ -357,6 +359,10 @@ def edit_post(request, post_id=None):
                 post.name = name
                 if not post.author:
                     post.author = request.user
+                if request.user.is_authenticated() and request.user.profile.get().is_moderator:
+                    post._notify_moderator = False
+                else:
+                    post._notify_moderator = True
             post.save()
             return HttpResponseRedirect(post.get_absolute_url())
     else:
@@ -387,7 +393,7 @@ def jobs(request):
     delta = datetime.timedelta(days=max_days)
     target_time = now - delta
     
-    jobs = Post.objects.filter(date_created__gt=target_time, published=True, section=Section.objects.get(key='jobs'))
+    jobs = Post.objects.filter(date_created__gt=target_time, published=True, listing=Listing.objects.get(key='jobs'))
     ctx = RequestContext(request)
     return render_to_response('cms/jobs.html', dict(jobs=jobs, max_days=max_days), context_instance=ctx)
 

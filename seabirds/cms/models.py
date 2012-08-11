@@ -11,7 +11,9 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, Resolver404
+from django.core.mail import EmailMessage
 
+from pigeonpost.tasks import add_to_queue
 from markdown import markdown
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -99,8 +101,8 @@ class Page(models.Model):
         help_text='Sidebar text. Appears at the top of the right sidebar. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     date_published = models.DateField(
         help_text="Publication date", null=True, blank=True)
-    date_created = models.DateField(auto_now_add=True)
-    date_updated = models.DateField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
      
     def __str__(self):
         return self.name
@@ -140,13 +142,16 @@ class Post(models.Model):
     seabird_families = models.ManyToManyField(SeabirdFamily, related_name='posts', null=True, blank=True, help_text="Optional. If this post is about a particular seabird or seabirds, please select the correct families.") 
     image = models.ForeignKey('Image', related_name = 'posts', null=True, blank=True,
 	    help_text='Image associated with the post')
-    date_created = models.DateField(auto_now_add=True)
-    date_updated = models.DateField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
     enable_comments = models.BooleanField()
-    section = models.ForeignKey('Section', related_name = 'posts', default=1,
-        help_text='Section of the website that the post is published in')
+    listing = models.ForeignKey('Listing', related_name='posts', default=1,
+        help_text='List that the post is published in')
+    _notify_moderator = models.BooleanField(default=False, editable=False,
+        help_text='True if the moderator should be notified of edits to this post') 
+    _sent_to_list = models.BooleanField(default=False, editable=False, 
+        help_text='True if the post has been sent to lists')
 
-	
     def __str__(self):
         return self.name
 
@@ -170,12 +175,25 @@ class Post(models.Model):
             'day': date.strftime('%d'), 
             'slug': self.name})
 
+    def email_moderator(self, user):
+        if user.is_moderator:
+            subject = render_to_string('email_list_subject.txt', {'title': self.title, 'user': user, 'post': self})
+            body = render_to_string('email_list_body.txt', {'text': self.text, 'user': user, 'post': self})
+            return EmailMessage(subject, body, to=[user.email])
+
     def save(self, *args, **kwargs):
-        if self.published and not self.date_published:
+        if not self.date_published: #The first time it is saved it is published
+            self.published = True
             self.date_published = datetime.date.today()
-        if not self.enable_comments: #Default to the value for the section unless overridden
-            self.enable_comments = self.section.allow_comments
+            self.enable_comments = self.listing.allow_comments
         super(Post, self).save(*args, **kwargs)
+        
+        # When the post is saved, the moderators are notified, with a delay
+        if self.published and self._notify_moderator and kwargs.get('commit', True):
+            add_to_queue(sender=self, 
+                render_email_method='email_moderator', 
+                defer_for=settings.PIGEONPOST_DEFER_POST_MODERATOR)
+            self._notify_moderator = False
 
     class Meta:
         ordering = ['-date_published', '-date_created']
@@ -217,8 +235,8 @@ class Image(models.Model):
         help_text="Optional copyright license. Available licenses include <a href='http://creativecommons.org/'>creative commons</a> or public domain licenses. If no license is specified it is assumed that the owner has the copyright and has granted permission for the image to be used")
     uploaded_by = models.ForeignKey(User, 
         help_text="The user who uploaded the image")
-    date_created = models.DateField(auto_now_add=True)
-    date_updated = models.DateField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
     def thumbnail(self, width=100, max_height=300):
         width, height = self.get_dimensions(width=width, max_height=max_height)
@@ -295,12 +313,13 @@ class Navigation(MPTTModel):
     class Meta:
         verbose_name_plural = 'navigation'
         
-class Section(models.Model):
+class Listing(models.Model):
     key = models.SlugField(max_length=50)
     description = models.TextField()
     staff_only_write = models.BooleanField()
     staff_only_read = models.BooleanField()
     allow_comments = models.BooleanField()
+    optional_list = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.description

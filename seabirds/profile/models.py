@@ -7,6 +7,7 @@ from django.db.models.signals import pre_save, post_save
 from django.template.defaultfilters import slugify
 
 from categories.models import SeabirdFamily, InstitutionType, ResearchField
+from cms.models import Listing
 
 TITLES = ('Mr', 'Ms', 'Mrs', 'Miss', 'Dr', 'Prof')
 
@@ -49,6 +50,8 @@ class UserProfile(models.Model):
     date_created = models.DateField(auto_now_add = True)
     date_updated = models.DateField(auto_now = True)
     wid = models.IntegerField(null=True, blank=True, editable=False)
+    subscriptions = models.ManyToManyField(Listing, related_name='profiles', null=True, blank=True)
+    is_moderator = models.BooleanField(default=False, editable=False)
 
     def __str__(self):
         return "%s %s"%(self.user.first_name, self.user.last_name)
