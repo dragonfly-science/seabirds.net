@@ -172,7 +172,8 @@ def get_initial_data(request):
     return initial
 
 def process_image_form(request, image_id=None):
-    if request.method == 'POST': # If the form has been submitted..
+    print "Process image ***"
+    if request.method == 'POST' and request.POST.has_key('submit'): # If we are saving the form
         if not image_id:
             form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
         else:
@@ -207,11 +208,13 @@ def process_image_form(request, image_id=None):
             form.redirect_url = image.get_absolute_url()
     else: #unbound forms
         if not image_id:
+            print "No image id ***"
             form = ImageForm(initial=get_initial_data(request), prefix='image')
         else:
             image = get_object_or_404(Image, id=image_id)
+            print "Image form ***"
             #form = ImageForm(initial=get_initial_data(request), prefix='image', instance=image) 
-            form = ImageForm(prefix='image', instance=image) 
+            form = ImageForm(prefix='image', instance=image)
     return form
 
 REQUIRED_FIELDS = ('image', 'title', 'owner', 'text', 'teaser')
@@ -375,7 +378,7 @@ def edit_post(request, post_id=None):
             if not post.image:
                 imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
             else:
-                imageform = ImageForm(post.image, initial=get_initial_data(request), prefix='image')
+                imageform = ImageForm(instance=post.image, initial=get_initial_data(request), prefix='image')
     if post_id:
         action = reverse('edit-post', args=(), kwargs={'post_id': post.id})
     else:
