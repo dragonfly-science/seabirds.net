@@ -172,7 +172,6 @@ def get_initial_data(request):
     return initial
 
 def process_image_form(request, image_id=None):
-    print "Process image ***"
     if request.method == 'POST' and request.POST.has_key('submit'): # If we are saving the form
         if not image_id:
             form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
@@ -208,11 +207,9 @@ def process_image_form(request, image_id=None):
             form.redirect_url = image.get_absolute_url()
     else: #unbound forms
         if not image_id:
-            print "No image id ***"
             form = ImageForm(initial=get_initial_data(request), prefix='image')
         else:
             image = get_object_or_404(Image, id=image_id)
-            print "Image form ***"
             #form = ImageForm(initial=get_initial_data(request), prefix='image', instance=image) 
             form = ImageForm(prefix='image', instance=image)
     return form
@@ -232,7 +229,6 @@ def edit_image(request, image_id=None):
 # Process comments
 @login_required
 def process_comment(request, commentform, post):
-    print commentform.cleaned_data
     try:
         comment = Comment.objects.get(id=commentform.cleaned_data.get('id', None))
     except Comment.DoesNotExist:
@@ -334,8 +330,7 @@ def edit_post(request, post_id=None):
             postform = PostForm(request.POST, request.FILES, prefix='post', instance=post)
         else:
             postform = PostForm(request.POST, request.FILES, prefix='post') 
-        # check that the image form has been completed (look for a file path)
-        if request.FILES.has_key('image-image'):
+        if post.image or request.FILES.has_key('image-image'):
             imageform = process_image_form(request, image_id=image_id)
         else:
             imageform = None
