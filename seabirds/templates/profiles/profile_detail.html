@@ -29,6 +29,12 @@
 </div>
 {% endblock content %}
 
+{% block leftbar %}
+{% if request.user == profile.user %}
+<button class="ym-button" style="width:80%; margin-left: 10%; margin-right:10%"><a href="/petrel/edit/">Update your profile</a></button>
+<button class="ym-button" style="width:80%; margin-left: 10%; margin-right:10%"><a href="/accounts/password/change/">Change your password</a></button>
+{% endif %}
+{% endblock leftbar %}
 
 {% block sidebar %}
 <div class="profile">
