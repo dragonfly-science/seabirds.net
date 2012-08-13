@@ -1,4 +1,6 @@
 BEGIN;
+DROP TABLE IF EXISTS "pigeonpost_pigeon";
+DROP TABLE IF EXISTS "pigeonpost_outbox";
 CREATE TABLE "pigeonpost_pigeon" (
     "id" serial NOT NULL PRIMARY KEY,
     "source_content_type_id" integer NOT NULL REFERENCES "django_content_type" ("id") DEFERRABLE INITIALLY DEFERRED,
