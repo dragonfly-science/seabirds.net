@@ -1,5 +1,5 @@
 BEGIN;
-DROP TABLE IF EXISTS cms_listing;
+DROP TABLE IF EXISTS cms_listing CASCADE;
 ALTER TABLE cms_section RENAME TO cms_listing;
 ALTER TABLE cms_listing ADD  "primary_list" boolean NOT NULL DEFAULT TRUE;
 ALTER TABLE cms_post RENAME section_id tO listing_id;
