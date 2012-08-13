@@ -13,6 +13,7 @@ from categories.models import SeabirdFamily
 from cms.models import Page, Post, Navigation, Listing
 from cms.tasks import send_digest
 from pigeonpost.models import Pigeon, Outbox
+from pigeonpost.tasks import process_outbox
 from profile.models import UserProfile
 
 class TestPages(TestCase):

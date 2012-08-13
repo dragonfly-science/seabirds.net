@@ -43,7 +43,7 @@ class UserProfile(models.Model):
     is_researcher = models.BooleanField(default=True)
     photograph = models.ImageField(upload_to=get_photo_path, null=True, blank=True)
     seabirds = models.ManyToManyField(SeabirdFamily, related_name='profiles', null=True, blank=True)
-    twitter = models.CharField(max_length=15, null=True, blank=True)
+    twitter = models.CharField(max_length=16)
     display_twitter = models.BooleanField(default=False)
     collaboration_choices = models.ManyToManyField(CollaborationChoice, null=True, blank=True)
     accept_terms = models.BooleanField(default=False)

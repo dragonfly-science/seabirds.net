@@ -228,6 +228,11 @@ a:hover { color: #369; text-decoration: underline; background-color: transparent
 a.pageedit { color: #fd1241; }
 a.pageedit:hover { color: #fff; }
 
+.readmore, .byline {
+    margin-top: 0.1em;
+}
+
+
 
 #dsq-brlink {
 	display: none;

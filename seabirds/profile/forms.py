@@ -30,8 +30,8 @@ def research_field_validation(value):
 
 class ProfileForm(forms.ModelForm):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict, maxlength=75)))
-    first_name = forms.CharField(label="First name",help_text='', max_length=30)
-    last_name = forms.CharField(label="Last name",help_text='', max_length=30)
+    first_name = forms.CharField(label="First name", help_text='', max_length=30)
+    last_name = forms.CharField(label="Last name", help_text='', max_length=30)
     collaboration_choices = forms.ModelMultipleChoiceField(queryset=CollaborationChoice.objects.order_by("label"), required=False)
     subscriptions = forms.ModelMultipleChoiceField(queryset=Listing.objects.filter(optional_list=True), required=False)
     research_field = forms.ModelMultipleChoiceField(
@@ -63,6 +63,9 @@ class ProfileForm(forms.ModelForm):
         u.email = self.cleaned_data['email']
         u.first_name = self.cleaned_data['first_name']
         u.last_name = self.cleaned_data['last_name']
+        twitter = self.cleaned_data['twitter']
+        if twitter:
+            u.twitter = twitter.strip()
         u.save()
         profile = super(ProfileForm, self).save(*args,**kwargs)
         return profile

@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load cms_filters %}
 
-{% block title %}Recent discussion{% endblock %}
+{% block title %}Discussion{% endblock %}
+<p> A forum for discussion on seabirds and seabird research </p>
 
 {% block content %}
 {% for object in latest %}
@@ -14,7 +15,7 @@
       <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3><p class="byline">{{ object.date_published|date:"F j, Y" }}</p>
       <img src="{{ object.image.get_qualified_url }}" class="flexible float-right" width=100px>
       <div class="teaser"> {{ object.markdown_teaser }}</div>
-      <p><a href="{{ object.get_absolute_url }}"> Read more </a></p>
+      {% if object.markdown_text %}<p class="readmore"><a href="{{ object.get_absolute_url }}"> Read more </a></p>{% endif %}
     {% endautoescape %}
     {% if not object.published %}</div>{% endif %}
   {% endif %}
