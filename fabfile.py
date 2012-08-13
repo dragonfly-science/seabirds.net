@@ -83,7 +83,6 @@ def update():
     with cd('%(path)s' % env):
         run('pip install -r requirements.txt')
     with cd('%(path)s/seabirds' % env):
-        run('python manage.py syncdb')
         run('python manage.py cuckoo run')
 
 def syncdb():
