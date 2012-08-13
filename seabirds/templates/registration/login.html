@@ -9,11 +9,11 @@
 
 <form method="post" action="{% url django.contrib.auth.views.login %}" class="ym-form ym-columnar">{% csrf_token %}
     <div class="ym-fbox-text">
-        <label for="id_title">Email or username</label>
+        <label for="id_username">Email or username</label>
         {{ form.username }}
     </div>
     <div class="ym-fbox-text">
-        <label for="id_title">{{ form.password.label_tag }}</label>
+        {{ form.password.label_tag }}
         {{ form.password }}
     </div>
 <input type="submit" value="login" />

@@ -98,7 +98,6 @@ INSTALLED_APPS = (
     'pigeonpost',
     'django_coverage',
     'django.contrib.comments',
-    'test_utils',
 )
 
 AUTHENTICATION_BACKENDS = (

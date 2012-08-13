@@ -32,8 +32,8 @@
                 </div>
                 {% endblock header%}
                 </header>
-                <div id="top-navigation" class='ym-contain-fl ym-clearfix'>
-                    <ul class="float-right">
+                <nav id="top-navigation">
+                    <ul>
                         {% if user.is_authenticated %}
                         <li><a href='/edit/post/' {% block post-discussion %}{% endblock %}>Post discussion</a><li>
                         <li><a href='/petrel/{{ user.username }}/' {% block view-active %}{% endblock %}>View profile</a><li>
@@ -47,7 +47,7 @@
                         <li><a href='/accounts/register' {% block register-active %}{% endblock %}>Register</a><li>
                         {% endif %}
                     </ul>
-                </div>
+                </nav>
                 <div style="background-color:#eee">
                     <div class="ym-column linearize-level-1">
                         <!-- Navigation column -->
@@ -99,7 +99,7 @@
                 </div>
                 <footer>
                     {% block footer %}
-                    <a href="/"><img src="/css/wsu-logo-gray.png" height=90px class="float-right"></a>
+                    <a href="/"><img src="/css/wsu-logo-gray.png" height="90px" class="float-right" alt="WSU logo"></a>
                     {% endblock footer %}
                 </footer>
             </div>
