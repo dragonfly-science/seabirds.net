@@ -330,7 +330,7 @@ def edit_post(request, post_id=None):
             postform = PostForm(request.POST, request.FILES, prefix='post', instance=post)
         else:
             postform = PostForm(request.POST, request.FILES, prefix='post') 
-        if post.image or request.FILES.has_key('image-image'):
+        if post and (post.image or request.FILES.has_key('image-image')):
             imageform = process_image_form(request, image_id=image_id)
         else:
             imageform = None
