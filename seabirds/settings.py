@@ -8,6 +8,7 @@ SITE_ROOT = '/usr/local/django/seabirds.net'
 SITE_NAME = 'Seabirds.net development'
 SITE_URL = 'http://localhost:8000'
 SITE_ID = 1
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 try:
     from sitesettings import *
