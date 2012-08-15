@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 from django.core import mail
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.core.mail.message import EmailMessage
@@ -15,6 +16,14 @@ from cms.tasks import send_digest
 from pigeonpost.models import Pigeon, Outbox
 from pigeonpost.tasks import process_outbox
 from profile.models import UserProfile
+
+class TestEmail(TestCase):
+    def test_email_host(self):
+        for setting in  (settings.EMAIL_HOST_PASSWORD, \
+                settings.EMAIL_HOST, settings.EMAIL_HOST_USER, \
+                settings.SERVER_EMAIL, settings.DEFAULT_FROM_EMAIL):
+            self.assertFalse(setting == '')
+
 
 class TestPages(TestCase):
     def setUp(self):
