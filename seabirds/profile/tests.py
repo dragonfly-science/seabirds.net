@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test.utils import override_settings
 from categories.models import SeabirdFamily, InstitutionType
 from profile.models import UserProfile
 
@@ -35,6 +36,27 @@ class TestAnonymous(TestCase):
     def test_anonymous_users_redirected_to_login(self):
         response = self.client.get('/petrel/edit/', follow=True)
         self.assertTrue('login' in response.content, msg='Not redirected to the login page')
+
+
+#class TestNewUser(TestCase):
+#    @override_settings(DEBUG=True)
+#    def test_create_user(self):
+#        response = self.client.post(reverse('registration_register'), 
+#            {'first_name':'Fairy', 
+#            'last_name':'Prion', 
+#            'email': 'fairy@prion.net',
+#            'accept_terms': True,
+#            'research_field': 1,
+#            'password1':'fairyprion', 
+#            'password2':'fairyprion',
+#            'recaptcha_response_field': 'PASSED',
+#            }, follow=True)
+#        print(dir(response.content))
+#        print(response.content)
+#        self.assertTrue(response.status_code == 200)
+#        u = User.objects.get(first_name='Fairy')
+#        self.assertTrue(u.last_name, 'Prion')
+
 
 #class TestCustomListView(TestCase):
 
