@@ -85,6 +85,10 @@ def update():
     with cd('%(path)s/seabirds' % env):
         run('python manage.py cuckoo run')
 
+def cuckoo():
+    with cd('%(path)s/seabirds' % env):
+        run('python manage.py cuckoo run')
+
 def syncdb():
     with cd('%(path)s/seabirds' % env):
         run('python manage.py syncdb')
