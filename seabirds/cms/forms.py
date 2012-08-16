@@ -14,7 +14,6 @@ class PostForm(forms.ModelForm):
         model = Post
         exclude = ('author', 'name', 'date_published', 'published', 'image', 'date_created', 'date_updated', 'enable_comments', '_notify_moderator')
         widgets = {
-            'teaser': forms.Textarea(attrs={'rows': 6}),
             'text': forms.Textarea(attrs={'rows': 27}),
             }
 

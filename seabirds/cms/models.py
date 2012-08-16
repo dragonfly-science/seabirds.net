@@ -135,8 +135,6 @@ class Post(models.Model):
         help_text="Publication date")
     published = models.BooleanField(default=False,
         help_text="When this box is checked, the post will be visible on the site.")
-    teaser = models.TextField(max_length = 300,
-        help_text='Teaser text. Short text that appears in lists of posts. Must be less than 300 characters long. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     text = models.TextField(
         help_text='Post text. Formatted using <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a>')
     seabird_families = models.ManyToManyField(SeabirdFamily, related_name='posts', null=True, blank=True, help_text="Optional. If this post is about a particular seabird or seabirds, please select the correct families.") 
@@ -160,9 +158,18 @@ class Post(models.Model):
         return markdownplus(self, self.text)
 
     @property
-    def markdown_teaser(self):
-        return markdownplus(self, self.teaser)
-
+    def markdown_teaser(self, max_length=200):
+        chars = [(len(x), x) for x in self.text.split('\n')]
+        n = 0
+        i = 0
+        teaser = ''
+        while n < max_length and i < len(chars):
+            n += chars[i][0]
+            teaser += '\n'
+            teaser += chars[i][1]
+            i += 1
+        return markdownplus(self, teaser.strip())
+            
     @permalink
     def get_absolute_url(self):
         if self.date_published:

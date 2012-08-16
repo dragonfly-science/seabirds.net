@@ -2,7 +2,7 @@
 By {{ i.author.first_name }} {{ i.author.last_name }}, {{ site }}{{ i.get_absolute_url }}
 ----------------------------------------------
 
-{% if i.teaser|length >= 20 %}{{ i.teaser }}{% else %}{{ i.text }}{% endif %}
+{{ i.text }}
 
 {% endfor %}{% endfor %}
 

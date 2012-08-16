@@ -21,7 +21,7 @@ def send_digest(earliest=36, latest=12):
                 date_created__lt = latest_datetime,
                 published = True,
                 _sent_to_list = False)
-            substantive = [item for item in items if len(item.teaser.strip()) > 20 or len(item.text.strip()) > 20] 
+            substantive = [item for item in items if len(item.text.strip()) > 20] 
             if substantive:
                 posts[subscription.description] = substantive
         if posts:

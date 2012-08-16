@@ -117,7 +117,6 @@
             "image": null, 
             "title": "Jumping beans", 
             "date_published": "2012-02-15", 
-            "teaser": "Jumping jelly beans", 
             "published": false, 
             "seabird_families": [], 
             "name": "jumping-beans"
@@ -133,7 +132,6 @@
             "image": null, 
             "title": "A test post", 
             "date_published": "2012-02-15", 
-            "teaser": "This is a short test post", 
             "published": false, 
             "seabird_families": [], 
             "name": "a-test-post"
@@ -149,7 +147,6 @@
             "image": 14, 
             "title": "fighting bay", 
             "date_published": "2012-02-15", 
-            "teaser": "Diving locations in fighting bay", 
             "published": false, 
             "seabird_families": [], 
             "name": "fighting-bay"
@@ -165,7 +162,6 @@
             "image": 7, 
             "title": "Upcoming for the WSU", 
             "date_published": "2012-02-03", 
-            "teaser": "Upcoming World Seabird Union conference call times and Information about WSU", 
             "published": true, 
             "seabird_families": [], 
             "name": "upcoming-wsu"
@@ -181,7 +177,6 @@
             "image": 1, 
             "title": "World Seabird Conference", 
             "date_published": "2011-10-01", 
-            "teaser": "The 1st World Seabird Conference, led by the Pacific Seabird Group and an International Steering Committee of 26 other professional seabird and research organisations from around the world, was held in Victoria, BC, Canada in September 2010.", 
             "published": true, 
             "seabird_families": [], 
             "name": "world-seabird-conference"

@@ -39,11 +39,11 @@ class TestPages(TestCase):
 
     def test_index(self):
         response = self.client.get('/index.html')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_home(self):
         response = self.client.get('/home.html')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
     
     def test_posts(self):
         response = self.client.get('/posts/')
@@ -75,7 +75,6 @@ class TestPosts(TestCase):
     @override_settings(PIGEONPOST_DEFER_POST_MODERATOR=5)
     def test_create_post(self):
         response = self.client.post(reverse('new-post'), {'post-title':'Test', 
-            'post-teaser':'A test post', 
             'post-text':'This is a test post', 
             'post-listing':1, 
             'post-seabird_families':[1, 2]}, follow=True)
@@ -95,14 +94,12 @@ class TestPosts(TestCase):
         
     def test_edit_post(self):
         response = self.client.post(reverse('new-post'), {'post-title':'Test', 
-            'post-teaser':'A test post', 
             'post-text':'This is a test post', 
             'post-listing':1, 
             'post-seabird_families':[1, 2]}, follow=True)
         p = Post.objects.get(title='Test')
         response = self.client.post(reverse('edit-post', kwargs={'post_id':p.id}), 
             {'post-title':'Edited', 
-            'post-teaser':'A test post', 
             'post-text':'This is a test post', 
             'post-listing':1, 
             'post-seabird_families':[1, 2]}, follow=True)
@@ -122,7 +119,7 @@ class TestDigest(TestCase):
         albert = User.objects.get(username='albert-ross')
         listing = Listing.objects.all()[0]
         subscribers = [p.user for p in UserProfile.objects.all() if listing in p.subscriptions.all()]
-        Post(title='title', text='text', teaser='a sufficient teaser to the story', listing=listing, author=albert).save()
+        Post(title='title', text='text',  listing=listing, author=albert).save()
 
         send_digest(earliest=1, latest=-1)
         outbox = Outbox.objects.all()
@@ -137,9 +134,9 @@ class TestDigest(TestCase):
     def test_digest_rendering(self):
         albert = User.objects.get(username='albert-ross')
         listing = Listing.objects.all()[0]
-        Post(title='alpha', text='beta', teaser='gamma rays are powerful and deadly', 
+        Post(title='alpha', text='beta', 
             listing=listing, author=albert, name='alpha').save()
-        Post(title='one', text='two', teaser='three people in a bath is two people too many', 
+        Post(title='one', text='two', 
             listing=listing, author=albert, name='one').save()
         
         send_digest(earliest=1, latest=-1)

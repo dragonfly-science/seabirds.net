@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE cms_post DROP COLUMN teaser;
+COMMIT;

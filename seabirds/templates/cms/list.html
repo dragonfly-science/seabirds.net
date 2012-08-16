@@ -7,17 +7,26 @@
 {% block content %}
 {% for object in latest %}
   {% if object.published or user.is_authenticated and perms.website.administration %}
+    <div class="post-list ym-contain-dt">
     {% if not object.published %}<div class="pagedraft">{% endif %}
+      <img src="{{ object.image.get_qualified_url }}" class="float-left" width=60>
     {% if user.is_authenticated and perms.website.administration %}
-      <p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>
+      <!--<p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>-->
     {% endif %}
     {% autoescape off %}
-      <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3><p class="byline">{{ object.date_published|date:"F j, Y" }}</p>
-      <img src="{{ object.image.get_qualified_url }}" class="flexible float-right" width=100px>
-      <div class="teaser"> {{ object.markdown_teaser }}</div>
-      {% if object.markdown_text %}<p class="readmore"><a href="{{ object.get_absolute_url }}"> Read more </a></p>{% endif %}
+      <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3>
+   <p class="byline">
+   {% if object.author %}
+        {% if object.author.is_active %}
+        <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }}</a>, 
+        {% else %}
+            {{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }},
+        {% endif %}
+    {% endif %}
+      {{ object.date_published|date:"F j, Y" }}</p>
     {% endautoescape %}
     {% if not object.published %}</div>{% endif %}
+    </div>
   {% endif %}
 {% endfor  %}
 {% endblock %}

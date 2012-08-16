@@ -28,7 +28,6 @@ from bibliography.models import Reference
 from license.models import License
 from profile.models import UserProfile
 
-@login_required
 def page(request, name):
     context_instance=RequestContext(request)
     context_instance.autoescape=False
@@ -53,12 +52,14 @@ def page(request, name):
             )
     if name in (u'home',):
         c['twitter'] = 'seabirders'
-        c['seabirders'] = random.sample(
-            [profile for profile in UserProfile.objects.all() if hasattr(profile.photograph, 'file')],
-            9)
+        if len(UserProfile.objects.all()) > 8:
+            c['seabirders'] = random.sample(
+                [profile for profile in UserProfile.objects.all() if hasattr(profile.photograph, 'file')],
+                9)
+        else:
+            c['seabirders'] = []
     return render_to_response('index.html', c, context_instance)
 
-@login_required
 def home(request):
     return page(request, 'home')
 
@@ -96,7 +97,6 @@ def image(request, filename):
     img.save(response, format)
     return response
 
-@login_required
 def imagepage(request, key):
     image = get_object_or_404(Image, key=key)
     if request.user.is_authenticated() and (request.user == image.uploaded_by or request.user.is_staff):
@@ -108,7 +108,6 @@ def imagepage(request, key):
     return render_to_response('cms/imagepage.html', {'image': image, 'editform': editform, 'action':action},
         context_instance=RequestContext(request))
 
-@login_required
 def reference(request, key):
     current = None
     for r in get_list_or_404(Reference, name=key):
@@ -214,7 +213,7 @@ def process_image_form(request, image_id=None):
             form = ImageForm(prefix='image', instance=image)
     return form
 
-REQUIRED_FIELDS = ('image', 'title', 'owner', 'text', 'teaser')
+REQUIRED_FIELDS = ('image', 'title', 'owner', 'text',)
 @login_required
 def edit_image(request, image_id=None):
     imageform = process_image_form(request, image_id=image_id)
@@ -250,12 +249,11 @@ def process_comment(request, commentform, post):
     return comment
 
 # View an individual post
-@login_required
 def individual_post(request, year=None, month=None, day=None, slug=None):
     if not slug:
         return Http404
     post = get_object_or_404(Post, name=slug)
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated():
         if 'edit_comment' in request.POST or 'delete_comment' in request.POST:
             commentform = SimpleComment(request.POST, prefix='comment')
             comment_id = commentform.data.get('comment-id', None)
@@ -294,8 +292,10 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
     #Logic to decide whether or not to allow comment to be added
     add_comment =  post.enable_comments and post.published and request.user.is_authenticated()
     # Is there an existing comment by this user that should be edited or should we get a new one?
-    commentset = Comment.objects.for_model(Post).filter(object_pk=post.id).filter(user=request.user)
-    commentset = commentset.filter(submit_date__gt=datetime.datetime.now() - datetime.timedelta(seconds=60*10)).order_by('-submit_date')[0:1]
+    commentset = []
+    if request.user.is_authenticated():
+        commentset = Comment.objects.for_model(Post).filter(object_pk=post.id).filter(user=request.user)
+        commentset = commentset.filter(submit_date__gt=datetime.datetime.now() - datetime.timedelta(seconds=60*10)).order_by('-submit_date')[0:1]
     if commentset:
         latest_comment = commentset[0]
         initial = {'comment': latest_comment.comment, 'id': latest_comment.id }
