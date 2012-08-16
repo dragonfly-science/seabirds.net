@@ -22,3 +22,9 @@
 <p>Login using your email address or your username. Your username is usually of the form firstname-lastname.<br> <a href="{% url auth_password_reset %}">Request a new password</a><br><a href="{% url registration_register %}">Register as a seabird researcher</a></p>
 
 {% endblock %}
+
+{% block leftbar %}
+{% if not user.is_authenticated %}
+<div id="join"><a href="/accounts/register/"><img src="/css/join-us.png" alt="Join us"></a></div>
+{% endif %}
+{% endblock leftbar %}

@@ -19,6 +19,13 @@
 {% endif %}
 {% endblock content %}
 
+
+{% block leftbar %}
+{% if not user.is_authenticated %}
+<div id="join"><a href="/accounts/register/"><img src="/css/join-us.png" alt="Join us"></a></div>
+{% endif %}
+{% endblock leftbar %}
+
 {% block sidebar %}
   {{ page.markdown_sidebar }}
  

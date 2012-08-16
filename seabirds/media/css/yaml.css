@@ -392,3 +392,7 @@ color: #fff;
     color: #4D87C7;
     cursor: pointer;
 }
+
+#join img{
+    width: 100%;
+}
