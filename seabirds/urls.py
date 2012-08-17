@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.sitemaps import Sitemap, GenericSitemap
 from django.contrib import admin
 from django.views.generic.simple import redirect_to
+from django.views.generic import TemplateView
 
 from cms.models import Page, Post
 from cms.forms import PostForm
@@ -108,6 +109,7 @@ urlpatterns += patterns('',
     url(r'^(?P<name>[-\w]+)\.html',           'cms.views.page', name='page'),
     url(r'^jobs/$', 'cms.views.jobs', name='jobs'),
     url(r'^gallery/create$', 'cms.views.edit_image', name='new-image'),
-    url(r'^gallery/(?P<seabird_family>.*)$', 'cms.views.gallery', name='gallery')
+    url(r'^gallery/(?P<seabird_family>.*)$', 'cms.views.gallery', name='gallery'),
+    url(r'^_template.html', TemplateView.as_view(template_name='axiom.html')),
 )
 
