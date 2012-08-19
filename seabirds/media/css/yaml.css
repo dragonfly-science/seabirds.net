@@ -85,6 +85,12 @@
 		margin: 1.5em 0 0 0;
 	}
 
+body {
+    background-image: url("/css/cooks-petrel-slice.png");
+    background-repeat: repeat-x;
+    background-color: #485664;
+    background-attachment:fixed;
+}
 
 header {
     background-color: #0d1626;
@@ -395,4 +401,14 @@ color: #fff;
 
 #join img{
     width: 100%;
+}
+
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 800px;
+    height: 380px;
+    background-image: url("/css/cooks-petrel-grant-humphries.png");
+    z-index: -1; 
 }
