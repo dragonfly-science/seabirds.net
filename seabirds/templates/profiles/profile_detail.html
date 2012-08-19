@@ -31,8 +31,8 @@
 
 {% block leftbar %}
 {% if request.user == profile.user %}
-<button class="ym-button" style="width:80%; margin-left: 10%; margin-right:10%"><a href="/petrel/edit/">Update your profile</a></button>
-<button class="ym-button" style="width:80%; margin-left: 10%; margin-right:10%"><a href="/accounts/password/change/">Change your password</a></button>
+<div class="ym-button sidebar-button"><a href="/petrel/edit/">Update your profile</a></div>
+<div class="ym-button sidebar-button"><a href="/accounts/password/change/">Change your password</a></div>
 {% endif %}
 {% endblock leftbar %}
 
@@ -41,7 +41,7 @@
 {% if profile.photograph %}
 {% if profile.photograph.width > 255 %}
     {% thumbnail profile.photograph "255"  as im %}
-    <img src="{{ im.url }}" width="255"  class="flexible" alt="{{ profile.user.first_name|capfirst }} {{profile.user.last_name|capfirst }}"></a>
+    <img src="{{ im.url }}" width="255"  class="flexible" alt="{{ profile.user.first_name|capfirst }} {{profile.user.last_name|capfirst }}">
     {% endthumbnail %}
 {% else %}
     <img src="{{ profile.photograph.url }}" width="{{ profile.photograph.width }}"  class="flexible" alt="{{ profile.user.first_name|capfirst }} {{profile.user.last_name|capfirst }}"></a>
