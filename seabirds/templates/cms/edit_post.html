@@ -32,4 +32,70 @@ $(document).ready(function(){
 {% endblock %}
 
 
+{% block sidebar %}
+<h3>Formatting help</h3>
+
+<h4>Phrase emphasis</h4>
+
+<pre><code>*italic*   **bold**
+_italic_   __bold__</code></pre>
+
+<h4>Links</h4>
+
+<p>Inline:</p>
+<pre><code>An [example](http://url.com/ "Title")</code></pre>
+
+<p>Reference-style labels (titles are optional):</p>
+
+<pre><code>An [example][id]. Then, anywhere
+else in the doc, define the link:
+
+  [id]: http://example.com/  "Title"</code></pre>
+
+<h4>Lists</h4>
+<p>Ordered, without paragraphs:</p>
+
+<pre><code>1.  Foo
+2.  Bar</code></pre>
+
+<p>Unordered, with paragraphs:</p>
+<pre><code>*   A list item.
+
+    With multiple paragraphs.
+
+*   Bar</code></pre>
+
+<p>You can nest them:</p>
+
+<pre><code>*   Coffee
+    * Black coffee
+*   Tea
+    1.  Red tea
+    2.  Green tea
+        * Sencha
+*   Milk
+</code></pre>
+
+<h4>Blockquotes</h4>
+
+<pre><code>Email-style angle brackets
+> are used for blockquotes.
+
+
+> > And, they can be nested.
+
+> #### Headers in blockquotes
+> 
+> * You can quote a list.
+> * Etc.</code></pre>
+
+<h4>Horizontal rules</h4>
+
+<p>Three or more dashes or asterisks:</p>
+<pre><code>---
+
+* * *
+
+- - - -</code></pre>
+{% endblock sidebar %}
 
