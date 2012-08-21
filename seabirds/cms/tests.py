@@ -26,6 +26,7 @@ class TestEmail(TestCase):
 
 
 class TestPages(TestCase):
+    fixtures = ['test-data/profile.json']
     def setUp(self):
         try:
             Page.objects.get(name='home')
@@ -119,10 +120,15 @@ class TestDigest(TestCase):
         albert = User.objects.get(username='albert-ross')
         listing = Listing.objects.all()[0]
         subscribers = [p.user for p in UserProfile.objects.all() if listing in p.subscriptions.all()]
-        Post(title='title', text='text',  listing=listing, author=albert).save()
-
+        p = Post(title='new-post', text='text',  listing=listing, author=albert, published=True, _sent_to_list=False)
+        p.save()
+        print p
         send_digest(earliest=1, latest=-1)
+        posts = Post.objects.all()
         outbox = Outbox.objects.all()
+        print posts
+        print outbox
+        print subscribers
         self.assertTrue(len(outbox) == len(subscribers))
         for o in outbox:
             message = pickle.loads(o.message)
