@@ -71,7 +71,9 @@ class ProfileRegistrationForm(ProfileForm):
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields didn't match."))
-        self.cleaned_data['username'] = self.get_username()
+        # both first_name and last_name need to be validated first
+        if 'first_name' in self.cleaned_data and 'last_name' in self.cleaned_data:
+            self.cleaned_data['username'] = self.get_username()
         return self.cleaned_data
 
     def clean_email(self):
