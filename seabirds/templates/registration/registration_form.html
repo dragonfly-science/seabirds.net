@@ -1,5 +1,6 @@
-{% extends "profiles/edit_profile.html" %}
+{% extends "base.html" %}
 {% block title %}Register as a seabird researcher{% endblock %}
+{% block content %}
 {% block above %}
 <p>
 Registering as a researcher in the PETREL database gives you access to Seabirds.net. Once you are registered you will be able to post discussion items, upload photographs, and receive news on seabirds and from the World Seabird Union. Registration is free. Please complete the information below (mandatory fields are indicated with a red asterisk). The registration information will be displayed on your profile page.
@@ -8,6 +9,33 @@ Registering as a researcher in the PETREL database gives you access to Seabirds.
 Once you have registered, you will be sent an activation email to confirm your email address. Clicking on the link in the email will confirm your registration. You will be able to edit this profile information once you have activated your registration.
 </p>
 {% endblock above %}
+<form method="POST" action="" class="ym-form ym-columnar" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h6> Personal information </h6>
+    <div class="ym-fbox-text {% if form.title.errors %}ym-error{% endif %}">
+        <label for="id_title">{{ form.title.label }}{{ form.title.errors }}</label>
+        {{ form.title }}
+    </div>
+    <div class="ym-fbox-text {% if form.first_name.errors %}ym-error{% endif %}">
+        <label for="id_first_name">{{ form.first_name.label }}
+          <sup title="This field is mandatory.">*</sup>{{ form.first_name.errors }}
+        </label>
+        {{ form.first_name }}
+    </div>
+    <div class="ym-fbox-text {% if form.last_name.errors %}ym-error{% endif %}">
+        <strong></strong>
+        <label for="id_last_name">{{ form.last_name.label }}
+        <sup title="This field is mandatory.">*</sup>{{ form.last_name.errors }}
+        </label>
+        {{ form.last_name }}
+    </div>
+    <div class="ym-fbox-text {% if form.email.errors %}ym-error{% endif %}">
+        <label for="id_email">{{ form.email.label }}
+        <sup title="This field is mandatory.">*</sup> {{ form.email.errors }} 
+        </label>
+        {{ form.email }}
+    </div>
+
 {% block password %}
 <h6> Password </h6>
 <p>Your password must be six characters or longer, and should not be based on a dictionary word.</p>
@@ -60,4 +88,6 @@ attribution share-alike license</a>.
 {% endblock captcha %}
 {% block submit %}
 <input type="submit" name="submit" value="Register me" >
-{% endblock %}
+{% endblock submit %}
+</form>
+{% endblock content %}
