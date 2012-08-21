@@ -23,7 +23,6 @@ def profile(request):
 COUNTRIES_REVERSED = dict((force_unicode(c[1]), c[0]) for c in COUNTRIES)
 COUNTRIES = dict((c[0], force_unicode(c[1])) for c in COUNTRIES)
 
-@login_required
 def custom_list(request, template_name='profiles/profile_list.html', **kwargs):
     """
     A list of user profiles, based on code from django-profiles
