@@ -80,12 +80,8 @@ class TestPosts(TestCase):
             'post-listing':1, 
             'post-seabird_families':[1, 2]}, follow=True)
         p = Post.objects.get(title='Test')
-        #p._notify_moderator = True
-        #p.save()
         # The post is published        
         self.assertTrue(p.published)
-        #self.assertFalse(p._notify_moderator)
-        # The moderator is notified
         pigeons = Pigeon.objects.all()
         self.assertTrue(len(pigeons) == 1, msg=str(pigeons))
         # If the post is saved again the moderator isn't notified again
@@ -110,49 +106,53 @@ class TestPosts(TestCase):
 class TestDigest(TestCase):
     fixtures = ['test-data/profile.json']
 
+    def setUp(self):
+        albert = User.objects.get(username='albert-ross')
+        listing = Listing.objects.all()[0]
+        self.subscribers = [p.user for p in UserProfile.objects.all() if \
+            listing in p.subscriptions.all()]
+
+        # This post is too short to be sent out
+        Post(title='New Post', text='too short',  
+            listing=listing, author=albert, name='short-post').save()
+        # This post is long enough to be sent out
+        Post(title='New Post', text='A sentence that is long enough to go to the digest',  
+            listing=listing, author=albert, name='new-post').save()
+
     def test_no_messages(self):
-        """Test that nothing is sent if there are no messages to send"""
-        send_digest(earliest=0, latest=0)
+        """Test that nothing is sent if there are no messages that were made in the
+            time period"""
+        send_digest(earliest=10, latest=1)
         self.assertTrue(len(Outbox.objects.all()) == 0)
     
     def test_digest(self):
         """Test that messages are sent to the digest"""
-        albert = User.objects.get(username='albert-ross')
-        listing = Listing.objects.all()[0]
-        subscribers = [p.user for p in UserProfile.objects.all() if listing in p.subscriptions.all()]
-        p = Post(title='new-post', text='text',  listing=listing, author=albert, published=True, _sent_to_list=False)
-        p.save()
-        print p
         send_digest(earliest=1, latest=-1)
-        posts = Post.objects.all()
         outbox = Outbox.objects.all()
-        print posts
-        print outbox
-        print subscribers
-        self.assertTrue(len(outbox) == len(subscribers))
+        self.assertEqual(len(outbox), len(self.subscribers))
         for o in outbox:
             message = pickle.loads(o.message)
-            # The outbox ontains email messages
+            # The outbox contains email messages
             self.assertTrue(type(message) == EmailMessage)
             # Every outbox user is in the list of subscribers
-            self.assertTrue(o.user in subscribers)
+            self.assertTrue(o.user in self.subscribers)
+    
+    def test_not_twice(self):
+        """Test that messages are not sent multiple times"""
+        send_digest(earliest=1, latest=-1)
+        send_digest(earliest=1, latest=-1)
+        send_digest(earliest=1, latest=-1)
+        outbox = Outbox.objects.all()
+        self.assertEqual(len(outbox), len(self.subscribers))
 
     def test_digest_rendering(self):
-        albert = User.objects.get(username='albert-ross')
-        listing = Listing.objects.all()[0]
-        Post(title='alpha', text='beta', 
-            listing=listing, author=albert, name='alpha').save()
-        Post(title='one', text='two', 
-            listing=listing, author=albert, name='one').save()
-        
         send_digest(earliest=1, latest=-1)
         outbox = Outbox.objects.all()
         for o in outbox:
             message = pickle.loads(o.message)
             # The outbox ontains email messages
             self.assertTrue('[Seabirds.net]' in message.subject)
-            self.assertTrue('three' in message.body, msg=message.body)
-            self.assertTrue('gamma' in message.body, msg=message.body)
+            self.assertTrue('long enough' in message.body, msg=message.body)
 
 #  TestJobs(TestCase):
 #

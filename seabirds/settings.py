@@ -116,7 +116,7 @@ FROM_ADDRESS = 'web@seabirds.net'
 INTERNAL_IPS = ('127.0.0.1',)
 DISQUS_WEBSITE_SHORTNAME = 'seabirds'
 
-EMAIL_USE_TLS = True
+#EMAIL_USE_TLS = True
 try:
     from secrets import EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_HOST_USER, SERVER_EMAIL, DEFAULT_FROM_EMAIL
 except ImportError:

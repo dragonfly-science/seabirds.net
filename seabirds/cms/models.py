@@ -183,7 +183,7 @@ class Post(models.Model):
             'slug': self.name})
 
     def email_moderator(self, user):
-        if user.is_moderator:
+        if user.profile.get().is_moderator:
             subject = render_to_string('email_list_subject.txt', {'title': self.title, 'user': user, 'post': self})
             body = render_to_string('email_list_body.txt', {'text': self.text, 'user': user, 'post': self})
             return EmailMessage(subject, body, to=[user.email])
