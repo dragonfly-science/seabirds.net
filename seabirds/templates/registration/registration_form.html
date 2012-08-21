@@ -78,6 +78,7 @@ attribution share-alike license</a>.
         </strong>
     </div>
 {% endblock terms  %}
+{% if not debug %}
 {% block captcha %}
 <h6> A quick check that you are human and then you are done </h6>
     <div class="ym-fbox-text {% if form.captcha.errors %}ym-error{% endif %}">
@@ -86,6 +87,7 @@ attribution share-alike license</a>.
     </div>
 
 {% endblock captcha %}
+{% endif %}
 {% block submit %}
 <input type="submit" name="submit" value="Register me" >
 {% endblock submit %}

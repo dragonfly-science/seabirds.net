@@ -34,7 +34,8 @@ class ProfileRegistrationForm(ProfileForm):
     """
     password1 = PasswordField(label=_("Password"))
     password2 = PasswordField(label=_("Password (again)"))
-    captcha = ReCaptchaField(attrs={'theme' : 'clean'})
+    if not settings.DEBUG:
+        captcha = ReCaptchaField(attrs={'theme' : 'clean'})
  
     def get_username(self):
         """
@@ -72,20 +73,26 @@ class ProfileRegistrationForm(ProfileForm):
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields didn't match."))
         # both first_name and last_name need to be validated first
-        if 'first_name' in self.cleaned_data and 'last_name' in self.cleaned_data:
+        if self.cleaned_data.get('first_name', '').strip() and \
+                self.cleaned_data.get('last_name', '').strip():
             self.cleaned_data['username'] = self.get_username()
+        else:
+            raise ValidationError(_('Both first and last names are required'))
         return self.cleaned_data
 
     def clean_email(self):
         """
         We require a unique email address
         """
-        email = self.cleaned_data['email']
-        try:
-            u = User.objects.get(email=email)
+        print 'cleaning email'
+        print self.cleaned_data
+        email = self.cleaned_data.get('email', '')
+        username = self.cleaned_data.get('username')
+        if not email.strip():
+            raise forms.ValidationError(_("An email address is required"))
+        if User.objects.filter(email=email).exclude(username=username).count():
             raise forms.ValidationError(_("A user with that email already exists, have you tried logging in to the website?"))
-        except:
-            return email
+        return email
 
 
 class ProfileBackend(DefaultBackend):
