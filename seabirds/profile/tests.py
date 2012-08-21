@@ -7,6 +7,9 @@ from profile.models import UserProfile
 
 
 class TestTwitter(TestCase):
+    fixtures = ['test-data/profile.json']
+    def setUp(self):
+        self.client.login(username="sooty-shearwater", password="foo")
 
     def test_model_supports_twitter(self):
         u = UserProfile()
@@ -17,17 +20,18 @@ class TestTwitter(TestCase):
         self.assertTrue(hasattr(u, 'display_twitter'))
 
     def test_can_enter_twitter(self):
-        response = self.client.get('/accounts/register/')
+        response = self.client.get('/petrel/edit/')
         twitter_in_form = 'id_twitter' in response.content.lower()
-        self.assertTrue(twitter_in_form)
+        self.assertTrue(twitter_in_form, msg=response.content)
 
     def test_can_opt_out_of_twitter_feed_being_displayed(self):
-        response = self.client.get('/accounts/register/')
+        response = self.client.get('/petrel/edit/')
         twitter_optout_in_form = 'Display your Twitter feed on your profile page' in response.content
-        self.assertTrue(twitter_optout_in_form)
+        self.assertTrue(twitter_optout_in_form, msg=response.content)
 
 
 class TestAnonymous(TestCase):
+    fixtures = ['test-data/profile.json']
         
     def test_anonymous_users_are_barred(self):
         response = self.client.get('/petrel/edit/', follow=False)
