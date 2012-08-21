@@ -33,69 +33,34 @@ $(document).ready(function(){
 
 
 {% block sidebar %}
-<h3>Formatting help</h3>
+<h4>Formatting your post</h4>
 
-<h4>Phrase emphasis</h4>
+<p>Posts are written using the <a href="http://daringfireball.net/projects/markdown/syntax">markdown</a> syntax. This lets you use
+a simple email style syntax to add formatting.</p>
 
-<pre><code>*italic*   **bold**
-_italic_   __bold__</code></pre>
+<p>To add a link use  the following syntax<br> 
+<code> [website link](http://url.com/)</code>,<br>
+with
+the text to appear in the post within the square brackets, and the web url in the 
+round brackets.</p>
 
-<h4>Links</h4>
+<p> Lines begining with <code>#</code> characters are interpreted as headings: <br>
+<code> # Heading <br>
+## Smaller heading <br>
+### Smaller heading <br>
+</code>
+</p>
+<p>Use asterisks for <code>*italic*</code> and <code>**bold**</code> text.</p>
 
-<p>Inline:</p>
-<pre><code>An [example](http://url.com/ "Title")</code></pre>
+<p>For more markdown syntax see <a href="http://en.wikipedia.org/wiki/Markdown">wikipedia</a>. If you are keen you may
+use HTML markup for more advanced formatting.</p>
 
-<p>Reference-style labels (titles are optional):</p>
+<h4>What happens when you save?</h4>
 
-<pre><code>An [example][id]. Then, anywhere
-else in the doc, define the link:
+<p>When you save your post it will be formatted and will appear on the website. You will then have the option to 
+edit it, or to retract it if you change your mind.  If you don't make any more changes then, after 10 minutes 
+the moderator will be notified that there is a new post. They will have the opportunity to review the post and make any minor edits.</p>
 
-  [id]: http://example.com/  "Title"</code></pre>
-
-<h4>Lists</h4>
-<p>Ordered, without paragraphs:</p>
-
-<pre><code>1.  Foo
-2.  Bar</code></pre>
-
-<p>Unordered, with paragraphs:</p>
-<pre><code>*   A list item.
-
-    With multiple paragraphs.
-
-*   Bar</code></pre>
-
-<p>You can nest them:</p>
-
-<pre><code>*   Coffee
-    * Black coffee
-*   Tea
-    1.  Red tea
-    2.  Green tea
-        * Sencha
-*   Milk
-</code></pre>
-
-<h4>Blockquotes</h4>
-
-<pre><code>Email-style angle brackets
-> are used for blockquotes.
-
-
-> > And, they can be nested.
-
-> #### Headers in blockquotes
-> 
-> * You can quote a list.
-> * Etc.</code></pre>
-
-<h4>Horizontal rules</h4>
-
-<p>Three or more dashes or asterisks:</p>
-<pre><code>---
-
-* * *
-
-- - - -</code></pre>
+<p> After 12 hours, saved posts will be sent out in the daily digest to all the users who have subscribed to the relevant list. </p>
 {% endblock sidebar %}
 
