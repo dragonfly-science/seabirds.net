@@ -90,6 +90,12 @@
         }
     },
     {
+        "pk": 16, "model": "categories.seabirdfamily", "fields": {
+            "choice": "Sea ducks" ,
+            "family" : "Merginae"
+        }
+    },
+    {
         "pk": 1, "model": "categories.institutiontype", "fields": {
             "choice": "Academic (e.g., university, polytechnic)" 
         }
