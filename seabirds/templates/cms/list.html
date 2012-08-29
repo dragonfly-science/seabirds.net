@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load thumbnail %}
 {% load cms_filters %}
 
 {% block title %}Discussion{% endblock %}
@@ -9,7 +10,11 @@
   {% if object.published or user.is_authenticated and perms.website.administration %}
     <div class="post-list ym-contain-dt">
     {% if not object.published %}<div class="pagedraft">{% endif %}
-      <img src="{{ object.image.get_qualified_url }}" class="float-left" width=60>
+    {% if object.image %}
+        {% thumbnail object.image.image "60"  as im %}
+            <img src="{{ im.url }}" width="60"  class="float-left" alt="{{ object.title }}">
+        {% endthumbnail %}
+    {% endif %}
     {% if user.is_authenticated and perms.website.administration %}
       <!--<p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>-->
     {% endif %}
