@@ -13,6 +13,7 @@ from registration.forms import RegistrationForm
 from registration.models import RegistrationProfile
 from registration.backends.default import DefaultBackend
 from passwords.fields import PasswordField
+from unidecode import unidecode
 
 from profile.forms import ProfileForm
 from profile.models import UserProfile
@@ -41,8 +42,8 @@ class ProfileRegistrationForm(ProfileForm):
         """
         Construct the username out of the firstname and the lastname, 
         """
-        first = self.cleaned_data['first_name']
-        last = self.cleaned_data['last_name']
+        first = unidecode(self.cleaned_data['first_name'])
+        last = unidecode(self.cleaned_data['last_name'])
         user = slugify('%s %s' % (first, last))[:30].rstrip('-').lower()
         try:
             u = User.objects.get(username__iexact=user)

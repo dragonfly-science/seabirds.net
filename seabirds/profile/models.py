@@ -8,6 +8,7 @@ from django.template.defaultfilters import slugify
 
 from categories.models import SeabirdFamily, InstitutionType, ResearchField
 from cms.models import Listing
+from unidecode import unidecode
 
 TITLES = ('Mr', 'Ms', 'Mrs', 'Miss', 'Dr', 'Prof')
 
@@ -20,7 +21,7 @@ def get_photo_path(instance, filename):
 	    except OSError:
 	        pass
 	    print 'Upload image', '%s'%instance.user.id
-	    return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(str(instance).lower()), ext))
+	    return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(str(unidecode(instance)).lower()), ext))
 
 class CollaborationChoice(models.Model):
     label = models.CharField(max_length=50)
