@@ -311,8 +311,9 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             context_instance=RequestContext(request))
     # Or it is publicly viewable
     elif post.date_published:
+        navigation = get_base_navigation(request)
         return render_to_response('cms/post.html', {'object': post, 'form': False,
-            'add_comment': add_comment})
+            'add_comment': add_comment, 'navigation': navigation['navigation']})
     # Or we shouldn't know it exists
     else:
         raise Http404
