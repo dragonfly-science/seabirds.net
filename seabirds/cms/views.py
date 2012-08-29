@@ -179,7 +179,8 @@ def process_image_form(request, image_id=None):
             form = ImageForm(request.POST, request.FILES, prefix='image', instance=image)
         if form.is_valid(): # All validation rules pass
             image = form.save(commit=False)
-            if image_id:
+            print 'Image', image_id, image
+            if image:
                 form.cleaned_data['image'] = image
             # Get the key
             if not image_id:
@@ -321,6 +322,7 @@ def edit_post(request, post_id=None):
     # Get the post
     post = None
     image_id = None
+    hasimage = False
     if post_id:
         post = get_object_or_404(Post, id=post_id)
         if post.image:
@@ -330,13 +332,13 @@ def edit_post(request, post_id=None):
             postform = PostForm(request.POST, request.FILES, prefix='post', instance=post)
         else:
             postform = PostForm(request.POST, request.FILES, prefix='post') 
-        if post and (post.image or request.FILES.has_key('image-image')):
+        if (post and post.image) or request.FILES.has_key('image-image'):
             imageform = process_image_form(request, image_id=image_id)
         else:
             imageform = None
         if postform.is_valid(): # All validation rules pass
             post = postform.save(commit=False)
-            if imageform:
+            if imageform and imageform.is_valid():
                 post.image = imageform.cleaned_data['image']
             else:
                 post.image = None
@@ -374,11 +376,13 @@ def edit_post(request, post_id=None):
                 imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
             else:
                 imageform = ImageForm(instance=post.image, initial=get_initial_data(request), prefix='image')
+                hasimage = True
     if post_id:
         action = reverse('edit-post', args=(), kwargs={'post_id': post.id})
     else:
         action = reverse('new-post')
-    return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 'required': REQUIRED_FIELDS, 'action': action}, 
+    return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 
+        'required': REQUIRED_FIELDS, 'action': action, 'hasimage': hasimage}, 
         context_instance=RequestContext(request))
 
 def jobs(request):

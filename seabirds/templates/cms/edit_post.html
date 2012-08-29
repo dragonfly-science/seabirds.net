@@ -28,7 +28,7 @@ $(document).ready(function(){
         {{ field }}
     </div>
 {% endfor %}
-<h4 id="image-form-headline"> Add an image ... </h4>
+<h4 id="image-form-headline"> {% if hasimage %} Edit {% else %} Add an {% endif %} image ... </h4>
 {% endblock %}
 
 

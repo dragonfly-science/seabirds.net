@@ -425,3 +425,7 @@ color: #fff;
     margin-left: 1em;
     margin-right: 1em;
 }
+
+.flexible img {
+    max-width: 100%;
+}

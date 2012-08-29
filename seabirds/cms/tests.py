@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 import pickle
 
 from django.test import TestCase
@@ -72,6 +73,20 @@ class TestPosts(TestCase):
         # Verify that the subject of the first message is correct.
         self.assertEqual(mail.outbox[0].subject, 'Subject here')
         mail.outbox = [] # Reset the mail outbox
+    
+#    def test_create_post_with_image(self):
+#        """ Test that we can create a post with an associated image, using the new-post url """
+#        fid = open(os.path.join(settings.SITE_ROOT, 
+#                'test-data', 'bullers-and-cape-angrysunbird.jpg'), 'r')
+#        response = self.client.post(reverse('new-post'), {'post-title':'Test', 
+#            'post-text':'This is a test post', 
+#            'post-listing':1, 
+#            'post-seabird_families':[1, 2],
+#            'image-image': fid,
+#            'image-owner': 'Duncan Wright',
+#            'image-source_url': 'http://www.flickr.com/photos/angrysunbird/5187764485/',
+#            'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
+#        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
 
     @override_settings(PIGEONPOST_DEFER_POST_MODERATOR=5)
     def test_create_post(self):
