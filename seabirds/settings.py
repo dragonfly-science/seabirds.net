@@ -143,3 +143,6 @@ COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
 
 PIGEONPOST_DEFER_POST_MODERATOR = 30*60 #10 minutes
 
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: "/petrel/%s/" % u.username,
+    }
