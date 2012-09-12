@@ -21,7 +21,7 @@ def get_photo_path(instance, filename):
 	    except OSError:
 	        pass
 	    print 'Upload image', '%s'%instance.user.id
-	    return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(str(unidecode(instance)).lower()), ext))
+	    return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(unidecode(str(instance)).lower()), ext))
 
 class CollaborationChoice(models.Model):
     label = models.CharField(max_length=50)
