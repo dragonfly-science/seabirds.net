@@ -12,6 +12,7 @@ from cms.forms import PostForm
 from profile.forms import ProfileForm
 from registration.views import register
 from profile.custom_registration import ProfileRegistrationForm
+from longerusername.forms import AuthenticationForm
 
 urlpatterns = patterns('',
     )
@@ -91,6 +92,10 @@ urlpatterns += patterns('',
         name='registration_register'
     ),    
     url(r'^accounts/profile/', 'profile.views.profile'),
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login', {
+            'template_name': 'registration/login.html',
+            'authentication_form': AuthenticationForm,
+        }, name='auth_login'),
     (r'^accounts/', include('registration.urls')),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$',   'cms.views.reference'),

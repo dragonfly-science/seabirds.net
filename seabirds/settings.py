@@ -99,6 +99,7 @@ INSTALLED_APPS = (
     'pigeonpost',
     'django_coverage',
     'django.contrib.comments',
+    'longerusername',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -146,3 +147,5 @@ PIGEONPOST_DEFER_POST_MODERATOR = 30*60 #10 minutes
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: "/petrel/%s/" % u.username,
     }
+# max of "first_name(30)-last_name(30)-int" combination or email(75)
+MAX_USERNAME_LENGTH = 75

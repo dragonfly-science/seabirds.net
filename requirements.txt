@@ -9,6 +9,7 @@ django-reversion==1.6.1
 django-countries
 django-profiles
 django-passwords
+longerusername==0.4
 sorl-thumbnail
 Markdown==2.0.3
 PIL
