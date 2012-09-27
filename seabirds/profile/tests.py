@@ -42,6 +42,57 @@ class TestAnonymous(TestCase):
         response = self.client.get('/petrel/edit/', follow=True)
         self.assertTrue('login' in response.content, msg='Not redirected to the login page')
 
+class TestUsername(TestCase):
+    fixtures = ['test-data/profile.json']
+ 
+    def test_have_sooty(self):
+        sooty = User.objects.get(username='sooty-shearwater')
+        self.assertTrue(sooty.email=='sooty@seabirds.net')
+
+    def test_login(self):
+        response = self.client.post('/accounts/login/', 
+            {'username':'sooty-shearwater', 
+            'password': 'foo', 
+            }, follow=True)
+        self.assertTrue('Dr Sooty Shearwater' in response.content)
+
+    def test_login_email(self):
+        response = self.client.post('/accounts/login/', 
+            {'username':'sooty@seabirds.net', 
+            'password': 'foo', 
+            }, follow=True)
+        self.assertTrue('Dr Sooty Shearwater' in response.content)
+        
+    def test_login_long_username(self):
+        sooty = User.objects.get(username='sooty-shearwater')
+        sooty.username = 'sooty-shearwater-with-a-very-long-username'
+        sooty.save()
+        response = self.client.post('/accounts/login/', 
+            {'username':'sooty-shearwater-with-a-very-long-username', 
+            'password': 'foo', 
+            }, follow=True)
+        self.assertTrue('Dr Sooty Shearwater' in response.content)
+
+    def test_login_long_email(self):
+        sooty = User.objects.get(username='sooty-shearwater')
+        sooty.email = 'sooty.shearwater.with.a.very.long.email@seabirds.net'
+        sooty.save()
+        response = self.client.post('/accounts/login/', 
+            {'username':'sooty.shearwater.with.a.very.long.email@seabirds.net', 
+            'password': 'foo', 
+            }, follow=True)
+        self.assertTrue('Dr Sooty Shearwater' in response.content)
+
+#    def test_login_sooty(self):
+#        sooty = User.objects.get(username='sooty-shearwater')
+#        self.assertTrue(sooty.profile.get().is_moderator)
+#
+#    def test_long_username(self):
+#        albert = User.objects.get(username='sooty-shearwater')
+#        albert.username = 'sooty-shearwater-has-a-very-long-name' #32 characters
+#        self.assertTrue(albert.profile.get().is_moderator)
+
+
 #class TestNewUser(TestCase):
 #    @override_settings(DEBUG=True)
 #    def test_create_user(self):
@@ -56,11 +107,12 @@ class TestAnonymous(TestCase):
 #            'password2':'fairyprion',
 #            }, follow=True)
 #        print(response.content)
+#        print(response.status_code)
 #        print(settings.DEBUG)
 #        self.assertTrue(response.status_code == 302)
 #        u = User.objects.get(first_name='Fairy')
 #        self.assertTrue(u.last_name, 'Prion')
-
+#
 
 #class TestCustomListView(TestCase):
 

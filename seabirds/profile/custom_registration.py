@@ -78,7 +78,7 @@ class ProfileRegistrationForm(ProfileForm):
                 self.cleaned_data.get('last_name', '').strip():
             self.cleaned_data['username'] = self.get_username()
         else:
-            raise ValidationError(_('Both first and last names are required'))
+            raise forms.ValidationError(_('Both first and last names are required'))
         return self.cleaned_data
 
     def clean_email(self):
@@ -136,7 +136,8 @@ class EmailAuthBackend(ModelBackend):
             return None
         possibles = User.objects.filter(email__istartswith=username)
         for possible in possibles:
-            if username[:30].lower() == possible.email.lower() and \
+            if possible.email and \
+                username.lower() == possible.email.lower() and \
                 check_password(password, possible.password) and \
                 possible.is_active:
                 return possible
