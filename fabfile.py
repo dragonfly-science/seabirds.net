@@ -43,7 +43,9 @@ def git_pull():
 def get_secrets():
     "Get files that aren't in the checkout, such as sitesettings.py"
     with lcd(env.local_dir):
-        get('%(remote_dir)s/seabirds/sitesettings.py' % env, local_path='seabirds/')
+        # We get a copy of the production sitesettings.py, but we don't use it for local
+        # development (hence it's not kept in seabirds/).
+        get('%(remote_dir)s/seabirds/sitesettings.py' % env, local_path='sitesettings_production.py')
         get('%(remote_dir)s/seabirds/secrets.py' % env, local_path='seabirds/')
 
 def get_live_media():
@@ -83,7 +85,7 @@ def git_push():
 
 def put_secrets():
     "Put files that aren't in the checkout, such as sitesettings.py"
-    put('seabirds/sitesettings.py', remote_path='%(remote_dir)s/seabirds' % env)
+    put('sitesettings_production.py', remote_path='%(remote_dir)s/seabirds' % env)
     put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
 
 def install():

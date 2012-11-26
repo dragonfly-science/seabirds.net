@@ -22,33 +22,11 @@ DATABASES = {
 
 try:
     # Site settings are private data for the production server
-    # TODO: Why not place it all in secrets.py?
+    # TODO: Why not place it all in secrets.py or place secrets
+    # in sitesettings?
     from sitesettings import *
 except ImportError, e:
     print "WARNING: While loading sitesettings, '%s'" % str(e) 
-
-try:
-    # Local settings are for a developer's local/testing configuration
-    # Currently this is mostly just to allow custom DATABASES and to set
-    # DEBUG=True
-
-    # Unfortunate hack because manage.py isn't in the root of the project,
-    # and custom files deeper in the directory hierarchy is messy. e.g.
-    #    seabirds.net/local_settings.py
-    # is better than:
-    #    seabirds.net/seabirds/local_settings.py
-    import sys
-    import os.path
-    # Get the directory directly above the directory this settings file
-    # is located in
-    sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
-    # Import the developer's settings
-    from local_settings import *
-    # Fix the python path
-    sys.path.pop()
-except ImportError, e:
-    if DEBUG:
-        print "WARNING: While loading local_settings, '%s'" % str(e) 
 
 TIME_ZONE = 'Pacific/Auckland'
 LANGUAGE_CODE = 'en-nz'
