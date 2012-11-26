@@ -3,3 +3,63 @@ is the website of the World Seabird Union, an umbrella organisation focused on s
 
 It is a fairly standard Django application. Feel free to contribute by forking
 the code and commenting on issues.
+
+## Setup
+
+```
+sudo apt-get install libpg-dev postgresql
+sudo apt-get install libfreetype6 libfreetype6-dev
+sudo apt-get install libjpeg8 libjpeg8-dev
+mkvirtualenv seabirds
+```
+
+Now fix Ubuntu paths to conform to PIL's weird setup assumption
+([more detail](https://gist.github.com/1901496)):
+```
+sudo ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
+```
+
+```
+pip install -r requirements.txt
+sudo su postgres
+psql template1
+```
+
+At the `template1=#` prompt:
+```
+CREATE USER [your username] CREATEDB;
+CREATE USER seabirds;
+```
+
+Why?
+* The user you develop under needs to be able to create databases.
+* The seabirds user has a number of permissions assigned to it when loading
+  a database dump from the production server.
+
+Go back to your login, and ensure your public ssh key is in the
+authorised_keys of the server you are deploying to. Then run:
+```
+fab get_live_database # Download live db and load it locally
+fab get_live_media    # Download all the media assets
+fab get_secrets       # Get API keys etc and example sitesettings.py
+```
+
+`get_secrets` will place the production sitesettings.py in a file
+`sitesettings_production.py`. You can create your own custom settings in
+`seabirds/sitesettings.py` which might look something like this:
+
+```python
+# Settings for seabirds.net
+DEBUG = True
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'seabirds',
+        'USER': 'your username',
+        'HOST': 'localhost',
+    }
+}
+```
