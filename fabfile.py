@@ -13,7 +13,7 @@ env.local_user = os.environ['USER']
 
 env.hosts = [env.production_server]
 env.remote_dir = '/home/seabirds/seabirds.net'
-env.local_dir = os.getcwd()
+env.local_dir = os.path.dirname(__file__)
 
 #### Private functions ####
 @_contextmanager
@@ -42,11 +42,9 @@ def git_pull():
 
 def get_secrets():
     "Get files that aren't in the checkout, such as sitesettings.py"
-    # TODO: Should we really overwrite sitesettings.py?
-    # This would blast away information that a developer may have
-    # customised.
-    get('%(remote_dir)s/seabirds/sitesettings.py' % env, local_path='seabirds')
-    get('%(remote_dir)s/seabirds/secrets.py' % env, local_path='seabirds')
+    with lcd(env.local_dir):
+        get('%(remote_dir)s/seabirds/sitesettings.py' % env, local_path='seabirds/')
+        get('%(remote_dir)s/seabirds/secrets.py' % env, local_path='seabirds/')
 
 def get_live_media():
     "Copy media from the production server to the local machine"
@@ -85,7 +83,7 @@ def git_push():
 
 def put_secrets():
     "Put files that aren't in the checkout, such as sitesettings.py"
-    put('sitesettings.py', remote_path='%(remote_dir)s/seabirds' % env)
+    put('seabirds/sitesettings.py', remote_path='%(remote_dir)s/seabirds' % env)
     put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
 
 def install():
@@ -111,6 +109,11 @@ def validate():
     "Run django validation"
     with cd('%(remote_dir)s/seabirds' % env):
         run('python manage.py validate')
+
+def test():
+    with cd('%(remote_dir)s/seabirds' % env):
+        run('python manage.py test cms')
+        run('python manage.py test profile')
 
 def restart():
     "Restart the server"

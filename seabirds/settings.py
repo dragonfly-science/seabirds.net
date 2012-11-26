@@ -2,22 +2,12 @@
 import logging, os
 logging.basicConfig(level = logging.WARN,)
 
-# settings overridden in sitesettings
-DEBUG = True
-SITE_ROOT = '/usr/local/django/seabirds.net'
+# These settings may be overridden in sitesettings
+SITE_ROOT = os.path.join(os.path.dirname(__file__))
 SITE_NAME = 'Seabirds.net development'
 SITE_URL = 'http://localhost:8000'
 SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-try:
-    from sitesettings import *
-except ImportError:
-    pass
-
-from secrets import RECAPTCHA_PRIVATE_KEY, DISQUS_API_KEY, SECRET_KEY
-
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = ()
 MANAGERS = ADMINS
@@ -26,10 +16,39 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'seabirds',
-        'USER':  'seabirds',
+        'USER': 'seabirds',
     }
 }
 
+try:
+    # Site settings are private data for the production server
+    # TODO: Why not place it all in secrets.py?
+    from sitesettings import *
+except ImportError, e:
+    print "WARNING: While loading sitesettings, '%s'" % str(e) 
+
+try:
+    # Local settings are for a developer's local/testing configuration
+    # Currently this is mostly just to allow custom DATABASES and to set
+    # DEBUG=True
+
+    # Unfortunate hack because manage.py isn't in the root of the project,
+    # and custom files deeper in the directory hierarchy is messy. e.g.
+    #    seabirds.net/local_settings.py
+    # is better than:
+    #    seabirds/local_settings.py
+    import sys
+    import os.path
+    # Get the directory directly above the directory this settings file
+    # is located in
+    sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
+    # Import the developer's settings
+    from local_settings import *
+    # Fix the python path
+    sys.path.pop()
+except ImportError, e:
+    if DEBUG:
+        print "WARNING: While loading local_settings, '%s'" % str(e) 
 
 TIME_ZONE = 'Pacific/Auckland'
 LANGUAGE_CODE = 'en-nz'
@@ -37,8 +56,12 @@ USE_I18N = True
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media/')
 MEDIA_URL = '/'
 
-#ADMIN_MEDIA_PREFIX = '/am/'
+AVATAR_CROP_MIN_SIZE = 20
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
+ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
 
+TEMPLATE_DEBUG = DEBUG
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -117,10 +140,15 @@ FROM_ADDRESS = 'web@seabirds.net'
 INTERNAL_IPS = ('127.0.0.1',)
 DISQUS_WEBSITE_SHORTNAME = 'seabirds'
 
+# Get API Keys 
+from secrets import RECAPTCHA_PRIVATE_KEY, DISQUS_API_KEY, SECRET_KEY
+
 #EMAIL_USE_TLS = True
 try:
     from secrets import EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_HOST_USER, SERVER_EMAIL, DEFAULT_FROM_EMAIL
 except ImportError:
+    # Should we really nuke these? What if they are already setup in
+    # sitesettings?
     EMAIL_HOST_PASSWORD = ''
     EMAIL_HOST = ''
     EMAIL_HOST_USER = ''
@@ -130,15 +158,8 @@ EMAIL_NOREPLY = 'noreply@seabirds.net'
 SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
 
-
-
 # Required for enforcing a global login during testing
 LOGIN_URL = '/accounts/login/'
-
-AVATAR_CROP_MIN_SIZE = 20
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(SITE_ROOT, 'static/')
-ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
 
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
 
@@ -147,5 +168,7 @@ PIGEONPOST_DEFER_POST_MODERATOR = 30*60 #10 minutes
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: "/petrel/%s/" % u.username,
     }
+
+# TODO: Seems like this could be worked out by inspecting the models?
 # max of "first_name(30)-last_name(30)-int" combination or email(75)
 MAX_USERNAME_LENGTH = 75
