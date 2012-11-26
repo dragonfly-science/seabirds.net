@@ -8,7 +8,19 @@ the code and commenting on issues.
 
 ```
 sudo apt-get install libpg-dev postgresql
+sudo apt-get install libfreetype6 libfreetype6-dev
+sudo apt-get install libjpeg8 libjpeg8-dev
 mkvirtualenv seabirds
+```
+
+Now fix paths to conform to PIL's weird setup assumption:
+```
+sudo ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
+```
+
+```
 pip install -r requirements.txt
 sudo su postgres
 psql template1
