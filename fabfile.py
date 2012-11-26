@@ -45,7 +45,7 @@ def get_secrets():
     # TODO: Should we really overwrite sitesettings.py?
     # This would blast away information that a developer may have
     # customised.
-    get('%(remote_dir)s/seabirds/sitesettings.py' % env, local_path='.')
+    get('%(remote_dir)s/seabirds/sitesettings.py' % env, local_path='seabirds')
     get('%(remote_dir)s/seabirds/secrets.py' % env, local_path='seabirds')
 
 def get_live_media():
