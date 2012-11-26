@@ -13,7 +13,8 @@ sudo apt-get install libjpeg8 libjpeg8-dev
 mkvirtualenv seabirds
 ```
 
-Now fix paths to conform to PIL's weird setup assumption:
+Now fix Ubuntu paths to conform to PIL's weird setup assumption
+([more detail](https://gist.github.com/1901496)):
 ```
 sudo ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
 sudo ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
@@ -37,19 +38,28 @@ Why?
 * The seabirds user has a number of permissions assigned to it when loading
   a database dump from the production server.
 
-Now copy `local_settings.py.TEMPLATE` to `local_settings.py` and edit it
-to configure to match your local db:
-```
-cp local_settings.py.TEMPLATE local_settings.py
-vim local_settings.py
-```
-
-Go back to your login, and then ensure your public ssh key is in the
-authorised_keys of the server you are deploying to.
-
+Go back to your login, and ensure your public ssh key is in the
+authorised_keys of the server you are deploying to. Then run:
 ```
 fab get_live_database # Download live db and load it locally
 fab get_live_media    # Download all the media assets
 fab get_secrets       # Get API keys etc and example sitesettings.py
 ```
 
+`get_secrets` will place the production sitesettings.py in a file
+`sitesettings_production.py`. You can create your own custom settings in
+`seabirds/sitesettings.py` which might look something like this:
+
+```python
+# Settings for seabirds.net
+DEBUG = True
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'seabirds',
+        'USER': 'your username',
+        'HOST': 'localhost',
+    }
+}
+```
