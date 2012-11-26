@@ -3,7 +3,7 @@ import logging, os
 logging.basicConfig(level = logging.WARN,)
 
 # These settings may be overridden in sitesettings
-SITE_ROOT = os.path.join(os.path.dirname(__file__))
+SITE_ROOT = os.path.dirname(__file__)
 SITE_NAME = 'Seabirds.net development'
 SITE_URL = 'http://localhost:8000'
 SITE_ID = 1
@@ -36,7 +36,7 @@ try:
     # and custom files deeper in the directory hierarchy is messy. e.g.
     #    seabirds.net/local_settings.py
     # is better than:
-    #    seabirds/local_settings.py
+    #    seabirds.net/seabirds/local_settings.py
     import sys
     import os.path
     # Get the directory directly above the directory this settings file
