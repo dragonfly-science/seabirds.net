@@ -12,6 +12,7 @@ dumps/*.sql
 
 seabirds/sitesettings.py
 seabirds/secrets.py
+sitesettings_production.py
 sitesettings.py
 
 static/*
@@ -19,3 +20,4 @@ seabirds/htmlcov/*
 proposal.*
 README.tex
 .coverage
+htmlcov/
