@@ -13,17 +13,20 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, Resolver404
 from django.core.mail import EmailMessage
 
-from pigeonpost.tasks import add_to_queue
+from pigeonpost.signals import pigeonpost_queue
 from markdown import markdown
 from mptt.models import MPTTModel, TreeForeignKey
 
 from license.models import License
 from categories.models import SeabirdFamily
 
+log = logging.getLogger(__name__)
+
 # Process references if the bibliography is installed
 try:
     from bibliography.views import markdown_post_references
 except ImportError:
+    log.warning('bibliography module missing or broken')
     def markdown_post_references(text):
         return text
 
@@ -85,7 +88,6 @@ def markdownplus(instance, text, check=False):
     text = markdown_post_references(text)
     return text
 
-# Create your models here.
 class Page(models.Model):
     title = models.CharField(max_length = 100, 
         help_text='Title of the page, appears in the title bar of the browser')
@@ -189,7 +191,8 @@ class Post(models.Model):
             return EmailMessage(subject, body, to=[user.email])
 
     def save(self, *args, **kwargs):
-        if not self.date_published: #The first time it is saved it is published
+        # The first time it is saved it is published
+        if not self.date_published:
             self.published = True
             self.date_published = datetime.date.today()
             self.enable_comments = self.listing.allow_comments
@@ -197,7 +200,7 @@ class Post(models.Model):
         
         # When the post is saved, the moderators are notified, with a delay
         if self.published and self._notify_moderator and kwargs.get('commit', True):
-            add_to_queue(sender=self, 
+            pigeonpost_queue.send(sender=self, 
                 render_email_method='email_moderator', 
                 defer_for=settings.PIGEONPOST_DEFER_POST_MODERATOR)
             self._notify_moderator = False
