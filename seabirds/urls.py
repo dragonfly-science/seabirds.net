@@ -14,10 +14,6 @@ from registration.views import register
 from profile.custom_registration import ProfileRegistrationForm
 from longerusername.forms import AuthenticationForm
 
-urlpatterns = patterns('',
-    )
-
-
 admin.autodiscover()
 
 #from django.contrib.auth.models import User, Group

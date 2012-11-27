@@ -83,8 +83,8 @@ INSTALLED_APPS = (
     #'bibliography',
     'grappelli',
     'django.contrib.admin',
-    'profiles', #Django profiles
-    'profile', #App for storing user info
+    'profiles', # Django profiles
+    'profile', # App for storing user info
     'taggit',
     'mptt',
     'disqus',
