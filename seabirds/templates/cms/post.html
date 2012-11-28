@@ -38,16 +38,16 @@ $(document).ready(function(){
             <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }}</a>, 
             {% endif %}
             {{ object.date_published|date:"F j, Y" }}
-          </div>
-<div class="ym-g25 ym-gr">
-<div class="addthis_toolbox addthis_default_style ">
-<a class="addthis_button_preferred_1"></a>
-<a class="addthis_button_preferred_2"></a>
-<a class="addthis_button_preferred_3"></a>
-<a class="addthis_button_preferred_4"></a>
-<a class="addthis_button_compact"></a>
-<a class="addthis_counter addthis_bubble_style"></a>
-</div></div>
+      </div>
+      <div class="ym-g25 ym-gr">
+      <div class="addthis_toolbox addthis_default_style ">
+      <a class="addthis_button_preferred_1"></a>
+      <a class="addthis_button_preferred_2"></a>
+      <a class="addthis_button_preferred_3"></a>
+      <a class="addthis_button_preferred_4"></a>
+      <a class="addthis_button_compact"></a>
+      <a class="addthis_counter addthis_bubble_style"></a>
+      </div></div>
 <div class="ym-clearfix">&nbsp;</div>
     {% autoescape off %}
        {{ object.markdown_text }}
@@ -91,7 +91,6 @@ $(document).ready(function(){
                 {% endif %}
             </div>
         </div>
-    </div>
     <br>
 {% endblock %}
 
