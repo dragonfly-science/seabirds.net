@@ -14,10 +14,6 @@ from registration.views import register
 from profile.custom_registration import ProfileRegistrationForm
 from longerusername.forms import AuthenticationForm
 
-urlpatterns = patterns('',
-    )
-
-
 admin.autodiscover()
 
 #from django.contrib.auth.models import User, Group
@@ -88,7 +84,10 @@ urlpatterns += patterns('',
     url('^edit/image/(?P<image_id>\d*)/$', 'cms.views.edit_image', name='edit-image'),
     url(r'^accounts/register/$',
         register,
-        {'backend': 'profile.custom_registration.ProfileBackend', 'form_class': ProfileRegistrationForm},        
+        {
+            'backend': 'profile.custom_registration.ProfileBackend',
+            'form_class': ProfileRegistrationForm
+        },
         name='registration_register'
     ),    
     url(r'^accounts/profile/', 'profile.views.profile'),

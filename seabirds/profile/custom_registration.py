@@ -35,8 +35,7 @@ class ProfileRegistrationForm(ProfileForm):
     """
     password1 = PasswordField(label=_("Password"))
     password2 = PasswordField(label=_("Password (again)"))
-    if not settings.DEBUG:
-        captcha = ReCaptchaField(attrs={'theme' : 'clean'})
+    captcha = ReCaptchaField(attrs={'theme' : 'clean'})
  
     def get_username(self):
         """
@@ -44,9 +43,9 @@ class ProfileRegistrationForm(ProfileForm):
         """
         first = unidecode(self.cleaned_data['first_name'])
         last = unidecode(self.cleaned_data['last_name'])
-        user = slugify('%s %s' % (first, last))[:30].rstrip('-').lower()
+        username = slugify('%s %s' % (first, last))[:30].rstrip('-').lower()
         try:
-            u = User.objects.get(username__iexact=user)
+            User.objects.get(username__iexact=username)
             user_root = user[:26]
             if user_root.endswith('-'):
                 suffix_join = ''
@@ -54,13 +53,13 @@ class ProfileRegistrationForm(ProfileForm):
                 suffix_join = '-'
             for suffix in range(2, 1000):
                 try:
-                    user = '%s%s%s'%(user_root, suffix_join, suffix)
-                    u = User.objects.get(username__iexact=user)
-                except:
+                    username = '%s%s%s'%(user_root, suffix_join, suffix)
+                    User.objects.get(username__iexact=username)
+                except User.DoesNotExist:
                     break
         except User.DoesNotExist:
             pass
-        return user
+        return username
 
     def clean(self):
         """
@@ -85,8 +84,6 @@ class ProfileRegistrationForm(ProfileForm):
         """
         We require a unique email address
         """
-        print 'cleaning email'
-        print self.cleaned_data
         email = self.cleaned_data.get('email', '')
         username = self.cleaned_data.get('username')
         if not email.strip():
@@ -103,7 +100,7 @@ class ProfileBackend(DefaultBackend):
             site = Site.objects.get_current()
         else:
             site = RequestSite(request)
-        new_user = RegistrationProfile.objects.create_inactive_user(username, email,                                                            password, site)
+        new_user = RegistrationProfile.objects.create_inactive_user(username, email, password, site)
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=request)

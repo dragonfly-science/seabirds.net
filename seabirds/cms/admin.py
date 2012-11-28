@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from mptt.admin import MPTTModelAdmin
 
 
-
 class NavigationAdmin(MPTTModelAdmin):
     list_display = ('name', 'order', 'url', 'parent')
     list_filter = ('parent',)

@@ -3,14 +3,12 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django_countries import CountryField
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
 from categories.models import SeabirdFamily, InstitutionType, ResearchField
 from cms.models import Listing
 from unidecode import unidecode
-
-TITLES = ('Mr', 'Ms', 'Mrs', 'Miss', 'Dr', 'Prof')
 
 def get_photo_path(instance, filename):
     if filename:
@@ -30,8 +28,10 @@ class CollaborationChoice(models.Model):
     def __unicode__(self):
         return self.label
 
+TITLES = ('Mr', 'Ms', 'Mrs', 'Miss', 'Dr', 'Prof')
+
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, related_name = 'profile', unique=True)
+    user = models.ForeignKey(User, related_name='profile', unique=True)
     title = models.CharField(max_length=5, choices=zip(TITLES, TITLES), null=True, blank=True)
     webpage = models.URLField(null=True, blank=True)
     display_email = models.BooleanField(default=True)
@@ -55,25 +55,22 @@ class UserProfile(models.Model):
     is_moderator = models.BooleanField(default=False, editable=False)
 
     def __str__(self):
-        return "%s %s"%(self.user.first_name, self.user.last_name)
+        return "%s %s" % (self.user.first_name, self.user.last_name)
 
     @models.permalink
     def get_absolute_url(self):
         return ('profiles_profile_detail', (), {'username': self.user.username})
 
-#Automatically create a profile when a User is created (if one doesn't already exits)
 def create_user_profile(sender, instance, created, **kwargs):
+    """ Automatically create a profile when a User is created (if one doesn't already exist) """
     if created:
-        try:
-            UserProfile.objects.get(user=instance)
-        except UserProfile.DoesNotExist:
-            UserProfile.objects.create(user=instance)
+        UserProfile.objects.get_or_create(user=instance)
 post_save.connect(create_user_profile, sender=User)
 
 def toggle_research_field(sender, instance, created, **kwargs):
-    profile = UserProfile.objects.get(user=instance)
-    if ResearchField.objects.get(choice='Not a researcher') in profile.research_field.all():
-        if profile.is_researcher:
-            profile.is_researcher = False
-            profile.save()
-post_save.connect(toggle_research_field, sender=User)
+    non_researcher, created = ResearchField.objects.get_or_create(choice='Not a researcher')
+    if non_researcher in instance.research_field.all():
+        if instance.is_researcher:
+            instance.is_researcher = False
+            instance.save()
+post_save.connect(toggle_research_field, sender=UserProfile)

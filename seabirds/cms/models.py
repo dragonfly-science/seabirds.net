@@ -1,8 +1,5 @@
 import datetime
-import re
-import logging
 import os
-from math import floor
 
 from django.db import models
 from django.db.models import permalink
@@ -13,79 +10,99 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, Resolver404
 from django.core.mail import EmailMessage
 
-from pigeonpost.tasks import add_to_queue
-from markdown import markdown
+from pigeonpost.signals import pigeonpost_queue
 from mptt.models import MPTTModel, TreeForeignKey
 
 from license.models import License
 from categories.models import SeabirdFamily
 
-# Process references if the bibliography is installed
-try:
-    from bibliography.views import markdown_post_references
-except ImportError:
-    def markdown_post_references(text):
-        return text
+def get_image_path(instance, filename):
+    base, ext = os.path.splitext(os.path.split(filename)[1])
+    return os.path.join('images', '%s%s'%(instance.key, ext))
 
-check=True
-IMAGE_REGEX = '\[Image\s+([-\w]+)(\s+\w[\w=%\'" -]+)?\s*\](.*)(?=</p>)'
-def markdownplus(instance, text, check=False):
-    text = markdown(text)
-    def insert_image(m):
-        try:
-            image = Image.objects.get(key=m.group(1))
-            try:
-                width = int(re.findall('width=([\d]+)', m.group(2))[0])
-            except:
-                width = None
-            try:
-                height = int(re.findall('height=([\d]+)', m.group(2))[0])
-            except:
-                height = None
-            try:
-                place = re.findall('place=([\w]+)', m.group(2))[0]
-            except:
-                place = ''
-            width, height = image.get_dimensions(width, height)
-            url = image.get_qualified_url(width, height)
-            if place.upper().startswith('R'):
-                place = 'float-right'
-            elif place.upper().startswith('L'):
-                place = 'float-left'
-            else:
-                place = 'center'
-            caption = m.group(3)
-            if not caption:
-                caption = image.caption
-            return render_to_string('image/plain.html', dict(image=image, width=width, place=place, url=url, caption=caption))
-        except:
-            if check: 
-                raise
-            return m.group(0) 
-    text = re.sub(IMAGE_REGEX, insert_image,  text)
+class Image(models.Model):
+    image = models.ImageField(upload_to = get_image_path)
+    title = models.CharField(max_length = 100, 
+        help_text="The title is displayed when you mouse over the image")
+    source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
+        help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
+    caption = models.TextField(null=True, blank=True, 
+        help_text="Optional. Displayed under the image.")
+    key = models.SlugField(max_length = 50, unique=True, 
+        help_text="A unique name for each image on the website. Must only be letters, number, underscores, or hyphens.")
+    seabird_families = models.ManyToManyField(SeabirdFamily, related_name='images', null=True, blank=True, help_text="Optional. If this is an image of a seabird or seabirds, please select the correct families.") 
+    owner = models.CharField(max_length = 200, 
+        help_text="The name of the copyright holder of the image")
+    owner_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG,
+        help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
+    license = models.ForeignKey(License, null=True, blank=True, 
+        help_text="Optional copyright license. Available licenses include <a href='http://creativecommons.org/'>creative commons</a> or public domain licenses. If no license is specified it is assumed that the owner has the copyright and has granted permission for the image to be used")
+    uploaded_by = models.ForeignKey(User, 
+        help_text="The user who uploaded the image")
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
-    def insert_references(m):
-        try:
-            return listview(None, query=m.group(1))
-        except:
-            if check: raise 
-            return ""
-    text = re.sub('\[References\s+(\w[\w=\'" -]+)\]', insert_references,  text)
-    return text
+    def thumbnail(self, width=100, max_height=300):
+        width, height = self.get_dimensions(width=width, max_height=max_height)
+        return "<img src='%s' title='%s'>"%(self.get_qualified_url(width, height), self.title)
+    thumbnail.allow_tags=True
 
-    def insert_file(m):
-        try:
-            file = File.objects.get(name=m.group(1))
-            return file.html()
-        except:
-            if check: raise 
-            return ""
-    text = re.sub('\[File\s+(\w+)\]',   insert_file, text) 
+    def render(self, width=None, height=None, caption=None, place=None):
+        width, height = self.get_dimensions(width=width, height=height)
+        url = self.get_qualified_url(width, height)
+        if not caption:
+            caption=self.caption
+        return render_to_string('image/plain.html', dict(image=self, width=width, place=None, url=url, caption=caption))
 
-    text = markdown_post_references(text)
-    return text
+    def tag(self):
+        return "[Image %s]"%(self.key,)
+        
+    def __str__(self):
+        return '%s - %s'%(self.key, self.title)
 
-# Create your models here.
+    def get_dimensions(self, width=None, height=None, max_height=None):
+        if not height and not width:
+            height = self.image.height
+            width = self.image.width
+        elif not height:
+            height = int(float(self.image.height*width)/self.image.width)
+        elif not width:
+            width = int(float(self.image.width*height)/self.image.height)
+        if max_height and height > max_height:
+            height = max_height
+            width = int(float(width*height)/max_height)
+        return width, height       
+
+    def get_qualified_url(self, width=None, height=None, max_height=None):
+	if not width or not height or max_height:
+	    width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
+        base, ext = os.path.splitext(os.path.split(self.image.path)[1])
+        return os.path.join('/images', '%s-%ix%i%s'%(base, width, height, ext))
+
+    @permalink
+    def get_image_url(self):
+        return ('cms.views.image', (), {'filename': os.path.split(self.image.path)[1]}) 
+    
+    @permalink
+    def get_absolute_url(self):
+        return ('cms.views.imagepage', (), {'key': self.key}) 
+
+
+class File(models.Model):
+   name = models.CharField(max_length = 100)
+   file = models.FileField(upload_to = "files")
+   title = models.CharField(max_length = 100, null=True, blank=True)
+
+   def __str__(self):
+      return self.title
+   def get_absolute_url(self):
+      return  "%s/%s" % (settings.SITE_URL, self.file.url)
+   def html(self):
+      return "<a href=\"%s/%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
+
+# Depends on models.Image and models.File
+from cms.utils import markdownplus
+
 class Page(models.Model):
     title = models.CharField(max_length = 100, 
         help_text='Title of the page, appears in the title bar of the browser')
@@ -189,7 +206,8 @@ class Post(models.Model):
             return EmailMessage(subject, body, to=[user.email])
 
     def save(self, *args, **kwargs):
-        if not self.date_published: #The first time it is saved it is published
+        # The first time it is saved it is published
+        if not self.date_published:
             self.published = True
             self.date_published = datetime.date.today()
             self.enable_comments = self.listing.allow_comments
@@ -197,7 +215,7 @@ class Post(models.Model):
         
         # When the post is saved, the moderators are notified, with a delay
         if self.published and self._notify_moderator and kwargs.get('commit', True):
-            add_to_queue(sender=self, 
+            pigeonpost_queue.send(sender=self, 
                 render_email_method='email_moderator', 
                 defer_for=settings.PIGEONPOST_DEFER_POST_MODERATOR)
             self._notify_moderator = False
@@ -205,90 +223,6 @@ class Post(models.Model):
     class Meta:
         ordering = ['-date_published', '-date_created']
 
-
-class File(models.Model):
-   name = models.CharField(max_length = 100)
-   file = models.FileField(upload_to = "files")
-   title = models.CharField(max_length = 100, null=True, blank=True)
-   def __str__(self):
-      return self.title
-   def get_absolute_url(self):
-      return  "%s/%s" % (settings.SITE_URL, self.file.url)
-   def html(self):
-      return "<a href=\"%s/%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
-
-
-def get_image_path(instance, filename):
-    print 'get path'
-    base, ext = os.path.splitext(os.path.split(filename)[1])
-    return os.path.join('images', '%s%s'%(instance.key, ext))
-
-class Image(models.Model):
-    image = models.ImageField(upload_to = get_image_path)
-    title = models.CharField(max_length = 100, 
-        help_text="The title is displayed when you mouse over the image")
-    source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
-        help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
-    caption = models.TextField(null=True, blank=True, 
-        help_text="Optional. Displayed under the image.")
-    key = models.SlugField(max_length = 50, unique=True, 
-        help_text="A unique name for each image on the website. Must only be letters, number, underscores, or hyphens.")
-    seabird_families = models.ManyToManyField(SeabirdFamily, related_name='images', null=True, blank=True, help_text="Optional. If this is an image of a seabird or seabirds, please select the correct families.") 
-    owner = models.CharField(max_length = 200, 
-        help_text="The name of the copyright holder of the image")
-    owner_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG,
-        help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
-    license = models.ForeignKey(License, null=True, blank=True, 
-        help_text="Optional copyright license. Available licenses include <a href='http://creativecommons.org/'>creative commons</a> or public domain licenses. If no license is specified it is assumed that the owner has the copyright and has granted permission for the image to be used")
-    uploaded_by = models.ForeignKey(User, 
-        help_text="The user who uploaded the image")
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
-
-    def thumbnail(self, width=100, max_height=300):
-        width, height = self.get_dimensions(width=width, max_height=max_height)
-        return "<img src='%s' title='%s'>"%(self.get_qualified_url(width, height), self.title)
-    thumbnail.allow_tags=True
-
-    def render(self, width=None, height=None, caption=None, place=None):
-        width, height = self.get_dimensions(width=width, height=height)
-        url = self.get_qualified_url(width, height)
-        if not caption:
-            caption=self.caption
-        return render_to_string('image/plain.html', dict(image=image, width=width, place=None, url=url, caption=caption))
-
-    def tag(self):
-        return "[Image %s]"%(self.key,)
-        
-    def __str__(self):
-        return '%s - %s'%(self.key, self.title)
-
-    def get_dimensions(self, width=None, height=None, max_height=None):
-        if not height and not width:
-            height = self.image.height
-            width = self.image.width
-        elif not height:
-            height = int(float(self.image.height*width)/self.image.width)
-        elif not width:
-            width = int(float(self.image.width*height)/self.image.height)
-        if max_height and height > max_height:
-            height = max_height
-            width = int(float(width*height)/max_height)
-        return width, height       
-
-    def get_qualified_url(self, width=None, height=None, max_height=None):
-	if not width or not height or max_height:
-	    width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
-        base, ext = os.path.splitext(os.path.split(self.image.path)[1])
-        return os.path.join('/images', '%s-%ix%i%s'%(base, width, height, ext))
-
-    @permalink
-    def get_image_url(self):
-        return ('cms.views.image', (), {'filename': os.path.split(self.image.path)[1]}) 
-    
-    @permalink
-    def get_absolute_url(self):
-        return ('cms.views.imagepage', (), {'key': self.key}) 
 
 class Navigation(MPTTModel):
     name = models.CharField(max_length=20,

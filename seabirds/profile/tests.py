@@ -1,9 +1,8 @@
+import os
+
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.conf import settings
 from django.test.utils import override_settings
-from categories.models import SeabirdFamily, InstitutionType
 from profile.models import UserProfile
 
 
@@ -41,6 +40,7 @@ class TestAnonymous(TestCase):
     def test_anonymous_users_redirected_to_login(self):
         response = self.client.get('/petrel/edit/', follow=True)
         self.assertTrue('login' in response.content, msg='Not redirected to the login page')
+
 
 class TestUsername(TestCase):
     fixtures = ['test-data/profile.json']
@@ -83,100 +83,101 @@ class TestUsername(TestCase):
             }, follow=True)
         self.assertTrue('Dr Sooty Shearwater' in response.content)
 
-#    def test_login_sooty(self):
-#        sooty = User.objects.get(username='sooty-shearwater')
-#        self.assertTrue(sooty.profile.get().is_moderator)
-#
-#    def test_long_username(self):
-#        albert = User.objects.get(username='sooty-shearwater')
-#        albert.username = 'sooty-shearwater-has-a-very-long-name' #32 characters
-#        self.assertTrue(albert.profile.get().is_moderator)
+    def test_login_sooty(self):
+        sooty = User.objects.get(username='sooty-shearwater')
+        self.assertFalse(sooty.profile.get().is_moderator)
+
+    def test_long_username(self):
+        sooty = User.objects.get(username='sooty-shearwater')
+        sooty.username = 'sooty-shearwater-has-a-very-long-name' #32 characters
+        sooty.save()
+        self.assertTrue(len(sooty.username), 32)
+        self.assertFalse(sooty.profile.get().is_moderator)
 
 
-#class TestNewUser(TestCase):
-#    @override_settings(DEBUG=True)
-#    def test_create_user(self):
-#        response = self.client.post('/accounts/register/', 
-#            {'first_name':'Fairy', 
-#            'last_name':'Prion', 
-#            'email': 'fairy@prion.net',
-#            'accept_terms': True,
-#            'research_field': 1,
-#            'password1':'fairyprion', 
-#            'password': 'fairyprion', 
-#            'password2':'fairyprion',
-#            }, follow=True)
-#        print(response.content)
-#        print(response.status_code)
-#        print(settings.DEBUG)
-#        self.assertTrue(response.status_code == 302)
-#        u = User.objects.get(first_name='Fairy')
-#        self.assertTrue(u.last_name, 'Prion')
-#
+class TestNewUser(TestCase):
 
-#class TestCustomListView(TestCase):
+    def setUp(self):
+        os.environ['RECAPTCHA_TESTING'] = 'True'
 
-    #def test_logged_in_users_can_visit_page(self):
-    #    assert self.client.get('/petrel', follow=True).status_code == 200
-    #    assert self.client.get('/petrel/', follow=True).status_code == 200
+    def tearDown(self):
+        os.environ['RECAPTCHA_TESTING'] = 'False'
 
-#    def test_default_listing(self):
-#        response = self.client.get('/petrel/', follow=True)
-#        assert 'activebadge' not in response.content
-#
-#    def test_country_no_seabirds_nor_collab_choices(self):
-#        link =  '/petrel/?c=GB'
-#        response = self.client.get(link)
-#       
-#        desired = [
-#          '<a href="/petrel/?c=SE" class="badge linkbadge">Sweden</a>',
-#          '<a href="/petrel/" class="badge activebadge">United Kingdom</a>'
-#        ]
-#        for s in desired:
-#            content = response.content
-#            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
-#
-#        
-#    def test_country_seabirds_but_no_collab_choices(self):
-#        link = '/petrel/?c=GB&s=alb'
-#        response = self.client.get(link)
-#
-#        desired = [
-#          '<a href="/petrel/?c=SE&s=alb" class="badge linkbadge">Sweden</a>',
-#          '<a href="/petrel/?s=alb" class="badge activebadge">United Kingdom</a>',
-#          '<a href="/petrel/?c=GB" class="badge activebadge">Albatrosses</a>',
-#          '<a href="/petrel/?c=GB&s=auk" class="badge linkbadge">Auks</a>'
-#        ]
-#        for s in desired:
-#            content = response.content
-#            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
-#
-#    def test_country_seabirds_and_collab_choices(self):
-#        link = '/petrel/?c=GB&s=alb&r=graduate+student'
-#        response = self.client.get(link) 
-#        desired = [
-#          '<a href="/petrel/?c=SE&s=alb&r=graduate+student" class="badge linkbadge">Sweden</a>',
-#          '<a href="/petrel/?s=alb&r=graduate+student" class="badge activebadge">United Kingdom</a>',
-#          '<a href="/petrel/?c=GB&r=graduate+student" class="badge activebadge">Albatrosses</a>',
-#          '<a href="/petrel/?c=GB&s=auk&r=graduate+student" class="badge linkbadge">Auks</a>'
-#        ]
-#        for s in desired:
-#            content = response.content
-#            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
-#
-#    def test_seabirds_no_countries_nor_collab_choices(self):
-#        link = '/petrel/?s=alb'
-#        response = self.client.get(link)
-#        desired = [
-#          '<a href="/petrel/?c=SE&s=alb" class="badge linkbadge">Sweden</a>',
-#          '<a href="/petrel/" class="badge activebadge">Albatrosses</a>'
-#        ]
-#        for s in desired:
-#            content = response.content
-#            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
-#        
-#
-#    def test_seabirds_countries_and_collab_choices(self):
-#        response = self.client.get('/petrel/?s=alb&r=graduate+student')
-#
-#
+    @override_settings(DEBUG=True)
+    def test_create_user(self):
+        response = self.client.post('/accounts/register/',
+            {
+            'first_name':'Fairy',
+            'last_name':'Prion',
+            'email': 'fairy@prion.net',
+            'accept_terms': True,
+            'recaptcha_response_field': 'PASSED',
+            'password1':'fairyprion',
+            'password2':'fairyprion',
+            })
+        self.assertTrue(response.status_code == 302)
+        u = User.objects.get(first_name='Fairy')
+        self.assertTrue(u.last_name, 'Prion')
+
+
+class TestCustomListView(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def setUp(self):
+        # Because displaying list tries to render thumbnails of these images
+        for p in UserProfile.objects.all():
+            p.photograph = ''
+            p.save()
+
+    def check_desired(self, link, desired):
+        response = self.client.get(link)
+        for s in desired:
+            content = response.content
+            self.assertTrue(s in content, msg=u'\nMISSING: {0}\nFROM:    {1}\n{2}\n'.format(s, link, content))
+
+    def test_logged_in_users_can_visit_page(self):
+        assert self.client.get('/petrel', follow=True).status_code == 200
+        assert self.client.get('/petrel/', follow=True).status_code == 200
+
+    def test_default_listing(self):
+        response = self.client.get('/petrel/', follow=True)
+        assert 'activebadge' not in response.content
+
+    def test_country_no_seabirds_nor_collab_choices(self):
+        link =  '/petrel/?c=NZ'
+        desired = [
+          '<a href="/petrel/" class="badge activebadge">New Zealand</a>',
+          '<a href="/petrel/?s=alb&c=NZ" class="badge linkbadge">Albatrosses</a>',
+          '<a href="/petrel/?s=pet&c=NZ" class="badge linkbadge">Petrels</a>',
+        ]
+        self.check_desired(link, desired)
+
+    def test_country_seabirds_but_no_collab_choices(self):
+        link = '/petrel/?c=NZ&s=alb'
+        desired = [
+          '<a href="/petrel/?s=alb" class="badge activebadge">New Zealand</a>',
+          '<a href="/petrel/?c=NZ" class="badge activebadge">Albatrosses</a>',
+        ]
+        self.check_desired(link, desired)
+
+    def test_country_seabirds_and_collab_choices(self):
+        link = '/petrel/?c=NZ&s=alb&r=1'
+        desired = [
+          '<a href="/petrel/?s=alb&r=1" class="badge activebadge">New Zealand</a>',
+          '<a href="/petrel/?c=NZ&r=1" class="badge activebadge">Albatrosses</a>',
+        ]
+        self.check_desired(link, desired)
+
+    def test_seabirds_no_countries_nor_collab_choices(self):
+        link = '/petrel/?s=alb'
+        desired = [
+          '<a href="/petrel/" class="badge activebadge">Albatrosses</a>'
+        ]
+        self.check_desired(link, desired)
+
+    def test_seabirds_countries_and_collab_choices(self):
+        link = '/petrel/?s=alb&r=1'
+        desired = [
+          '<a href="/petrel/?r=1" class="badge activebadge">Albatrosses</a>'
+        ]
+        self.check_desired(link, desired)

@@ -1,5 +1,6 @@
+import logging
+import os
 
-import logging, os
 logging.basicConfig(level = logging.WARN,)
 
 # These settings may be overridden in sitesettings
@@ -83,8 +84,8 @@ INSTALLED_APPS = (
     #'bibliography',
     'grappelli',
     'django.contrib.admin',
-    'profiles', #Django profiles
-    'profile', #App for storing user info
+    'profiles', # Django profiles
+    'profile', # App for storing user info
     'taggit',
     'mptt',
     'disqus',
@@ -135,8 +136,8 @@ except ImportError:
 EMAIL_NOREPLY = 'noreply@seabirds.net'
 SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
-
-# Required for enforcing a global login during testing
+# Required by LoginRequiredMiddleware which enforces a global login during testing
+# This is not currently active.
 LOGIN_URL = '/accounts/login/'
 
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
