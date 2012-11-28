@@ -22,5 +22,5 @@ hg+https://bitbucket.org/ubernostrum/django-registration
 django-coverage
 django-grappelli==2.3.7
 coverage
-git+git://github.com/dragonfly-science/django-pigeonpost
+git+git://github.com/dragonfly-science/django-pigeonpost@0.1.2
 unidecode
