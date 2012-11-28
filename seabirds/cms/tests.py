@@ -104,6 +104,24 @@ class TestPosts(TestCase):
         pigeons = Pigeon.objects.all()
         self.assertTrue(len(pigeons) == 1, msg=str(pigeons))
         
+    def test_create_post_dupe_title(self):
+        """ Test that a post with the same title can be posted multiple times """
+        post_data = {
+                'post-title':'Test',
+                'post-text':'This is a test post',
+                'post-listing':1,
+                'post-seabird_families':[1, 2]
+                }
+        self.client.post(reverse('new-post'), post_data, follow=True)
+        p = Post.objects.get(title='Test')
+        post_data['post-text'] = 'copycat'
+        self.client.post(reverse('new-post'), post_data, follow=True)
+        p2 = Post.objects.get(text='copycat')
+        self.assertNotEqual(p, p2)
+
+        pigeons = Pigeon.objects.all()
+        self.assertTrue(len(pigeons) == 2, msg=str(pigeons))
+
     def test_edit_post(self):
         response = self.client.post(reverse('new-post'), {'post-title':'Test', 
             'post-text':'This is a test post', 

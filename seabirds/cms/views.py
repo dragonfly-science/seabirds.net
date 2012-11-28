@@ -320,11 +320,11 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
 
 @login_required
 def edit_post(request, post_id=None):
-    # Get the post
     post = None
     image_id = None
     hasimage = False
     if post_id:
+        # Get the post
         post = get_object_or_404(Post, id=post_id)
         if post.image:
             image_id = post.image.id
@@ -346,15 +346,13 @@ def edit_post(request, post_id=None):
             if not post_id:
                 name = slugify(post.title)[:50]
                 try:
+                    origname = name
                     Post.objects.get(name=name)
                     count = 0
                     while True:
                         count += 1
-                        newname = name[:(50 - 1 - len(str(count)))] + '-' + str(count)
-                        try:
-                            Post.objects.get(name=newname)
-                        except Post.DoesNotExist:
-                            name = newname
+                        name = origname[:(50 - 1 - len(str(count)))] + '-' + str(count)
+                        Post.objects.get(name=name)
                 except Post.DoesNotExist:
                     pass
                 post.name = name
