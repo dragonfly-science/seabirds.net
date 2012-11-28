@@ -104,6 +104,7 @@ class TestNewUser(TestCase):
         os.environ['RECAPTCHA_TESTING'] = 'False'
 
     def test_create_user(self):
+        """ Ensure we can register new users """
         response = self.client.post('/accounts/register/',
             {
             'first_name':'Fairy',
@@ -119,6 +120,7 @@ class TestNewUser(TestCase):
         self.assertTrue(u.last_name, 'Prion')
 
     def test_create_duplicate_user(self):
+        """ Test that users with the same name will generate a different username """
         user_data = {
             'first_name':'Fairy',
             'last_name':'Prion',
@@ -135,8 +137,8 @@ class TestNewUser(TestCase):
         self.assertTrue(response.status_code == 302)
         users = User.objects.filter(first_name='Fairy')
         self.assertTrue(len(users), 2)
-        print users[0].username
-        print users[1].username
+        # First username will be the prefix of the second one
+        self.assertTrue(users[0].username in users[1].username)
 
 class TestCustomListView(TestCase):
     fixtures = ['test-data/profile.json']
