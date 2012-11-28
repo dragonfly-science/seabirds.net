@@ -10,7 +10,6 @@ from django.shortcuts import get_object_or_404, render_to_response, get_list_or_
 from django.template import RequestContext
 from django.conf import settings
 from django.views.static import serve
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template.defaultfilters import slugify
@@ -21,10 +20,12 @@ from django.utils.html import strip_tags
 
 from PIL import Image as PILImage
 
+from bibliography.models import Reference
+
 from categories.models import SeabirdFamily
 from cms.models import Page, File, Navigation, Image, Post, Listing
 from cms.forms import PostForm, ImageForm, SimpleComment
-from bibliography.models import Reference
+from utils import get_first_available_label
 from license.models import License
 from profile.models import UserProfile
 
@@ -345,17 +346,7 @@ def edit_post(request, post_id=None):
                 post.image = None
             if not post_id:
                 name = slugify(post.title)[:50]
-                try:
-                    origname = name
-                    Post.objects.get(name=name)
-                    count = 0
-                    while True:
-                        count += 1
-                        name = origname[:(50 - 1 - len(str(count)))] + '-' + str(count)
-                        Post.objects.get(name=name)
-                except Post.DoesNotExist:
-                    pass
-                post.name = name
+                post.name = get_first_available_label(Post, name, 'name')
                 if not post.author:
                     post.author = request.user
                 if request.user.is_authenticated() and request.user.profile.get().is_moderator:

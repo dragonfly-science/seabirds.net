@@ -101,7 +101,7 @@ class File(models.Model):
       return "<a href=\"%s/%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
 
 # Depends on models.Image and models.File
-from cms.utils import markdownplus
+from utils.markdownplus import markdownplus
 
 class Page(models.Model):
     title = models.CharField(max_length = 100, 
@@ -257,9 +257,12 @@ class Navigation(MPTTModel):
 class Listing(models.Model):
     key = models.SlugField(max_length=50)
     description = models.TextField()
+
+    # Permissions
     staff_only_write = models.BooleanField()
     staff_only_read = models.BooleanField()
     allow_comments = models.BooleanField()
+
     optional_list = models.BooleanField(default=True)
 
     def __unicode__(self):

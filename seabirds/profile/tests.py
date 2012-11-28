@@ -103,7 +103,6 @@ class TestNewUser(TestCase):
     def tearDown(self):
         os.environ['RECAPTCHA_TESTING'] = 'False'
 
-    @override_settings(DEBUG=True)
     def test_create_user(self):
         response = self.client.post('/accounts/register/',
             {
@@ -119,6 +118,25 @@ class TestNewUser(TestCase):
         u = User.objects.get(first_name='Fairy')
         self.assertTrue(u.last_name, 'Prion')
 
+    def test_create_duplicate_user(self):
+        user_data = {
+            'first_name':'Fairy',
+            'last_name':'Prion',
+            'email': 'fairy@prion.net',
+            'accept_terms': True,
+            'recaptcha_response_field': 'PASSED',
+            'password1':'fairyprion',
+            'password2':'fairyprion',
+            }
+        response = self.client.post('/accounts/register/', user_data)
+        self.assertTrue(response.status_code == 302)
+        user_data['email'] = 'fairy2@prion.net'
+        response = self.client.post('/accounts/register/', user_data)
+        self.assertTrue(response.status_code == 302)
+        users = User.objects.filter(first_name='Fairy')
+        self.assertTrue(len(users), 2)
+        print users[0].username
+        print users[1].username
 
 class TestCustomListView(TestCase):
     fixtures = ['test-data/profile.json']
