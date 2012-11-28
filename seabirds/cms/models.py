@@ -13,6 +13,7 @@ from django.core.mail import EmailMessage
 from pigeonpost.signals import pigeonpost_queue
 from mptt.models import MPTTModel, TreeForeignKey
 
+from profile.models import UserProfile
 from license.models import License
 from categories.models import SeabirdFamily
 
@@ -201,24 +202,62 @@ class Post(models.Model):
 
     def email_moderator(self, user):
         if user.profile.get().is_moderator:
-            subject = render_to_string('email_list_subject.txt', {'title': self.title, 'user': user, 'post': self})
-            body = render_to_string('email_list_body.txt', {'text': self.text, 'user': user, 'post': self})
+            post_data = { 'text': self.text, 'user': user, 'post': self }
+            subject = render_to_string('email_list_subject.txt', post_data)
+            body = render_to_string('email_list_body.txt', post_data)
+            return EmailMessage(subject, body, to=[user.email])
+
+    def email_author(self, user):
+        if user == self.author:
+            post_data = { 'text': self.text, 'user': user, 'post': self }
+            subject = render_to_string('email_list_subject.txt', post_data)
+            body = render_to_string('email_list_body.txt', post_data)
+            return EmailMessage(subject, body, to=[user.email])
+
+    def email_subscriber(self, user):
+        if user != self.author:
+            post_data = { 'text': self.text, 'user': user, 'post': self }
+            subject = render_to_string('email_list_subject.txt', post_data)
+            body = render_to_string('email_list_body.txt', post_data)
             return EmailMessage(subject, body, to=[user.email])
 
     def save(self, *args, **kwargs):
+        just_published_now = False
         # The first time it is saved it is published
         if not self.date_published:
             self.published = True
             self.date_published = datetime.date.today()
             self.enable_comments = self.listing.allow_comments
+            just_published_now = True
+
         super(Post, self).save(*args, **kwargs)
         
         # When the post is saved, the moderators are notified, with a delay
-        if self.published and self._notify_moderator and kwargs.get('commit', True):
-            pigeonpost_queue.send(sender=self, 
-                render_email_method='email_moderator', 
+        if self._notify_moderator and kwargs.get('commit', True):
+            pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
                 defer_for=settings.PIGEONPOST_DEFER_POST_MODERATOR)
             self._notify_moderator = False
+
+        if just_published_now:
+            # We send the pigeonpost to the author via just_published_now because
+            # pigeonpost needs the Post.id for source_id
+            #
+            # We send the author an email to let them know they can edit it
+            # TODO: Think about if we really need this, since the user will
+            # already be aware they created it (and presumedly see the ability
+            # to edit it)
+            # TODO: make pigeonpost support send_to parameter and send_to_method
+            # parameters
+            pigeonpost_queue.send(sender=self, render_email_method='email_author', 
+                defer_for=0, send_to=self.author)
+
+            pigeonpost_queue.send(sender=self, render_email_method='email_subscriber', 
+                defer_for=0, send_to_method='get_subscribers')
+
+    def get_subscribers(self):
+        subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
+        subscribers = [p.user for p in subscriber_profiles]
+        return subscribers
 
     class Meta:
         ordering = ['-date_published', '-date_created']

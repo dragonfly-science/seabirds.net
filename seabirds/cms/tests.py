@@ -90,19 +90,27 @@ class TestPosts(TestCase):
 
     @override_settings(PIGEONPOST_DEFER_POST_MODERATOR=5)
     def test_create_post(self):
-        response = self.client.post(reverse('new-post'), {'post-title':'Test', 
+        self.client.post(reverse('new-post'), {'post-title':'Test', 
             'post-text':'This is a test post', 
             'post-listing':1, 
             'post-seabird_families':[1, 2]}, follow=True)
         p = Post.objects.get(title='Test')
-        # The post is published        
+        # Check the Post is published
         self.assertTrue(p.published)
+
+        # After a Post is created, there should be a pigeon notifications to:
+        # - the author who posted it
+        # - the moderator, who can edit/modify the post before members are notified
+        # - members who subscribed to the listing
         pigeons = Pigeon.objects.all()
-        self.assertTrue(len(pigeons) == 1, msg=str(pigeons))
-        # If the post is saved again the moderator isn't notified again
+        self.assertTrue(len(pigeons) == 3, msg=str(pigeons))
+
+        # After the Post is modified, the moderator/user isn't notified again, but
+        # if the pigeon notification has not been sent, it's scheduled_at time
+        # is reset to 10 minutes from now.
         p.save()
         pigeons = Pigeon.objects.all()
-        self.assertTrue(len(pigeons) == 1, msg=str(pigeons))
+        self.assertTrue(len(pigeons) == 3, msg=str(pigeons))
         
     def test_create_post_dupe_title(self):
         """ Test that a post with the same title can be posted multiple times """
@@ -120,7 +128,7 @@ class TestPosts(TestCase):
         self.assertNotEqual(p, p2)
 
         pigeons = Pigeon.objects.all()
-        self.assertTrue(len(pigeons) == 2, msg=str(pigeons))
+        self.assertTrue(len(pigeons) == 6, msg=str(pigeons))
 
     def test_edit_post(self):
         response = self.client.post(reverse('new-post'), {'post-title':'Test', 
