@@ -70,11 +70,10 @@ def markdownplus(instance, text, check=False):
             return m.group(0) 
     text = re.sub(IMAGE_REGEX, insert_image,  text)
 
-    text = re.sub('\[References\s+(\w[\w=\'" -]+)\]', insert_references,  text)
+    text = re.sub('\[References\s+(\w[\w=\'" -]+)\]', _insert_references, text)
     return text
 
-    text = re.sub('\[File\s+(\w+)\]',   insert_file, text) 
+    text = re.sub('\[File\s+(\w+)\]', _insert_file, text) 
 
     text = markdown_post_references(text)
     return text
-

@@ -52,7 +52,7 @@ class Image(models.Model):
         url = self.get_qualified_url(width, height)
         if not caption:
             caption=self.caption
-        return render_to_string('image/plain.html', dict(image=image, width=width, place=None, url=url, caption=caption))
+        return render_to_string('image/plain.html', dict(image=self, width=width, place=None, url=url, caption=caption))
 
     def tag(self):
         return "[Image %s]"%(self.key,)

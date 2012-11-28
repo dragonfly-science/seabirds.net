@@ -84,7 +84,10 @@ urlpatterns += patterns('',
     url('^edit/image/(?P<image_id>\d*)/$', 'cms.views.edit_image', name='edit-image'),
     url(r'^accounts/register/$',
         register,
-        {'backend': 'profile.custom_registration.ProfileBackend', 'form_class': ProfileRegistrationForm},        
+        {
+            'backend': 'profile.custom_registration.ProfileBackend',
+            'form_class': ProfileRegistrationForm
+        },
         name='registration_register'
     ),    
     url(r'^accounts/profile/', 'profile.views.profile'),
