@@ -46,6 +46,9 @@ fab get_live_media    # Download all the media assets
 fab get_secrets       # Get API keys etc and example sitesettings.py
 ```
 
+Don't worry if you get an error `ERROR:  must be member of role "seabirds"`,
+that's just because the table belongs to you instead of the seabirds user.
+
 `get_secrets` will place the production sitesettings.py in a file
 `sitesettings_production.py`. You can create your own custom settings in
 `seabirds/sitesettings.py` which might look something like this:

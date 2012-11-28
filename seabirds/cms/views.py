@@ -325,7 +325,7 @@ def edit_post(request, post_id=None):
     image_id = None
     hasimage = False
     if post_id:
-        # Get the post
+        # If post_id specified we are editing an existing post.
         post = get_object_or_404(Post, id=post_id)
         if post.image:
             image_id = post.image.id
@@ -357,8 +357,9 @@ def edit_post(request, post_id=None):
             return HttpResponseRedirect(post.get_absolute_url())
     else:
         if not post_id:
-            postform = PostForm(prefix='post') # An unbound form
-            imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+            # unbound forms
+            postform = PostForm(prefix='post')
+            imageform = ImageForm(initial=get_initial_data(request), prefix='image')
         else:
             post = get_object_or_404(Post, id=post_id)
             postform = PostForm(instance=post, prefix='post')
@@ -371,8 +372,12 @@ def edit_post(request, post_id=None):
         action = reverse('edit-post', args=(), kwargs={'post_id': post.id})
     else:
         action = reverse('new-post')
-    return render_to_response('cms/edit_post.html', {'postform': postform, 'imageform': imageform, 
-        'required': REQUIRED_FIELDS, 'action': action, 'hasimage': hasimage}, 
+    return render_to_response('cms/edit_post.html', {
+            'postform': postform,
+            'imageform': imageform, 
+            'required': REQUIRED_FIELDS,
+            'action': action,
+            'hasimage': hasimage}, 
         context_instance=RequestContext(request))
 
 def jobs(request):
