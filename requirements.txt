@@ -20,7 +20,7 @@ ssh
 git+https://github.com/praekelt/django-recaptcha
 hg+https://bitbucket.org/ubernostrum/django-registration
 django-coverage
-django-grappelli==2.3.7
+django-grappelli==2.4.2
 coverage
 git+git://github.com/dragonfly-science/django-pigeonpost@v0.1.2
 unidecode

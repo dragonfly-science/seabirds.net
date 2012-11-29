@@ -2,8 +2,6 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 from cms.models import Page, Image, File, Post, Navigation, Listing
-from reversion.admin import VersionAdmin
-from django.contrib.auth.models import User
 from mptt.admin import MPTTModelAdmin
 
 
