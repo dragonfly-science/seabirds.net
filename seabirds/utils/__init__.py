@@ -1,4 +1,14 @@
 def get_first_available_label(model, start_name, field, iexact=False):
+    """ Check for the first free label on [model].[field]
+    
+    If 'test-name' is the start_name, it will iterate and check variants like
+    test-name-1, test-name-2 etc. until no instance of [model] is found with
+    [label] == 'test-name-X'.
+
+    This is often a pattern when generating post slugs, or usernames...
+    but it can be tricky to get correct if it has to be reimplemented
+    everytime it's needed.
+    """
     try:
         name = start_name
         field_lookup = field
