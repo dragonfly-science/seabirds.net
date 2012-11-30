@@ -32,7 +32,8 @@ class PostAdmin(admin.ModelAdmin):
     #fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'text')}),)
     formfield_overrides = {
         models.TextField: {'widget': 
-            forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.3em'})
+            forms.Textarea(attrs={'size':15, 'class':'vTextfield', 'style':'height: 400px'})
+            #forms.Textarea(attrs={'size':15, 'style':'width: 100%; font-size:1.3em'})
         },
     }
 admin.site.register(Post, PostAdmin)

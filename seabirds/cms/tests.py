@@ -53,6 +53,17 @@ class TestPages(TestCase):
 
 class TestPosts(TestCase):
     fixtures = ['test-data/profile.json']
+    TEST_EMAIL_DELAYS = {
+            'cms.Post': {
+                'moderator': 5*60,
+                'subscriber': 3*60*60, # 3 hours
+                'author': 10*60,
+                },
+            'cms.Comment': {
+                'post_author': 5*60,
+                'post_other_commenters': 5*60,
+                },
+    }
 
     def setUp(self):
         self.client.login(username="sooty-shearwater", password="foo")
@@ -88,7 +99,7 @@ class TestPosts(TestCase):
 #            'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
 #        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
 
-    @override_settings(PIGEONPOST_DEFER_POST_MODERATOR=5)
+    @override_settings(PIGEONPOST_DELAYS=TEST_EMAIL_DELAYS)
     def test_create_post(self):
         self.client.post(reverse('new-post'), {'post-title':'Test', 
             'post-text':'This is a test post', 

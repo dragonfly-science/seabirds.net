@@ -5,12 +5,14 @@ from django.db import models
 from django.db.models import permalink
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, Resolver404
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 
 from pigeonpost.signals import pigeonpost_queue
+from pigeonpost.models import Pigeon
 from mptt.models import MPTTModel, TreeForeignKey
 
 from profile.models import UserProfile
@@ -75,8 +77,8 @@ class Image(models.Model):
         return width, height       
 
     def get_qualified_url(self, width=None, height=None, max_height=None):
-	if not width or not height or max_height:
-	    width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
+        if not width or not height or max_height:
+            width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
         base, ext = os.path.splitext(os.path.split(self.image.path)[1])
         return os.path.join('/images', '%s-%ix%i%s'%(base, width, height, ext))
 
@@ -167,6 +169,13 @@ class Post(models.Model):
         help_text='True if the moderator should be notified of edits to this post') 
     _sent_to_list = models.BooleanField(default=False, editable=False, 
         help_text='True if the post has been sent to lists')
+    
+    # This generic relation ensures that when a Post is deleted, so are any associated
+    # Pigeons (and due to the link from Outbox to Pigeon, so are Outbox messages)
+    pigeons = generic.GenericRelation(Pigeon,
+            content_type_field='source_content_type',
+            object_id_field='source_id')
+
 
     def __str__(self):
         return self.name
@@ -200,26 +209,67 @@ class Post(models.Model):
             'day': date.strftime('%d'), 
             'slug': self.name})
 
+    def _generate_email(self, to_user, subject, template, template_html):
+        """ Helper to reduce duplicate code between email methods """
+        # First generate the text version
+        template_data = { 'text': self.text, 'user': to_user, 'post': self }
+        body = render_to_string(template, template_data)
+        msg = EmailMultiAlternatives(subject, body, to=[to_user.email])
+
+        # Then generate the html version with rendered markdown
+        template_data['text'] = self.markdown_text
+        html_content = render_to_string(template_html, template_data)
+        msg.attach_alternative(html_content, "text/html")
+        return msg
+
     def email_moderator(self, user):
+        """ Email moderator when new post is made by a non-staff member
+        
+        This is to allow for the message to edited if necessary before they
+        get sent to all subscribers. The moderator only gets emailed once it
+        looks like there are no further changes from the author (i.e. after
+        there are no new edits for a given time).
+        """
         if user.profile.get().is_moderator:
-            post_data = { 'text': self.text, 'user': user, 'post': self }
-            subject = render_to_string('email_list_subject.txt', post_data)
-            body = render_to_string('email_list_body.txt', post_data)
-            return EmailMessage(subject, body, to=[user.email])
+            subject = '[seabirds.net] New post by %s' % self.author
+            template = 'pigeonpost/email_list_body.txt'
+            return self._generate_email(user, subject, template, template)
 
     def email_author(self, user):
+        """ Email author when they make a new post
+        
+        This lets the author know they have a while to make edits before
+        it's checked by a moderator and sent out to subscibers.
+
+        TODO: Think about if we really need this, since the user will
+        already be aware they created it (and presumedly see the ability
+        to edit it)
+        """
         if user == self.author:
-            post_data = { 'text': self.text, 'user': user, 'post': self }
-            subject = render_to_string('email_list_subject.txt', post_data)
-            body = render_to_string('email_list_body.txt', post_data)
-            return EmailMessage(subject, body, to=[user.email])
+            subject = '[seabirds.net] Your new post "%s"' % self.title
+            template = 'pigeonpost/email_list_body.txt'
+            return self._generate_email(user, subject, template, template)
 
     def email_subscriber(self, user):
+        """ Email subscribers to the listing this post is part of """
         if user != self.author:
-            post_data = { 'text': self.text, 'user': user, 'post': self }
-            subject = render_to_string('email_list_subject.txt', post_data)
-            body = render_to_string('email_list_body.txt', post_data)
-            return EmailMessage(subject, body, to=[user.email])
+            subject = '[seabirds.net] New %s post "%s"' % (self.listing, self.title)
+            template = 'pigeonpost/email_list_body.txt'
+            return self._generate_email(user, subject, template, template)
+
+    def email_author_about_comment(self, user):
+        if user == self.author:
+            subject = '[seabirds.net] New comment on your post "%s"' % self.title
+            template = 'pigeonpost/email_list_body.txt'
+            return self._generate_email(user, subject, template, template)
+
+    def email_commenters(self, user):
+        # TODO: If there is an op out for a conversation, or being emailed
+        # about comments, then it could be checked here
+        if user != self.author:
+            subject = '[seabirds.net] New comment on post "%s"' % self.title
+            template = 'pigeonpost/email_list_body.txt'
+            return self._generate_email(user, subject, template, template)
 
     def save(self, *args, **kwargs):
         just_published_now = False
@@ -235,7 +285,7 @@ class Post(models.Model):
         # When the post is saved, the moderators are notified, with a delay
         if self._notify_moderator and kwargs.get('commit', True):
             pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
-                defer_for=settings.PIGEONPOST_DEFER_POST_MODERATOR)
+                defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['moderator'])
             self._notify_moderator = False
 
         if just_published_now:
@@ -243,21 +293,26 @@ class Post(models.Model):
             # pigeonpost needs the Post.id for source_id
             #
             # We send the author an email to let them know they can edit it
-            # TODO: Think about if we really need this, since the user will
-            # already be aware they created it (and presumedly see the ability
-            # to edit it)
-            # TODO: make pigeonpost support send_to parameter and send_to_method
-            # parameters
             pigeonpost_queue.send(sender=self, render_email_method='email_author', 
-                defer_for=0, send_to=self.author)
+                defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['author'],
+                send_to=self.author)
 
+            # Let subscribers to the listing of this post know about it
             pigeonpost_queue.send(sender=self, render_email_method='email_subscriber', 
-                defer_for=0, send_to_method='get_subscribers')
+                defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber'],
+                send_to_method='get_subscribers')
 
     def get_subscribers(self):
         subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
         subscribers = [p.user for p in subscriber_profiles]
         return subscribers
+
+    def get_commenters(self):
+        from django.contrib.comments.models import Comment
+        # TODO: is comments.get_model() better for extensibility?
+        #from django.contrib import comments
+        commentset = Comment.objects.for_model(Post).filter(object_pk=self.id)
+        return [c.user for c in commentset]
 
     class Meta:
         ordering = ['-date_published', '-date_created']
@@ -306,4 +361,4 @@ class Listing(models.Model):
 
     def __unicode__(self):
         return self.description
-    
+

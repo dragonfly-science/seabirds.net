@@ -1,21 +1,25 @@
 import datetime
-import types
 import os
 import re
-import logging
 import random
 
-from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response, get_list_or_404, redirect
-from django.template import RequestContext
-from django.conf import settings
-from django.views.static import serve
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
+from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.shortcuts import get_object_or_404, render_to_response, render, get_list_or_404, redirect
+from django.conf import settings
+
+from django.views.static import serve
+from django.views.decorators.http import require_POST
+
 from django.template.defaultfilters import slugify
-from django.contrib.comments.models import Comment
-from django.dispatch import receiver
+from django.template import RequestContext
+
+from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
+from django.contrib.comments.models import Comment
+from django.contrib.comments.views.moderation import perform_delete
+from django.contrib import comments
+
 from django.utils.html import strip_tags
 
 from PIL import Image as PILImage
@@ -23,8 +27,13 @@ from PIL import Image as PILImage
 from bibliography.models import Reference
 
 from categories.models import SeabirdFamily
-from cms.models import Page, File, Navigation, Image, Post, Listing
+
+# We don't use cms.tasks in this module, but need to import to insure signal
+# listeners are in place
+from cms.tasks import generate_comment_pigeons
+from cms.models import Page,  Navigation, Image, Post, Listing
 from cms.forms import PostForm, ImageForm, SimpleComment
+
 from utils import get_first_available_label
 from license.models import License
 from profile.models import UserProfile
@@ -34,9 +43,6 @@ def page(request, name):
     context_instance.autoescape=False
     if name == 'index': 
         name = 'home'
-        fullpath = ""
-    else:
-        fullpath = name
     name = os.path.basename(name)
     page =  get_object_or_404(Page, name = name)
     navigation = page.get_absolute_url()
@@ -250,6 +256,17 @@ def process_comment(request, commentform, post):
     comment.save()
     return comment
 
+@require_POST
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(comments.get_model(), pk=comment_id)
+    if comment.user == request.user:
+        next_page = comment.content_object.get_absolute_url()
+        perform_delete(request, comment)
+        return redirect(next_page)
+    else:
+        raise Http404
+
 # View an individual post
 def individual_post(request, year=None, month=None, day=None, slug=None):
     if not slug:
@@ -291,9 +308,11 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                 del post
             return HttpResponseRedirect(profile.get_absolute_url())
         return HttpResponseRedirect(post.get_absolute_url())
-    #Logic to decide whether or not to allow comment to be added
+    # Logic to decide whether or not to allow comment to be added
     add_comment =  post.enable_comments and post.published and request.user.is_authenticated()
+
     # Is there an existing comment by this user that should be edited or should we get a new one?
+    # TODO: How is the below supposed to work? Currently users can just add multiple comments
     commentset = []
     if request.user.is_authenticated():
         commentset = Comment.objects.for_model(Post).filter(object_pk=post.id).filter(user=request.user)
@@ -304,19 +323,37 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
     else:
         latest_comment = None
         initial = None
-    # Logic to decide whether to allow editing of the form
+    ######
+    
+    # Decide whether to allow editing of the Post form
     if request.user.is_authenticated() and (request.user == post.author or request.user.is_staff or \
             request.user.profile.get().is_moderator):
-        return render_to_response('cms/post.html', {'object': post, 'form': True,
-            'add_comment': add_comment, 'commentform': SimpleComment(prefix='comment', initial=initial)},
-            context_instance=RequestContext(request))
-    # Or it is publicly viewable
+        return render(request, 'cms/post.html', {
+            'object': post,
+            'form': True,
+            'add_comment': add_comment,
+            'commentform': SimpleComment(prefix='comment', initial=initial)
+            }
+            )
+    elif request.user.is_authenticated():
+        # Decide whether to allow comments on the Post
+        return render(request, 'cms/post.html', {
+            'object': post,
+            'form': False,
+            'add_comment': add_comment,
+            'commentform': SimpleComment(prefix='comment', initial=initial)
+            }
+            )
     elif post.date_published:
+        # Or it is publicly viewable
         navigation = get_base_navigation(request)
-        return render_to_response('cms/post.html', {'object': post, 'form': False,
-            'add_comment': add_comment, 'navigation': navigation['navigation']})
-    # Or we shouldn't know it exists
+        return render(request, 'cms/post.html', {
+            'object': post,
+            'form': False,
+            'navigation': navigation['navigation'],
+            })
     else:
+        # Or we shouldn't know it exists
         raise Http404
 
 @login_required
