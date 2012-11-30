@@ -60,11 +60,11 @@ def generate_comment_pigeons(sender, **kwargs):
     post = comment.content_object
 
     # The first pigeon is to the post author
-    pigeonpost_queue.send(sender=post,
+    pigeonpost_queue.send(sender=comment,
          render_email_method='email_author_about_comment',
          send_to=post.author)
 
     # The second pigeon is for any commenters on the post
-    pigeonpost_queue.send(sender=post,
+    pigeonpost_queue.send(sender=comment,
          render_email_method='email_commenters',
          send_to_method='get_commenters')

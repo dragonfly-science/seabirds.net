@@ -13,10 +13,9 @@ class PigeonComment(Comment):
     objects = CommentManager()
 
     def email_author_about_comment(self, user):
-        if user == self.author:
-            subject = '[seabirds.net] New comment on your post "%s"' % self.title
-            template = 'pigeonpost/email_list_body.txt'
-            return self._generate_email(user, subject, template, template)
+        subject = '[seabirds.net] New comment on your post "%s"' % self.title
+        template = 'pigeonpost/email_list_body.txt'
+        return self._generate_email(user, subject, template, template)
 
     def email_commenters(self, user):
         # TODO: If there is an op out for a conversation, or being emailed
