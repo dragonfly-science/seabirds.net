@@ -16,7 +16,6 @@ from django.template import RequestContext
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
-from django.contrib.comments.models import Comment
 from django.contrib.comments.views.moderation import perform_delete
 from django.contrib import comments
 
@@ -236,10 +235,11 @@ def edit_image(request, image_id=None):
 # Process comments
 @login_required
 def process_comment(request, commentform, post):
+    C = comments.get_model()
     try:
-        comment = Comment.objects.get(id=commentform.cleaned_data.get('id', None))
-    except Comment.DoesNotExist:
-        comment = Comment()
+        comment = C.objects.get(id=commentform.cleaned_data.get('id', None))
+    except C.DoesNotExist:
+        comment = C()
     comment.content_object = post
     comment.site = Site.objects.get_current()
     comment.user = request.user
@@ -287,8 +287,8 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                 return HttpResponseRedirect(post.get_absolute_url() + anchor) 
             else:
                 try:
-                    Comment.objects.get(id=comment_id).delete()
-                except Comment.DoesNotExist:
+                    comments.get_model().objects.get(id=comment_id).delete()
+                except comments.get_model().DoesNotExist:
                     pass
         elif 'edit' in request.POST:
             return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
@@ -315,7 +315,7 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
     # TODO: How is the below supposed to work? Currently users can just add multiple comments
     commentset = []
     if request.user.is_authenticated():
-        commentset = Comment.objects.for_model(Post).filter(object_pk=post.id).filter(user=request.user)
+        commentset = comments.get_model().objects.for_model(Post).filter(object_pk=post.id).filter(user=request.user)
         commentset = commentset.filter(submit_date__gt=datetime.datetime.now() - datetime.timedelta(seconds=60*10)).order_by('-submit_date')[0:1]
     if commentset:
         latest_comment = commentset[0]

@@ -257,20 +257,6 @@ class Post(models.Model):
             template = 'pigeonpost/email_list_body.txt'
             return self._generate_email(user, subject, template, template)
 
-    def email_author_about_comment(self, user):
-        if user == self.author:
-            subject = '[seabirds.net] New comment on your post "%s"' % self.title
-            template = 'pigeonpost/email_list_body.txt'
-            return self._generate_email(user, subject, template, template)
-
-    def email_commenters(self, user):
-        # TODO: If there is an op out for a conversation, or being emailed
-        # about comments, then it could be checked here
-        if user != self.author:
-            subject = '[seabirds.net] New comment on post "%s"' % self.title
-            template = 'pigeonpost/email_list_body.txt'
-            return self._generate_email(user, subject, template, template)
-
     def save(self, *args, **kwargs):
         just_published_now = False
         # The first time it is saved it is published
@@ -306,13 +292,6 @@ class Post(models.Model):
         subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
         subscribers = [p.user for p in subscriber_profiles]
         return subscribers
-
-    def get_commenters(self):
-        from django.contrib.comments.models import Comment
-        # TODO: is comments.get_model() better for extensibility?
-        #from django.contrib import comments
-        commentset = Comment.objects.for_model(Post).filter(object_pk=self.id)
-        return [c.user for c in commentset]
 
     class Meta:
         ordering = ['-date_published', '-date_created']

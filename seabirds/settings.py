@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'cms',
+    'comments',
     #'bibliography',
     'grappelli',
     'django.contrib.admin',
@@ -103,6 +104,8 @@ INSTALLED_APPS = (
     'django.contrib.comments',
     'longerusername',
 )
+
+COMMENTS_APP = 'comments'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

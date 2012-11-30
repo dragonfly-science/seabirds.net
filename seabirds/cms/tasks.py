@@ -51,8 +51,8 @@ def send_digest(earliest=36, latest=12):
 #@receiver(comment_was_posted)
 # Instead we just listen to the post save signal.
 from django.db.models.signals import post_save
-from django.contrib.comments.models import Comment
-@receiver(post_save, sender=Comment)
+from django.contrib import comments
+@receiver(post_save, sender=comments.get_model())
 def generate_comment_pigeons(sender, **kwargs):
     """ Whenever a comment is received, we create a number of pigeons """
     # (use 'comment' from kwargs if changing back to comment_was_posted signal)
