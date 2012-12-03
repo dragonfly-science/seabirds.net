@@ -1,0 +1,13 @@
+{% if user.firstname %}Dear {{ user.firstname }},
+{% elif user.username %}Dear {{ user.username }},
+{% endif %}
+
+A new comment has been added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} "{{comment.content_object.title}}" on Seabirds.net.
+
+{{ comment.comment }}
+
+To comment on this post, or to view it online visit http://{{ site }}{{ comment.content_object.get_absolute_url }}
+You received this message because {% if comment.content_object.author == user %}you are the author of the {{ comment.content_type.model }}.
+{% else %}you previously commented on the {{ comment.content_type.model }}.
+{% endif %}
+To unsubscribe or alter your preferences please visit http://{{ site }}/petrel/edit
