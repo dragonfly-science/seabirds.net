@@ -4,8 +4,8 @@ import re
 import random
 
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
-from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.core.exceptions import ValidationError, PermissionDenied
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, render, get_list_or_404, redirect
 from django.conf import settings
 
@@ -241,10 +241,10 @@ def process_comment(request, commentform, post, can_add_comment):
     try:
         comment = C.objects.get(id=commentform.cleaned_data.get('id', None))
         if not comment.can_be_edited_by(request.user):
-            return None
+            raise PermissionDenied
     except C.DoesNotExist:
         if not can_add_comment:
-            return None
+            raise PermissionDenied
         comment = C()
     comment.content_object = post
     comment.site = Site.objects.get_current()
@@ -288,8 +288,6 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             if 'edit_comment' in request.POST:
                 if commentform.is_valid():
                     comment = process_comment(request, commentform, post, can_add_comment)
-                    if comment is None:
-                        return HttpResponseForbidden()
                     comment_id = comment.id
                 if comment_id:
                     anchor = '#comment-%s' % comment_id
