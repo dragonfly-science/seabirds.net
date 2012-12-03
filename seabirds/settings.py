@@ -146,6 +146,7 @@ LOGIN_URL = '/accounts/login/'
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
 
 # All delays are in seconds
+COMMENT_EDIT_GRACE_PERIOD = 10*60
 PIGEONPOST_DELAYS = {
         'cms.Post': {
             'moderator': 10*60,
@@ -153,8 +154,8 @@ PIGEONPOST_DELAYS = {
             'author': 10*60,
             },
         'cms.Comment': {
-            'post_author': 5*60,
-            'post_other_commenters': 5*60,
+            'post_author': COMMENT_EDIT_GRACE_PERIOD + 5*60,
+            'post_other_commenters': COMMENT_EDIT_GRACE_PERIOD + 5*60,
             },
 }
 

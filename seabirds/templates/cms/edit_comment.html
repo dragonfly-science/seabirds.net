@@ -1,0 +1,37 @@
+{% if id %}
+{% if id == "new" %}
+<h4 class="edit-comment-headline" id="edit-comment-{{id}}-headline"> Add a comment ... </h4>
+{% else %}
+<h4 class="edit-comment-headline" id="edit-comment-{{id}}-headline"> Edit comment ...</h4>
+{% endif %}
+<div class="edit-comment" id="edit-comment-{{id}}">
+<form method="POST" action="" class="ym-form ym-columnar">{% csrf_token %}
+    <div class="ym-fbox-text {% if commentform.comment.errors %}ym-error{% endif %}">
+        <strong> {{ commentform.comment.errors }} </strong>
+        <label for="id_title">{{ commentform.comment.label }}
+            <sup title="This field is mandatory.">*</sup>
+        </label>
+        {{ commentform.comment }}
+    </div>
+    <div>
+    <input style="width: 40%; float: left;" type="submit" name="edit_comment" value="Post" id="comment">
+{% if commentform.id.value %}
+    <input style="width: 40%; float: right;" type="submit" name="delete_comment" value="Delete" id="comment">
+    </div>
+    <input type="hidden" name="comment-id" value={{ commentform.id.value }}>
+{% else %}
+    </div>
+    <input type="hidden" name="comment-id" value=-1>
+{% endif %}
+</form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#edit-comment-{{id}}').addClass('hidden');
+  $('#edit-comment-{{id}}-headline').click(function(){
+    $('#edit-comment-{{id}}').slideToggle(300);
+    $('#edit-comment-{{id}}-headline').classToggle('expanded')
+  });
+});
+</script>
+{% endif %}

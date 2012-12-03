@@ -2,19 +2,11 @@
 {% load thumbnail %}
 {% load comments %}
 {% load markup %}
+{% load cms_filters %}
 
 {% block extrahead %}
 {% if add_comment %}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-<script>
-$(document).ready(function(){
-  $('#edit-comment').addClass('hidden');
-  $('#edit-comment-headline').click(function(){
-    $('#edit-comment').slideToggle(300);
-    $('#edit-comment-headline').classToggle('expanded')
-  });
-});
-</script>
 <style> .hidden {display: none} </style>
 {% endif %}
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4f7a64797e1ad3a8"></script>
@@ -62,40 +54,17 @@ $(document).ready(function(){
                {% thumbnail profile.photograph "40"  as im %}
                 <img src="{{ im.url }}" width="40" class="float-left"alt="{{ comment.user.first_name|capfirst }} {{ comment.user.last_name|capfirst }}"></a>  
                {% endthumbnail %}   
-               <h4><a href="{{ profile.get_absolute_url }}" id="comment-{{ comment.id }}" name="comment-{{ comment.id }}">{{ comment.name }}</a></h4>
+               <h4><a href="{{ profile.get_absolute_url }}" id="comment-{{ comment.id }}" name="c{{ comment.id }}">{{ comment.name }}</a></h4>
                <div class="byline">
-                   <a name="c{{ comment.id }}"></a>
                    <a href="{% get_comment_permalink comment %}">{{ comment.submit_date|timesince }} ago</a>
-                   {% if user.is_staff or comment.user == user %}
-                   <form method="POST" action="/comments/delete/{{ comment.id }}">{% csrf_token %}
-                   <input type="submit" name="delete_comment" value="Delete" id="comment">
-                   </form>
-                   {% endif %}
                </div>
                <p> {{ comment.comment|markdown }}</p>
+                {% edit_comment comment user %}
             {% endwith %}
             </div>
             {% endfor %}
             {% if add_comment %}
-                <h4 id="edit-comment-headline"> {% if commentform.initial.id %} Edit comment ... {% else %}Add a comment ... {% endif %} </h4>
-                <div id="edit-comment">
-                <form method="POST" action="" class="ym-form ym-columnar">{% csrf_token %}
-                    <div class="ym-fbox-text {% if commentform.comment.errors %}ym-error{% endif %}">
-                        <strong> {{ commentform.comment.errors }} </strong>
-                        <label for="id_title">{{ commentform.comment.label }}
-                            <sup title="This field is mandatory.">*</sup>
-                        </label>
-                        {{ commentform.comment }}
-                    </div>
-                <input type="submit" name="edit_comment" value="Post" id="comment">
-                {% if commentform.id.value %}
-                    <input type="submit" name="delete_comment" value="Delete" id="comment">
-                    <input type="hidden" name="comment-id" value={{ commentform.id.value }}>
-                {% else %}
-                    <input type="hidden" name="comment-id" value=-1>
-                {% endif %}
-                </form>
-                </div>
+                {% edit_comment None user %}
                 {% endif %}
             </div>
         </div>

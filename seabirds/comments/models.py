@@ -1,8 +1,11 @@
+import datetime
+
 from django.db import models
 
 from django.contrib.comments.managers import CommentManager
 from django.contrib.comments.models import Comment
 from django.contrib import comments
+from django.conf import settings
 
 from cms.models import Post
 from utils import generate_email
@@ -22,6 +25,14 @@ class PigeonComment(Comment):
 
     template = 'pigeonpost/new_comment.txt'
     html_template = 'pigeonpost/new_comment.html'
+
+    def can_be_edited_by(self, user):
+        """ Return True if the user is allowed to edit or delete comment """
+        some_time_ago = datetime.datetime.now() - datetime.timedelta(
+                seconds=settings.COMMENT_EDIT_GRACE_PERIOD)
+        if user.is_staff or (comment.user == user and comment.submit_date > some_time_ago):
+            return True
+        return False
 
     def email_author_about_comment(self, user):
         assert user == self.content_object.author

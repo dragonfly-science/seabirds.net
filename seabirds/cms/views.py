@@ -4,7 +4,8 @@ import re
 import random
 
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ValidationError
+from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render_to_response, render, get_list_or_404, redirect
 from django.conf import settings
 
@@ -30,6 +31,7 @@ from categories.models import SeabirdFamily
 # We don't use cms.tasks in this module, but need to import to insure signal
 # listeners are in place
 from cms.tasks import generate_comment_pigeons
+
 from cms.models import Page,  Navigation, Image, Post, Listing
 from cms.forms import PostForm, ImageForm, SimpleComment
 
@@ -234,11 +236,15 @@ def edit_image(request, image_id=None):
 
 # Process comments
 @login_required
-def process_comment(request, commentform, post):
+def process_comment(request, commentform, post, can_add_comment):
     C = comments.get_model()
     try:
         comment = C.objects.get(id=commentform.cleaned_data.get('id', None))
+        if not comment.can_be_edited_by(request.user):
+            return None
     except C.DoesNotExist:
+        if not can_add_comment:
+            return None
         comment = C()
     comment.content_object = post
     comment.site = Site.objects.get_current()
@@ -272,16 +278,21 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
     if not slug:
         return Http404
     post = get_object_or_404(Post, name=slug)
+    # Logic to decide whether or not to allow comment to be added
+    can_add_comment =  post.enable_comments and post.published and request.user.is_authenticated()
+
     if request.method == 'POST' and request.user.is_authenticated():
         if 'edit_comment' in request.POST or 'delete_comment' in request.POST:
             commentform = SimpleComment(request.POST, prefix='comment')
             comment_id = commentform.data.get('comment-id', None)
             if 'edit_comment' in request.POST:
                 if commentform.is_valid():
-                    comment = process_comment(request, commentform, post)
+                    comment = process_comment(request, commentform, post, can_add_comment)
+                    if comment is None:
+                        return HttpResponseForbidden()
                     comment_id = comment.id
                 if comment_id:
-                    anchor = '#comment-%s'%comment_id
+                    anchor = '#comment-%s' % comment_id
                 else:
                     anchor = ''
                 return HttpResponseRedirect(post.get_absolute_url() + anchor) 
@@ -308,52 +319,35 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                 del post
             return HttpResponseRedirect(profile.get_absolute_url())
         return HttpResponseRedirect(post.get_absolute_url())
-    # Logic to decide whether or not to allow comment to be added
-    add_comment =  post.enable_comments and post.published and request.user.is_authenticated()
 
-    # Is there an existing comment by this user that should be edited or should we get a new one?
-    # TODO: How is the below supposed to work? Currently users can just add multiple comments
-    commentset = []
-    if request.user.is_authenticated():
-        commentset = comments.get_model().objects.for_model(Post).filter(object_pk=post.id).filter(user=request.user)
-        commentset = commentset.filter(submit_date__gt=datetime.datetime.now() - datetime.timedelta(seconds=60*10)).order_by('-submit_date')[0:1]
-    if commentset:
-        latest_comment = commentset[0]
-        initial = {'comment': latest_comment.comment, 'id': latest_comment.id }
-    else:
-        latest_comment = None
-        initial = None
-    ######
-    
     # Decide whether to allow editing of the Post form
     if request.user.is_authenticated() and (request.user == post.author or request.user.is_staff or \
             request.user.profile.get().is_moderator):
         return render(request, 'cms/post.html', {
             'object': post,
             'form': True,
-            'add_comment': add_comment,
-            'commentform': SimpleComment(prefix='comment', initial=initial)
+            'add_comment': can_add_comment,
             }
             )
     elif request.user.is_authenticated():
-        # Decide whether to allow comments on the Post
+        # If the user is authenticated, we provide a comment form
         return render(request, 'cms/post.html', {
             'object': post,
             'form': False,
-            'add_comment': add_comment,
-            'commentform': SimpleComment(prefix='comment', initial=initial)
+            'add_comment': can_add_comment,
             }
             )
     elif post.date_published:
-        # Or it is publicly viewable
+        # We show the post if it published
         navigation = get_base_navigation(request)
         return render(request, 'cms/post.html', {
             'object': post,
             'form': False,
+            'add_comment': can_add_comment,
             'navigation': navigation['navigation'],
             })
     else:
-        # Or we shouldn't know it exists
+        # Otherwise we don't know about it
         raise Http404
 
 @login_required

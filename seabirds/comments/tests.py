@@ -47,7 +47,6 @@ class CommentEmailTest(TestCase):
         comment.is_public = True
         comment.is_removed = False
         comment.save()
-        print comment.id
         return comment
 
     def test_author_comments_no_email(self):
