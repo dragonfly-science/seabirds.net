@@ -1,3 +1,6 @@
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
 def get_first_available_label(model, start_name, field, iexact=False):
     """ Check for the first free label on [model].[field]
     
@@ -30,3 +33,22 @@ def get_first_available_label(model, start_name, field, iexact=False):
         # When we get here we know that field==name does not exist for model.
         pass
     return name
+
+def generate_email(to_user, subject, template_data, text_template, html_template):
+    """ Create an email with html and text versions.
+
+    Note that the same template_data is used for both rendering the text and html
+    versions of the email.
+    """
+    from django.contrib.sites.models import Site
+    current_site = Site.objects.get_current()
+    template_data = dict(template_data)
+    template_data['site'] = current_site
+    # First generate the text version
+    body = render_to_string(text_template, template_data)
+    msg = EmailMultiAlternatives(subject, body, to=[to_user.email])
+
+    # Then generate the html version with rendered markdown
+    html_content = render_to_string(html_template, template_data)
+    msg.attach_alternative(html_content, "text/html")
+    return msg

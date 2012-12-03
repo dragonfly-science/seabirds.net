@@ -211,6 +211,8 @@ class Post(models.Model):
 
     def _generate_email(self, to_user, subject, template, template_html):
         """ Helper to reduce duplicate code between email methods """
+        # TODO: replace with utils.generate_email
+
         # First generate the text version
         template_data = { 'text': self.text, 'user': to_user, 'post': self }
         body = render_to_string(template, template_data)

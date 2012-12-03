@@ -2,35 +2,53 @@ from django.db import models
 
 from django.contrib.comments.managers import CommentManager
 from django.contrib.comments.models import Comment
+from django.contrib import comments
 
 from cms.models import Post
+from utils import generate_email
 
 class PigeonComment(Comment):
     """
-    Almost exactly the same, but we add methods for rendering emails for use with PigeonPost.
+    Almost exactly the same as the Django comment model, but we add methods for
+    rendering emails for use with PigeonPost.
+
+    It has additional expectations for models that can be commented on. That is,
+    the models being commented on need to have:
+    - a title attribute
+    - an author attribute
     """ 
 
     objects = CommentManager()
 
+    template = 'pigeonpost/new_comment.txt'
+    html_template = 'pigeonpost/new_comment.html'
+
     def email_author_about_comment(self, user):
-        subject = '[seabirds.net] New comment on your post "%s"' % self.title
-        template = 'pigeonpost/email_list_body.txt'
-        return self._generate_email(user, subject, template, template)
+        assert user == self.content_object.author
+        # Prevent sending a notification when a user comments on
+        # something they authored.
+        if self.user == self.content_object.author:
+            return None
+        title = self.content_object.title
+        subject = '[seabirds.net] New comment on your %s "%s"' % (
+                self.content_type.model, title)
+        template_data = {'user': user, 'comment': self}
+        return generate_email(user, subject, template_data, self.template, self.html_template)
 
     def email_commenters(self, user):
         # TODO: If there is an op out for a conversation, or being emailed
         # about comments, then it could be checked here
-        if user != self.author:
-            subject = '[seabirds.net] New comment on post "%s"' % self.title
-            template = 'pigeonpost/email_list_body.txt'
-            return self._generate_email(user, subject, template, template)
+
+        # Do not email the commenter, or the author (the author is notified
+        # by `email_author_about_comment`
+        if user == self.user or user == self.content_object.author:
+            return None
+        title = self.content_object.title
+        subject = '[seabirds.net] New comment on %s "%s"' % (
+                self.content_type.model, title)
+        template_data = {'user': user, 'comment': self}
+        return generate_email(user, subject, template_data, self.template, self.html_template)
 
     def get_commenters(self):
-        from django.contrib import comments
-        commentset = comments.get_model().objects.for_model(Post).filter(object_pk=self.id)
-        return [c.user for c in commentset]
-
-
-
-
-
+        commentset = comments.get_model().objects.for_model(Post).filter(object_pk=self.object_pk)
+        return [c.user for c in commentset if self.id != c.id]

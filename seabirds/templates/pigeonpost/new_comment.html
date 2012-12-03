@@ -1,0 +1,29 @@
+{% load markup %}
+<html>  
+<head>  
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">  
+<title>A new comment on seabirds.net</title>  
+</head>
+    <body>
+    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="e4e4e4"><tr><td>
+    <table id="top-message" cellpadding="20" cellspacing="0" width="600" align="center">  
+    </table><!-- top message -->  
+    <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="600" align="center">  
+    <p>{% if user.firstname %}Dear {{ user.firstname }},
+{% elif user.username %}Dear {{ user.username }},
+{% endif %}</p>
+<p>A new comment from {{ comment.firstname }} {{ comment.last_name }} was added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} "{{comment.content_object.title}}" on Seabirds.net:
+<p><i>"{{ comment.comment|markdown }}"</i></p>
+<p>To comment on this post, or to view it online visit:
+http://{{ site }}{{ comment.content_object.get_absolute_url }}</p>
+<p>You received this message because {% if comment.content_object.author == user %}you are the author of the {{ comment.content_type.model }}.
+{% else %}you previously commented on the {{ comment.content_type.model }}.
+{% endif %}</p>
+<p>To unsubscribe or alter your preferences please visit:
+http://{{ site }}/petrel/edit</p>
+    </table><!-- main -->  
+    <table id="bottom-message" cellpadding="20" cellspacing="0" width="600" align="center">  
+    </table><!-- bottom message -->
+</tr></td></table><!-- wrapper -->
+</body>
+</html>  
