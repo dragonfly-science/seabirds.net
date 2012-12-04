@@ -1,9 +1,15 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 from cms.forms import SimpleComment
+from utils.markdownplus import markdownplus as __markdownplus
 
 
 register = template.Library()
+
+@register.filter
+def markdownplus(text):
+    return mark_safe(__markdownplus(text))
 
 @register.filter
 def twitter_widget(username):

@@ -1,6 +1,6 @@
 {% if user.firstname %}Dear {{ user.firstname }},
 
-{% endif %}There has been a new post to the Seabirds.net  {{ post.listing.description }} list
+{% endif %}There has been a new post to the Seabirds.net {{ post.listing.description }} list
 
 {{ text }}
 

@@ -30,7 +30,9 @@ class PigeonComment(Comment):
         """ Return True if the user is allowed to edit or delete comment """
         some_time_ago = datetime.datetime.now() - datetime.timedelta(
                 seconds=settings.COMMENT_EDIT_GRACE_PERIOD)
-        if user.is_staff or (comment.user == user and comment.submit_date > some_time_ago):
+        # Staff can always edit,
+        # Users can edit their own comments, if it's within the allowed grace period
+        if user.is_staff or (self.user == user and self.submit_date > some_time_ago):
             return True
         return False
 

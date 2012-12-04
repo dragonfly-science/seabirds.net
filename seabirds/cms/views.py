@@ -290,7 +290,7 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                     comment = process_comment(request, commentform, post, can_add_comment)
                     comment_id = comment.id
                 if comment_id:
-                    anchor = '#comment-%s' % comment_id
+                    anchor = '#c%s' % comment_id
                 else:
                     anchor = ''
                 return HttpResponseRedirect(post.get_absolute_url() + anchor) 

@@ -19,6 +19,8 @@ from profile.models import UserProfile
 from license.models import License
 from categories.models import SeabirdFamily
 
+from utils import generate_email
+
 def get_image_path(instance, filename):
     base, ext = os.path.splitext(os.path.split(filename)[1])
     return os.path.join('images', '%s%s'%(instance.key, ext))
@@ -134,11 +136,11 @@ class Page(models.Model):
     
     @property   
     def markdown_text(self):
-        return markdownplus(self, self.text)
+        return markdownplus(self.text)
     
     @property   
     def markdown_sidebar(self):
-        return markdownplus(self, self.sidebar)
+        return markdownplus(self.sidebar)
 
     @permalink
     def get_absolute_url(self):
@@ -176,13 +178,17 @@ class Post(models.Model):
             content_type_field='source_content_type',
             object_id_field='source_id')
 
+    # These templates are used for notifying the author/subscriber/moderator
+    # about a new post
+    text_template = 'pigeonpost/new_post.txt'
+    html_template = 'pigeonpost/new_post.html'
 
     def __str__(self):
         return self.name
 
     @property
     def markdown_text(self):
-        return markdownplus(self, self.text)
+        return markdownplus(self.text)
 
     @property
     def markdown_teaser(self, max_length=200):
@@ -195,7 +201,7 @@ class Post(models.Model):
             teaser += '\n'
             teaser += chars[i][1]
             i += 1
-        return markdownplus(self, teaser.strip())
+        return markdownplus(teaser.strip())
             
     @permalink
     def get_absolute_url(self):
@@ -209,21 +215,6 @@ class Post(models.Model):
             'day': date.strftime('%d'), 
             'slug': self.name})
 
-    def _generate_email(self, to_user, subject, template, template_html):
-        """ Helper to reduce duplicate code between email methods """
-        # TODO: replace with utils.generate_email
-
-        # First generate the text version
-        template_data = { 'text': self.text, 'user': to_user, 'post': self }
-        body = render_to_string(template, template_data)
-        msg = EmailMultiAlternatives(subject, body, to=[to_user.email])
-
-        # Then generate the html version with rendered markdown
-        template_data['text'] = self.markdown_text
-        html_content = render_to_string(template_html, template_data)
-        msg.attach_alternative(html_content, "text/html")
-        return msg
-
     def email_moderator(self, user):
         """ Email moderator when new post is made by a non-staff member
         
@@ -234,8 +225,14 @@ class Post(models.Model):
         """
         if user.profile.get().is_moderator:
             subject = '[seabirds.net] New post by %s' % self.author
-            template = 'pigeonpost/email_list_body.txt'
-            return self._generate_email(user, subject, template, template)
+            editable_until = (self.date_updated +
+                    datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
+            # If it's in the past, don't show it
+            if editable_until < datetime.now():
+                editable_until = None
+            template_data = { 'user': user, 'post': self, 'is_moderator': True,
+                    'editable_until': editable_until}
+            return generate_email(user, subject, template_data, self.text_template, self.html_template)
 
     def email_author(self, user):
         """ Email author when they make a new post
@@ -249,15 +246,20 @@ class Post(models.Model):
         """
         if user == self.author:
             subject = '[seabirds.net] Your new post "%s"' % self.title
-            template = 'pigeonpost/email_list_body.txt'
-            return self._generate_email(user, subject, template, template)
+            editable_until = (self.date_updated +
+                    datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
+            # If it's in the past, don't show it
+            if editable_until < datetime.now():
+                editable_until = None
+            template_data = { 'user': user, 'post': self, 'editable_until': editable_until }
+            return generate_email(user, subject, template_data, self.text_template, self.html_template)
 
     def email_subscriber(self, user):
         """ Email subscribers to the listing this post is part of """
         if user != self.author:
             subject = '[seabirds.net] New %s post "%s"' % (self.listing, self.title)
-            template = 'pigeonpost/email_list_body.txt'
-            return self._generate_email(user, subject, template, template)
+            template_data = { 'user': user, 'post': self }
+            return generate_email(user, subject, template_data, self.text_template, self.html_template)
 
     def save(self, *args, **kwargs):
         just_published_now = False
