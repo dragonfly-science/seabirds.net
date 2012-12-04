@@ -2,11 +2,19 @@ from django import forms
 
 from form_utils.widgets import ImageWidget
 
-from cms.models import Post, Image
+from cms.models import Post, Image, Listing
 
 class PostForm(forms.ModelForm):
     """ Form for creating a post """
     
+    listing = forms.ModelChoiceField(queryset=Listing.objects.none(), empty_label=None)
+
+    def __init__(self, user, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        if user.is_staff:
+            self.fields['listing'].queryset = Listing.objects.all()
+        else:
+            self.fields['listing'].queryset = Listing.objects.filter(staff_only_write = False)
     
     class Meta:
         model = Post

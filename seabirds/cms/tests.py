@@ -145,6 +145,139 @@ class TestPosts(TestCase):
         p = Post.objects.get(id=p.id)
         self.assertTrue(p.title=='Edited')
 
+class TestPermissions(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def setUp(self):
+        self.no_comments = Listing.objects.get(key='jobs')
+        self.staff_only_write_listing = Listing.objects.get(key='news')
+        self.staff_only_read_listing = Listing.objects.get(key='staff')
+        self.everyone_read_listing = Listing.objects.get(key='discussion')
+        self.counter = 0
+
+        #self.staff_client = self.client.login(username="sooty-shearwater", password="foo")
+
+    def _create_test_post(self, user_name, listing):
+        self.client.login(username=user_name, password="foo")
+        response = self.client.post(reverse('new-post'), {
+            'post-title': 'Test %d' % self.counter, 
+            'post-text': 'This is a test post', 
+            'post-listing': listing.id, 
+            'post-seabird_families': [1, 2]}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        slug = response.request['PATH_INFO'].split('/')[-2]
+        self.assertEqual(slug, 'test-%d' % self.counter)
+        self.counter += 1
+        return slug
+
+    def _post_comment(self, user_name, post_slug):
+        self.client.login(username=user_name, password="foo")
+        comment_response = self.client.post(reverse('individual-post', kwargs={
+            'slug':post_slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }), {
+            'edit_comment': 'Post',
+            'comment-id':-1, 
+            'comment-comment': 'test comment',
+            }, follow=True)
+        return comment_response
+
+    def test_no_comments_listing(self):
+        slug = self._create_test_post('albert-ross', self.no_comments)
+        # Comments forbidden
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 403)
+
+        # Even to staff members
+        response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 403)
+
+    def test_no_comments_post(self):
+        slug = self._create_test_post('albert-ross', self.everyone_read_listing)
+
+        # Comments currently okay
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
+
+        # Disable comments on post, even though they are allowed on the listing
+        p = Post.objects.get(name=slug)
+        p.enable_comments = False
+        p.save()
+
+        # Comments forbidden
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 403)
+
+        # Even to staff members
+        response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_only_write_public_read(self):
+        slug = self._create_test_post('albert-ross', self.staff_only_write_listing)
+
+        # Users not allowed to post to "staff write" listing
+        self.client.login(username='sooty-shearwater', password="foo")
+        response = self.client.post(reverse('new-post'), {
+            'post-title': 'Test normal user',
+            'post-text': 'This is a test post', 
+            'post-listing': self.staff_only_write_listing, 
+            'post-seabird_families': [1, 2]})
+        self.assertTrue('Select a valid choice' in response.content)
+
+        # But users can see the post
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 200)
+
+        # Comments are okay though
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
+
+    def test_staff_only_read(self):
+        slug = self._create_test_post('albert-ross', self.staff_only_read_listing)
+
+        # Users not allowed to post to "staff read" listing
+        # (technically this is not a required test, but
+        # the fixture data is set up to support this and
+        # allowing writes by normal users would be weird)
+        self.client.login(username='sooty-shearwater', password="foo")
+        response = self.client.post(reverse('new-post'), {
+            'post-title': 'Test normal user',
+            'post-text': 'This is a test post', 
+            'post-listing': self.staff_only_read_listing, 
+            'post-seabird_families': [1, 2]})
+        self.assertTrue('Select a valid choice' in response.content)
+
+        # normal users can't see the post
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 404)
+
+        # staff can see the post though
+        self.client.login(username='albert-ross', password="foo")
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 200)
+        # and can comment
+        response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 200)
+
+
+
 class TestDigest(TestCase):
     fixtures = ['test-data/profile.json']
 

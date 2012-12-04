@@ -336,7 +336,7 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             'add_comment': True,
             }
             )
-    elif post.date_published:
+    elif post.date_published and not post.listing.staff_only_read:
         # We show the post if it published, but provide no forms
         navigation = get_base_navigation(request)
         return render(request, 'cms/post.html', {
@@ -367,16 +367,19 @@ def edit_post(request, post_id=None):
     if request.method == 'POST':
         # Get a postform
         if post:
-            postform = PostForm(request.POST, request.FILES, prefix='post', instance=post)
+            postform = PostForm(request.user, request.POST, request.FILES, prefix='post', instance=post)
         else:
-            postform = PostForm(request.POST, request.FILES, prefix='post') 
+            postform = PostForm(request.user, request.POST, request.FILES, prefix='post') 
         # Get any attached image
         if (post and post.image) or request.FILES.has_key('image-image'):
             imageform = process_image_form(request, image_id=image_id)
         else:
             imageform = None
 
-        if postform.is_valid(): # All validation rules pass
+        # All validation rules pass
+        # Via the post form, this also ensures the listing specified is allowed
+        # and prevents users from posting to staff_only lists.
+        if postform.is_valid():
             post = postform.save(commit=False)
             if imageform and imageform.is_valid():
                 post.image = imageform.cleaned_data['image']
@@ -392,11 +395,10 @@ def edit_post(request, post_id=None):
     else:
         if not post_id:
             # unbound forms
-            postform = PostForm(prefix='post')
+            postform = PostForm(request.user, prefix='post')
             imageform = ImageForm(initial=get_initial_data(request), prefix='image')
         else:
-            post = get_object_or_404(Post, id=post_id)
-            postform = PostForm(instance=post, prefix='post')
+            postform = PostForm(request.user, instance=post, prefix='post')
             if not post.image:
                 # unbound form
                 imageform = ImageForm(initial=get_initial_data(request), prefix='image')

@@ -269,6 +269,10 @@ class Post(models.Model):
             self.enable_comments = self.listing.allow_comments
             just_published_now = True
 
+            # Check that the author is allowed to post to this list
+            if not self.author.is_staff and self.listing.staff_only_write:
+                raise PermissionDenied
+
         super(Post, self).save(*args, **kwargs)
         
         # When the post is saved, the moderators are notified, with a delay
@@ -295,13 +299,13 @@ class Post(models.Model):
         return subscribers
 
     def can_user_comment(self, user):
-        # TODO check permissions of listing
         if not user.is_authenticated():
             return False
-        return self.enable_comments and self.published and user.is_authenticated()
+        if not user.is_staff and self.listing.staff_only_read:
+            return False
+        return self.enable_comments and self.published
 
     def can_user_modify(self, user):
-        # TODO check permissions of listing
         if not user.is_authenticated():
             return False
         return user == self.author or user.is_staff or user.profile.get().is_moderator
