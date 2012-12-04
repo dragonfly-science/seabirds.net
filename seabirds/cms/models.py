@@ -167,8 +167,6 @@ class Post(models.Model):
     enable_comments = models.BooleanField()
     listing = models.ForeignKey('Listing', related_name='posts', default=1,
         help_text='List that the post is published in')
-    _notify_moderator = models.BooleanField(default=False, editable=False,
-        help_text='True if the moderator should be notified of edits to this post') 
     _sent_to_list = models.BooleanField(default=False, editable=False, 
         help_text='True if the post has been sent to lists')
     
@@ -223,7 +221,7 @@ class Post(models.Model):
         looks like there are no further changes from the author (i.e. after
         there are no new edits for a given time).
         """
-        if user.profile.get().is_moderator:
+        if not self.author.is_moderator and user.profile.get().is_moderator:
             subject = '[seabirds.net] New post by %s' % self.author
             editable_until = (self.date_updated +
                     datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
@@ -263,6 +261,7 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         just_published_now = False
+
         # The first time it is saved it is published
         if not self.date_published:
             self.published = True
@@ -273,10 +272,8 @@ class Post(models.Model):
         super(Post, self).save(*args, **kwargs)
         
         # When the post is saved, the moderators are notified, with a delay
-        if self._notify_moderator and kwargs.get('commit', True):
-            pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
-                defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['moderator'])
-            self._notify_moderator = False
+        pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
+            defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['moderator'])
 
         if just_published_now:
             # We send the pigeonpost to the author via just_published_now because
@@ -296,6 +293,18 @@ class Post(models.Model):
         subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
         subscribers = [p.user for p in subscriber_profiles]
         return subscribers
+
+    def can_user_comment(self, user):
+        # TODO check permissions of listing
+        if not user.is_authenticated():
+            return False
+        return self.enable_comments and self.published and user.is_authenticated()
+
+    def can_user_modify(self, user):
+        # TODO check permissions of listing
+        if not user.is_authenticated():
+            return False
+        return user == self.author or user.is_staff or user.profile.get().is_moderator
 
     class Meta:
         ordering = ['-date_published', '-date_created']

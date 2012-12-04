@@ -11,6 +11,9 @@ from pigeonpost.tasks import add_to_outbox
 from cms.models import Post
 
 def send_digest(earliest=36, latest=12):
+    """
+    TODO: Convert this to use pigeon post.
+    """
     now = datetime.datetime.now() 
     earliest_datetime = now - datetime.timedelta(seconds=earliest*60*60) 
     latest_datetime = now - datetime.timedelta(seconds=latest*60*60) 

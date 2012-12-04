@@ -7,11 +7,11 @@ from cms.models import Post, Image
 class PostForm(forms.ModelForm):
     """ Form for creating a post """
     
+    
     class Meta:
         model = Post
         exclude = ('author', 'name', 'date_published', 'published', 'image',
-                'date_created', 'date_updated', 'enable_comments',
-                '_notify_moderator')
+                'date_created', 'date_updated', 'enable_comments',)
         widgets = {
             'text': forms.Textarea(attrs={'rows': 27}),
             }

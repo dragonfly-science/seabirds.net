@@ -236,14 +236,14 @@ def edit_image(request, image_id=None):
 
 # Process comments
 @login_required
-def process_comment(request, commentform, post, can_add_comment):
+def process_comment(request, commentform, post):
     C = comments.get_model()
     try:
         comment = C.objects.get(id=commentform.cleaned_data.get('id', None))
         if not comment.can_be_edited_by(request.user):
             raise PermissionDenied
     except C.DoesNotExist:
-        if not can_add_comment:
+        if not post.can_user_comment(request.user):
             raise PermissionDenied
         comment = C()
     comment.content_object = post
@@ -278,16 +278,15 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
     if not slug:
         return Http404
     post = get_object_or_404(Post, name=slug)
-    # Logic to decide whether or not to allow comment to be added
-    can_add_comment =  post.enable_comments and post.published and request.user.is_authenticated()
 
+    # Only authenticated users are allowed to POST any data
     if request.method == 'POST' and request.user.is_authenticated():
         if 'edit_comment' in request.POST or 'delete_comment' in request.POST:
             commentform = SimpleComment(request.POST, prefix='comment')
             comment_id = commentform.data.get('comment-id', None)
             if 'edit_comment' in request.POST:
                 if commentform.is_valid():
-                    comment = process_comment(request, commentform, post, can_add_comment)
+                    comment = process_comment(request, commentform, post)
                     comment_id = comment.id
                 if comment_id:
                     anchor = '#c%s' % comment_id
@@ -296,52 +295,54 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                 return HttpResponseRedirect(post.get_absolute_url() + anchor) 
             else:
                 try:
-                    comments.get_model().objects.get(id=comment_id).delete()
+                    c = comments.get_model().objects.get(id=comment_id)
+                    if c.can_be_edited_by(request.user):
+                        c.delete()
                 except comments.get_model().DoesNotExist:
-                    pass
-        elif 'edit' in request.POST:
-            return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
-        elif 'publish' in request.POST or 'restore' in request.POST:
-            post.published = True
-            if request.user.is_authenticated() and request.user.profile.get().is_moderator:
-                post._notify_moderator = False
-            else:
-                post._notify_moderator = True
-            post.save()
-        elif 'retract' in request.POST:
-            post.published = False
-            post.save()
-        elif 'delete' in request.POST:
-            profile = UserProfile.objects.get(user = post.author)
-            if not post.published:
-                del post
-            return HttpResponseRedirect(profile.get_absolute_url())
-        return HttpResponseRedirect(post.get_absolute_url())
+                    return Http404
+        else:
+            if not post.can_user_modify(request.user):
+                raise PermissionDenied
+
+            if 'edit' in request.POST:
+                return HttpResponseRedirect(reverse('edit-post', args=(), kwargs={'post_id': post.id}))
+            elif 'publish' in request.POST or 'restore' in request.POST:
+                post.published = True
+                post.save()
+            elif 'retract' in request.POST:
+                post.published = False
+                post.save()
+            elif 'delete' in request.POST:
+                listing = post.listing
+                if not post.published:
+                    post.delete()
+                return HttpResponseRedirect(listing.get_absolute_url())
+            return HttpResponseRedirect(post.get_absolute_url())
 
     # Decide whether to allow editing of the Post form
-    if request.user.is_authenticated() and (request.user == post.author or request.user.is_staff or \
-            request.user.profile.get().is_moderator):
+    if post.can_user_modify(request.user):
+        # If a user can modify a post, we assume they can comment
         return render(request, 'cms/post.html', {
             'object': post,
             'form': True,
-            'add_comment': can_add_comment,
+            'add_comment': True,
             }
             )
-    elif request.user.is_authenticated():
-        # If the user is authenticated, we provide a comment form
+    elif post.can_user_comment(request.user):
+        # We only provide a comment form
         return render(request, 'cms/post.html', {
             'object': post,
             'form': False,
-            'add_comment': can_add_comment,
+            'add_comment': True,
             }
             )
     elif post.date_published:
-        # We show the post if it published
+        # We show the post if it published, but provide no forms
         navigation = get_base_navigation(request)
         return render(request, 'cms/post.html', {
             'object': post,
             'form': False,
-            'add_comment': can_add_comment,
+            'add_comment': False,
             'navigation': navigation['navigation'],
             })
     else:
@@ -353,20 +354,28 @@ def edit_post(request, post_id=None):
     post = None
     image_id = None
     hasimage = False
+
+    # If post_id specified we are editing an existing post.
     if post_id:
-        # If post_id specified we are editing an existing post.
         post = get_object_or_404(Post, id=post_id)
+        if not post.can_user_modify(request.user):
+            raise PermissionDenied
         if post.image:
             image_id = post.image.id
-    if request.method == 'POST': # If the form has been submitted...
+
+    # If the form has been submitted...
+    if request.method == 'POST':
+        # Get a postform
         if post:
             postform = PostForm(request.POST, request.FILES, prefix='post', instance=post)
         else:
             postform = PostForm(request.POST, request.FILES, prefix='post') 
+        # Get any attached image
         if (post and post.image) or request.FILES.has_key('image-image'):
             imageform = process_image_form(request, image_id=image_id)
         else:
             imageform = None
+
         if postform.is_valid(): # All validation rules pass
             post = postform.save(commit=False)
             if imageform and imageform.is_valid():
@@ -378,10 +387,6 @@ def edit_post(request, post_id=None):
                 post.name = get_first_available_label(Post, name, 'name')
                 if not post.author:
                     post.author = request.user
-                if request.user.is_authenticated() and request.user.profile.get().is_moderator:
-                    post._notify_moderator = False
-                else:
-                    post._notify_moderator = True
             post.save()
             return HttpResponseRedirect(post.get_absolute_url())
     else:
@@ -393,7 +398,8 @@ def edit_post(request, post_id=None):
             post = get_object_or_404(Post, id=post_id)
             postform = PostForm(instance=post, prefix='post')
             if not post.image:
-                imageform = ImageForm(initial=get_initial_data(request), prefix='image') # An unbound form
+                # unbound form
+                imageform = ImageForm(initial=get_initial_data(request), prefix='image')
             else:
                 imageform = ImageForm(instance=post.image, initial=get_initial_data(request), prefix='image')
                 hasimage = True
