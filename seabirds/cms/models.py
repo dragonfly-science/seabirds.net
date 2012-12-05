@@ -75,12 +75,14 @@ class Image(models.Model):
             width = int(float(self.image.width*height)/self.image.height)
         if max_height and height > max_height:
             height = max_height
+            # I feel as though this is wrong since it will never change the width
             width = int(float(width*height)/max_height)
+            # To keep aspect ratio it should be
+            #width = int(float(self.image.width*height)/self.image.height)
         return width, height       
 
     def get_qualified_url(self, width=None, height=None, max_height=None):
-        if not width or not height or max_height:
-            width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
+        width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
         base, ext = os.path.splitext(os.path.split(self.image.path)[1])
         return os.path.join('/images', '%s-%ix%i%s'%(base, width, height, ext))
 
@@ -101,9 +103,9 @@ class File(models.Model):
    def __str__(self):
       return self.title
    def get_absolute_url(self):
-      return  "%s/%s" % (settings.SITE_URL, self.file.url)
+      return  "%s%s" % (settings.SITE_URL, self.file.url)
    def html(self):
-      return "<a href=\"%s/%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
+      return "<a href=\"%s%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
 
 # Depends on models.Image and models.File
 from utils.markdownplus import markdownplus
@@ -140,7 +142,9 @@ class Page(models.Model):
     
     @property   
     def markdown_sidebar(self):
-        return markdownplus(self.sidebar)
+        if self.sidebar:
+            return markdownplus(self.sidebar)
+        return ''
 
     @permalink
     def get_absolute_url(self):
@@ -189,7 +193,9 @@ class Post(models.Model):
         return markdownplus(self.text)
 
     @property
-    def markdown_teaser(self, max_length=200):
+    def markdown_teaser(self):
+        # This was a method argument, but @properties can't be called with arguments!
+        max_length=200
         chars = [(len(x), x) for x in self.text.split('\n')]
         n = 0
         i = 0
@@ -221,12 +227,12 @@ class Post(models.Model):
         looks like there are no further changes from the author (i.e. after
         there are no new edits for a given time).
         """
-        if not self.author.is_moderator and user.profile.get().is_moderator:
+        if not self.author.profile.get().is_moderator and user.profile.get().is_moderator:
             subject = '[seabirds.net] New post by %s' % self.author
             editable_until = (self.date_updated +
                     datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
             # If it's in the past, don't show it
-            if editable_until < datetime.now():
+            if editable_until < datetime.datetime.now():
                 editable_until = None
             template_data = { 'user': user, 'post': self, 'is_moderator': True,
                     'editable_until': editable_until}
@@ -247,7 +253,7 @@ class Post(models.Model):
             editable_until = (self.date_updated +
                     datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
             # If it's in the past, don't show it
-            if editable_until < datetime.now():
+            if editable_until < datetime.datetime.now():
                 editable_until = None
             template_data = { 'user': user, 'post': self, 'editable_until': editable_until }
             return generate_email(user, subject, template_data, self.text_template, self.html_template)

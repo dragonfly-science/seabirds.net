@@ -2,8 +2,8 @@ import os
 
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.test.utils import override_settings
-from profile.models import UserProfile
+
+from profile.models import UserProfile, get_photo_path, CollaborationChoice, create_user_profile
 
 
 class TestTwitter(TestCase):
@@ -28,6 +28,14 @@ class TestTwitter(TestCase):
         response = self.client.get('/petrel/edit/')
         twitter_optout_in_form = 'Display your Twitter feed on your profile page' in response.content
         self.assertTrue(twitter_optout_in_form, msg=response.content)
+
+class TestProfile(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def test_misc(self):
+        sooty = User.objects.get(username='sooty-shearwater')
+        profile = sooty.profile.get()
+        self.assertTrue('Sooty' in str(profile))
 
 
 class TestAnonymous(TestCase):

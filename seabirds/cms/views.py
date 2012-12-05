@@ -18,6 +18,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
 from django.contrib.comments.views.moderation import perform_delete
+from django.contrib.contenttypes.models import ContentType
 from django.contrib import comments
 
 from django.utils.html import strip_tags
@@ -25,7 +26,7 @@ from django.utils.html import strip_tags
 from PIL import Image as PILImage
 
 from bibliography.models import Reference
-
+from pigeonpost.models import Pigeon
 from categories.models import SeabirdFamily
 
 # We don't use cms.tasks in this module, but need to import to insure signal
@@ -179,7 +180,7 @@ def get_initial_data(request):
     return initial
 
 def process_image_form(request, image_id=None):
-    if request.method == 'POST' and request.POST.has_key('submit'): # If we are saving the form
+    if request.method == 'POST':
         if not image_id:
             form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
         else:
@@ -187,7 +188,6 @@ def process_image_form(request, image_id=None):
             form = ImageForm(request.POST, request.FILES, prefix='image', instance=image)
         if form.is_valid(): # All validation rules pass
             image = form.save(commit=False)
-            print 'Image', image_id, image
             if image:
                 form.cleaned_data['image'] = image
             # Get the key
@@ -262,19 +262,8 @@ def process_comment(request, commentform, post):
     comment.save()
     return comment
 
-@require_POST
-@login_required
-def delete_comment(request, comment_id):
-    comment = get_object_or_404(comments.get_model(), pk=comment_id)
-    if comment.user == request.user:
-        next_page = comment.content_object.get_absolute_url()
-        perform_delete(request, comment)
-        return redirect(next_page)
-    else:
-        raise Http404
-
-# View an individual post
 def individual_post(request, year=None, month=None, day=None, slug=None):
+    """ View a post and handle dispatching various POST requests to the url """
     if not slug:
         return Http404
     post = get_object_or_404(Post, name=slug)
@@ -297,7 +286,14 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                 try:
                     c = comments.get_model().objects.get(id=comment_id)
                     if c.can_be_edited_by(request.user):
-                        c.delete()
+                        c.is_removed = True
+                        # Delete any pigeons waiting to be sent out
+                        c_model = ContentType.objects.get_for_model(c)
+                        Pigeon.objects.filter(source_id=c.id,
+                                source_content_type=c_model, to_send=True).delete()
+                        c.save()
+                    else:
+                        raise PermissionDenied
                 except comments.get_model().DoesNotExist:
                     return Http404
         else:
