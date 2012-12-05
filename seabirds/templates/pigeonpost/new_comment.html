@@ -13,7 +13,7 @@
     <p>{% if user.firstname %}Dear {{ user.firstname }},
 {% elif user.username %}Dear {{ user.username }},
 {% endif %}</p>
-<p>A new comment from {{ comment.firstname }} {{ comment.last_name }} was added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} "{{comment.content_object.title}}" on Seabirds.net:
+<p>A new comment from {% if comment.user.first_name %}{{ comment.user.firstname }} {{ comment.user.last_name }}{%else%}{{comment.user.username}}{%endif%} was added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} <a href="http://{{ site }}{{ comment.content_object.get_absolute_url }}">"{{comment.content_object.title}}"</a> on Seabirds.net:
 <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="500" align="center">  
 <p>"{{ comment.comment|markdownplus }}"</p>
 </table><!-- comment -->  
@@ -24,8 +24,7 @@ http://{{ site }}{{ comment.content_object.get_absolute_url }}</p>
 <p>You received this message because {% if comment.content_object.author == user %}you are the author of the {{ comment.content_type.model }}.
 {% else %}you previously commented on the {{ comment.content_type.model }}.
 {% endif %}</p>
-<p>To unsubscribe or alter your preferences please visit:
-http://{{ site }}/petrel/edit</p>
+<p>You can unsubscribe or alter your preferences <a href="http://{{ site }}{{ url profile_edit }}">here</a>.</p>
     </table><!-- bottom message -->
 </tr></td></table><!-- wrapper -->
 </body>
