@@ -6,7 +6,7 @@ import site
 sys.path.insert(0, '/home/seabirds/.virtualenvs/%(venv)s/lib/python2.7/site-packages')
 # add django app
 sys.path.insert(0, '/home/seabirds/webapps/%(webapp)s/seabirds.net/seabirds')
-print sys.path
+%(debug_print)s
 
 # set the settings module
 os.environ['DJANGO_SETTINGS_MODULE'] = 'seabirds.settings'

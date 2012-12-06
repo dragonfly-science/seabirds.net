@@ -123,7 +123,7 @@ def push():
     validate()
     restart()
 
-def deploy(environment='staging'):
+def deploy(environment='staging', specific_commit=None):
     """ Deploy to server
 
     By default we deploy to staging. If environment is set to 'production', then we'll
@@ -134,9 +134,7 @@ def deploy(environment='staging'):
     make sure your local changes are pushed if you want to see them on the site.
     """
     app_dir = '/home/seabirds/webapps/'
-    production_dir = '/home/seabirds/seabirds.net'
-    # When proper setup is used it should be
-    #production_dir = app_dir + 'django/seabirds.net'
+    production_dir = app_dir + 'seabirds_live/seabirds.net'
 
     # Deploy to production or staging?
     production = False
@@ -146,7 +144,7 @@ def deploy(environment='staging'):
     if production:
         env.remote_dir = production_dir
         settings_file = 'sitesettings_production.py'
-        venv = 'seabirds'
+        venv = 'seabirds_live'
     else:
         env.remote_dir = app_dir + 'seabirds_dev/seabirds.net'
         settings_file = 'sitesettings_dev.py'
@@ -171,6 +169,10 @@ def deploy(environment='staging'):
     with cd(env.remote_dir):
         # Fetch latest code and then upload our local copies of sitesettings and secrets
         run('git pull')
+        if specific_commit:
+            # If we want to deploy a specific commit, reset to it
+            run('git reset --hard %s' % specific_commit)
+            run('git clean -f -d')
         with prefix('source /home/seabirds/.virtualenvs/%s/bin/activate' % venv):
             run('pip install -r requirements.txt')
         put(settings_file, remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
@@ -188,8 +190,13 @@ def deploy(environment='staging'):
 
     from fabric.contrib.files import upload_template
 
+    # Unless this is production, print out the sys.path in wsgi.py after setting 
+    # up virtualenv
+    debug_print = 'print sys.path'
+    if production:
+        debug_print = ''
     upload_template('wsgi.py.TEMPLATE', '%(remote_dir)s/wsgi.py' % env,
-            context={'venv':venv, 'webapp':venv})
+            context={'venv':venv, 'webapp':venv, 'debug_print': debug_print})
 
     # restart apache
     run('%(remote_dir)s/../apache2/bin/restart' % env)
