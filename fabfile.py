@@ -155,9 +155,3 @@ def deploy(production=False):
             run('cd .. && make test')
 
     run('%(remote_dir)s/../apache2/bin/restart')
-
-
-
-
-
-
