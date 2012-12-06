@@ -166,3 +166,11 @@ ABSOLUTE_URL_OVERRIDES = {
 # TODO: Seems like this could be worked out by inspecting the models?
 # max of "first_name(30)-last_name(30)-int" combination or email(75)
 MAX_USERNAME_LENGTH = 75
+
+import sys
+#if manage.py test was called, use test settings
+if 'test' in sys.argv:
+    try:
+        from test_settings import *
+    except ImportError:
+        pass
