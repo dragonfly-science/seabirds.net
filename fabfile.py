@@ -34,12 +34,7 @@ def _virtualenv():
     local('deactivate')
 #### End private functions ####
 
-
 # Commands for  getting data from the server
-def git_pull():
-    "Make sure that any commits are synchronised with the server"
-    local('git pull')
-
 def get_secrets():
     "Get files that aren't in the checkout, such as sitesettings.py"
     with lcd(env.local_dir):
@@ -70,7 +65,7 @@ def runserver():
                 local('python manage.py runserver')
 
 def pull():
-    git_pull()
+    local('git pull')
     get_secrets()
     get_live_media()
     get_live_database()
@@ -85,7 +80,7 @@ def git_push():
 
 def put_secrets():
     "Put files that aren't in the checkout, such as sitesettings.py"
-    put('sitesettings_production.py', remote_path='%(remote_dir)s/seabirds' % env)
+    put('sitesettings_production.py', remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
     put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
 
 def install():
@@ -127,3 +122,42 @@ def push():
     update()
     validate()
     restart()
+
+def deploy(production=False):
+    app_dir = '/home/seabirds/webapps/'
+    if production:
+        env.remote_dir = '/home/seabirds/webapps/django/seabirds.net'
+        settings_file = 'sitesettings_production.py'
+        venv = 'seabirds'
+    else:
+        env.remote_dir = '/home/seabirds/webapps/seabirds_dev/seabirds.net'
+        settings_file = 'sitesettings_dev.py'
+        venv = 'seabirds_dev'
+
+    if not production:
+        with cd('%(remote_dir)s/..' % env):
+            # Expects password credentials to be in ~/.pgpass
+            run('pg_dump -U seabirds -c seabirds > seabirds.sql')
+            run('psql -U seabirds_dev -d seabirds_dev -f seabirds.sql')
+
+    with cd('%(remote_dir)s' % env):
+        run('git pull')
+        with prefix('source /home/seabirds/.virtualenvs/%s/bin/activate' % venv):
+            run('pip install -r requirements.txt')
+        put(settings_file, remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
+        put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
+    
+    with cd('%(remote_dir)s/seabirds' % env):
+        with prefix('source /home/seabirds/.virtualenvs/%s/bin/activate' % venv):
+            run('python manage.py cuckoo run')
+            run('python manage.py syncdb')
+            run('python manage.py validate')
+            run('cd .. && make test')
+
+    run('%(remote_dir)s/../apache2/bin/restart')
+
+
+
+
+
+
