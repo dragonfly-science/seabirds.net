@@ -1,6 +1,15 @@
 from django import template
+from django.utils.safestring import mark_safe
+
+from cms.forms import SimpleComment
+from utils.markdownplus import markdownplus as __markdownplus
+
 
 register = template.Library()
+
+@register.filter
+def markdownplus(text):
+    return mark_safe(__markdownplus(text))
 
 @register.filter
 def twitter_widget(username):
@@ -38,3 +47,17 @@ new TWTR.Widget({
 }).render().setUser("%s").start();
 </script>
 </div>""" % username
+
+@register.inclusion_tag('cms/edit_comment.html')
+def edit_comment(comment, user):
+    if comment:
+        if comment.can_be_edited_by(user):
+            initial = { 'comment': comment.comment, 'id': comment.id }
+            return {
+                    'id': comment.id,
+                    'commentform': SimpleComment(prefix='comment', initial=initial)
+                   }
+        else:
+            return {}
+    else:
+        return { 'id': 'new', 'commentform': SimpleComment(prefix='comment') }

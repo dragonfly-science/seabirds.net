@@ -2,8 +2,6 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 from cms.models import Page, Image, File, Post, Navigation, Listing
-from reversion.admin import VersionAdmin
-from django.contrib.auth.models import User
 from mptt.admin import MPTTModelAdmin
 
 
@@ -34,7 +32,8 @@ class PostAdmin(admin.ModelAdmin):
     #fieldsets = ((None, {'fields':(('title', 'name', 'author'), ('date_published', 'published'), 'text')}),)
     formfield_overrides = {
         models.TextField: {'widget': 
-            forms.Textarea(attrs={'rows':15, 'style':'width: 100%; font-size:1.3em'})
+            forms.Textarea(attrs={'size':15, 'class':'vTextfield', 'style':'height: 400px'})
+            #forms.Textarea(attrs={'size':15, 'style':'width: 100%; font-size:1.3em'})
         },
     }
 admin.site.register(Post, PostAdmin)

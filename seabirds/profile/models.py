@@ -7,19 +7,18 @@ from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
 from categories.models import SeabirdFamily, InstitutionType, ResearchField
-from cms.models import Listing
 from unidecode import unidecode
 
 def get_photo_path(instance, filename):
     if filename:
-	    print 'get path'
-	    base, ext = os.path.splitext(os.path.split(filename)[1])
-	    try: 
-	        os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', '%s'%instance.user.id))
-	    except OSError:
-	        pass
-	    print 'Upload image', '%s'%instance.user.id
-	    return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(unidecode(str(instance)).lower()), ext))
+        print 'get path'
+        base, ext = os.path.splitext(os.path.split(filename)[1])
+        try: 
+            os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', '%s'%instance.user.id))
+        except OSError:
+            pass
+        print 'Upload image', '%s'%instance.user.id
+        return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(unidecode(str(instance)).lower()), ext))
 
 class CollaborationChoice(models.Model):
     label = models.CharField(max_length=50)
@@ -51,7 +50,7 @@ class UserProfile(models.Model):
     date_created = models.DateField(auto_now_add = True)
     date_updated = models.DateField(auto_now = True)
     wid = models.IntegerField(null=True, blank=True, editable=False)
-    subscriptions = models.ManyToManyField(Listing, related_name='profiles', null=True, blank=True)
+    subscriptions = models.ManyToManyField('cms.Listing', related_name='profiles', null=True, blank=True)
     is_moderator = models.BooleanField(default=False, editable=False)
 
     def __str__(self):

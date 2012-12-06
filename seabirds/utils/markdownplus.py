@@ -34,7 +34,7 @@ def _insert_file(m, check):
         if check: raise 
         return ""
 
-def markdownplus(instance, text, check=False):
+def markdownplus(text, check=False):
     text = markdown(text)
     def insert_image(m):
         try:

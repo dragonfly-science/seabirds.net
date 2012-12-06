@@ -3,7 +3,6 @@ import os
 import pickle
 
 from django.test import TestCase
-from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 from django.core import mail
 from django.conf import settings
@@ -11,20 +10,22 @@ from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.core.mail.message import EmailMessage
 
-from categories.models import SeabirdFamily
-from cms.models import Page, Post, Navigation, Listing
+from cms.models import Page, Post, Listing, Image, File
 from cms.tasks import send_digest
+from cms.templatetags.cms_filters import twitter_widget
+
+from comments.models import PigeonComment
 from pigeonpost.models import Pigeon, Outbox
 from pigeonpost.tasks import process_outbox
 from profile.models import UserProfile
 
-class TestEmail(TestCase):
-    def test_email_host(self):
-        for setting in  (settings.EMAIL_HOST_PASSWORD, \
-                settings.EMAIL_HOST, settings.EMAIL_HOST_USER, \
-                settings.SERVER_EMAIL, settings.DEFAULT_FROM_EMAIL):
-            self.assertFalse(setting == '')
+class TestFilter(TestCase):
 
+    def test_twitter_filter(self):
+        widget_src = twitter_widget('seabirders')
+        assert '"seabirders"' in widget_src
+        widget_src = twitter_widget('@seabirders')
+        assert '"seabirders"' in widget_src
 
 class TestPages(TestCase):
     fixtures = ['test-data/profile.json']
@@ -51,8 +52,101 @@ class TestPages(TestCase):
         response = self.client.get('/posts/')
         self.assertEqual(response.status_code, 200)
 
+class TestImages(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def setUp(self):
+        self.client.login(username="sooty-shearwater", password="foo")
+        fid = open(os.path.join(settings.SITE_ROOT, 
+                'test-data', 'bullers-and-cape-angrysunbird.jpg'), 'r')
+        response = self.client.post(reverse('new-post'), {'post-title':'Test', 
+            'post-text':'This is a test post', 
+            'post-listing':1, 
+            'post-seabird_families':[1, 2],
+            'image-image': fid,
+            'image-owner': 'Duncan Wright',
+            'image-source_url': 'http://www.flickr.com/photos/angrysunbird/5187764485/',
+            'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
+        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
+
+        self.post = Post.objects.get(title='Test')
+        self.image = Image.objects.get(owner='Duncan Wright')
+
+    def test_thumbnail(self):
+        self.assertTrue('img src' in self.image.thumbnail())
+
+    def test_render(self):
+        self.assertTrue(self.image.source_url in self.image.render())
+
+    def test_tag(self):
+        self.assertTrue(self.image.key in self.image.tag())
+
+    def test_str(self):
+        self.assertTrue(self.image.key in str(self.image))
+
+    def test_get_dimensions(self):
+        self.assertEqual((160, 240), self.image.get_dimensions())
+        self.assertEqual((10, 15), self.image.get_dimensions(width=10))
+        self.assertEqual((6, 10), self.image.get_dimensions(height=10))
+        self.assertEqual((10, 10), self.image.get_dimensions(width=10, height=10))
+        # Not sure about the expected behaviour of the max_height parameter
+        self.assertEqual((160, 15), self.image.get_dimensions(max_height=15))
+
+    def test_get_qualified_url(self):
+        self.assertTrue('160x240' in self.image.get_qualified_url())
+
+    def test_get_image_url(self):
+        self.assertTrue(self.image.get_image_url())
+
+    def test_get_absolute_url(self):
+        self.assertTrue(self.image.get_absolute_url())
+
+class TestFiles(TestCase):
+
+    def test_save_file(self):
+        from django.core.files.base import ContentFile
+        from StringIO import StringIO
+        f = File(name='test_file', title='test_file_title')
+        file_content = ContentFile(StringIO('dummy file content').read())
+        f.file.save('original_name', file_content)
+        f.save()
+        self.assertTrue(f.html())
+        self.assertTrue(f.get_absolute_url())
+        self.assertTrue(str(f))
+
+class TestPages(TestCase):
+
+    def setUp(self):
+        self.p = Page(title='A great page', name='great-page', text='A great page on a great site')
+        self.p.save()
+
+    def test_new_page(self):
+        self.assertTrue(str(self.p))
+        self.p.published = True
+        self.p.save()
+        self.assertTrue(self.p.date_published)
+
+    def test_markdown_page(self):
+        self.assertTrue(self.p.markdown_text)
+        self.assertFalse(self.p.markdown_sidebar)
+        self.p.sidebar = 'hurray!'
+        self.p.save()
+        self.assertTrue(self.p.markdown_sidebar)
+
+
 class TestPosts(TestCase):
     fixtures = ['test-data/profile.json']
+    TEST_EMAIL_DELAYS = {
+            'cms.Post': {
+                'moderator': 5*60,
+                'subscriber': 3*60*60, # 3 hours
+                'author': 10*60,
+                },
+            'cms.Comment': {
+                'post_author': 5*60,
+                'post_other_commenters': 5*60,
+                },
+    }
 
     def setUp(self):
         self.client.login(username="sooty-shearwater", password="foo")
@@ -74,36 +168,62 @@ class TestPosts(TestCase):
         self.assertEqual(mail.outbox[0].subject, 'Subject here')
         mail.outbox = [] # Reset the mail outbox
     
-#    def test_create_post_with_image(self):
-#        """ Test that we can create a post with an associated image, using the new-post url """
-#        fid = open(os.path.join(settings.SITE_ROOT, 
-#                'test-data', 'bullers-and-cape-angrysunbird.jpg'), 'r')
-#        response = self.client.post(reverse('new-post'), {'post-title':'Test', 
-#            'post-text':'This is a test post', 
-#            'post-listing':1, 
-#            'post-seabird_families':[1, 2],
-#            'image-image': fid,
-#            'image-owner': 'Duncan Wright',
-#            'image-source_url': 'http://www.flickr.com/photos/angrysunbird/5187764485/',
-#            'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
-#        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
-
-    @override_settings(PIGEONPOST_DEFER_POST_MODERATOR=5)
-    def test_create_post(self):
+    def test_create_post_with_image(self):
+        """ Test that we can create a post with an associated image, using the new-post url """
+        fid = open(os.path.join(settings.SITE_ROOT, 
+                'test-data', 'bullers-and-cape-angrysunbird.jpg'), 'r')
         response = self.client.post(reverse('new-post'), {'post-title':'Test', 
+            'post-text':'This is a test post', 
+            'post-listing':1, 
+            'post-seabird_families':[1, 2],
+            'image-image': fid,
+            'image-owner': 'Duncan Wright',
+            'image-source_url': 'http://www.flickr.com/photos/angrysunbird/5187764485/',
+            'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
+        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
+ 
+    @override_settings(PIGEONPOST_DELAYS=TEST_EMAIL_DELAYS)
+    def test_create_post(self):
+        self.client.post(reverse('new-post'), {'post-title':'Test', 
             'post-text':'This is a test post', 
             'post-listing':1, 
             'post-seabird_families':[1, 2]}, follow=True)
         p = Post.objects.get(title='Test')
-        # The post is published        
+        # Check the Post is published
         self.assertTrue(p.published)
+
+        # After a Post is created, there should be a pigeon notifications to:
+        # - the author who posted it
+        # - the moderator, who can edit/modify the post before members are notified
+        # - members who subscribed to the listing
         pigeons = Pigeon.objects.all()
-        self.assertTrue(len(pigeons) == 1, msg=str(pigeons))
-        # If the post is saved again the moderator isn't notified again
+        self.assertTrue(len(pigeons) == 3, msg=str(pigeons))
+
+        # After the Post is modified, the moderator/user isn't notified again, but
+        # if the pigeon notification has not been sent, it's scheduled_at time
+        # is reset to 10 minutes from now.
         p.save()
         pigeons = Pigeon.objects.all()
-        self.assertTrue(len(pigeons) == 1, msg=str(pigeons))
+        self.assertTrue(len(pigeons) == 3, msg=str(pigeons))
         
+    def test_create_post_dupe_title(self):
+        """ Test that a post with the same title can be posted multiple times """
+        post_data = {
+                'post-title':'Test',
+                'post-text':'This is a test post',
+                'post-listing':1,
+                'post-seabird_families':[1, 2]
+                }
+        self.client.post(reverse('new-post'), post_data, follow=True)
+        p = Post.objects.get(title='Test')
+        post_data['post-text'] = 'copycat'
+        self.client.post(reverse('new-post'), post_data, follow=True)
+        p2 = Post.objects.get(text='copycat')
+        self.assertNotEqual(p, p2)
+
+        pigeons = Pigeon.objects.all()
+        self.assertTrue(len(pigeons) == 6, msg=str(pigeons))
+
     def test_edit_post(self):
         response = self.client.post(reverse('new-post'), {'post-title':'Test', 
             'post-text':'This is a test post', 
@@ -117,6 +237,249 @@ class TestPosts(TestCase):
             'post-seabird_families':[1, 2]}, follow=True)
         p = Post.objects.get(id=p.id)
         self.assertTrue(p.title=='Edited')
+
+    def test_misc(self):
+        self.client.post(reverse('new-post'), {'post-title':'Test', 
+            'post-text':'This is a test post' + 'x\n'*200, 
+            'post-listing':1, 
+            'post-seabird_families':[1, 2]}, follow=True)
+        p = Post.objects.get(title='Test')
+        self.assertTrue(str(p))
+        self.assertTrue(p.markdown_text)
+        self.assertTrue(p.markdown_teaser)
+        self.assertTrue(len(p.markdown_teaser) < len(p.markdown_text))
+
+        self.assertTrue(p.get_absolute_url())
+
+    def test_get_subscribers(self):
+        self.client.post(reverse('new-post'), {'post-title':'Test', 
+            'post-text':'This is a test post' + 'x\n'*200, 
+            'post-listing':1, 
+            'post-seabird_families':[1, 2]}, follow=True)
+        p = Post.objects.get(title='Test')
+        self.assertEqual(len(p.get_subscribers()), 2)
+
+
+    def test_email_rendering(self):
+        self.client.post(reverse('new-post'), {'post-title':'Test', 
+            'post-text':'This is a test post' + 'x\n'*200, 
+            'post-listing':1, 
+            'post-seabird_families':[1, 2]}, follow=True)
+        p = Post.objects.get(title='Test')
+        albert = User.objects.get(username='albert-ross')
+        sooty  = User.objects.get(username='sooty-shearwater')
+
+        self.assertTrue(p.email_moderator(albert))
+        self.assertFalse(p.email_moderator(sooty))
+
+        self.assertTrue(p.email_author(sooty))
+        self.assertFalse(p.email_author(albert))
+
+        self.assertTrue(p.email_subscriber(albert))
+        self.assertFalse(p.email_subscriber(sooty))
+
+class TestPermissions(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def setUp(self):
+        self.no_comments = Listing.objects.get(key='jobs')
+        self.staff_only_write_listing = Listing.objects.get(key='news')
+        self.staff_only_read_listing = Listing.objects.get(key='staff')
+        self.everyone_read_listing = Listing.objects.get(key='discussion')
+        self.counter = 0
+
+        #self.staff_client = self.client.login(username="sooty-shearwater", password="foo")
+
+    def _create_test_post(self, user_name, listing):
+        self.client.login(username=user_name, password="foo")
+        response = self.client.post(reverse('new-post'), {
+            'post-title': 'Test %d' % self.counter, 
+            'post-text': 'This is a test post', 
+            'post-listing': listing.id, 
+            'post-seabird_families': [1, 2]}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        slug = response.request['PATH_INFO'].split('/')[-2]
+        self.assertEqual(slug, 'test-%d' % self.counter)
+        self.counter += 1
+        return slug
+
+    def _post_comment(self, user_name, post_slug):
+        if user_name:
+            self.client.login(username=user_name, password="foo")
+        comment_response = self.client.post(reverse('individual-post', kwargs={
+            'slug':post_slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }), {
+            'edit_comment': 'Post',
+            'comment-id':-1, 
+            'comment-comment': 'test comment',
+            }, follow=True)
+        return comment_response
+
+    def test_no_comments_listing(self):
+        slug = self._create_test_post('albert-ross', self.no_comments)
+        # Comments forbidden
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 403)
+
+        # Even to staff members
+        response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 403)
+
+    def test_unauthenticated_user(self):
+        slug = self._create_test_post('albert-ross', self.everyone_read_listing)
+
+        response = self._post_comment('sooty-shearwater', slug)
+
+        total_comments = len(PigeonComment.objects.all())
+        self.client.logout()
+        response = self._post_comment(None, slug)
+        # We don't say anything, we just silented ignore it
+        self.assertEqual(response.status_code, 200)
+        # But check there isn't a new comment
+        self.assertEqual(total_comments, len(PigeonComment.objects.all()))
+
+        pc = PigeonComment.objects.all()[0]
+        # check we can't delete comments
+        comment_response = self.client.post(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }), {
+            'delete_comment': 'Post',
+            'comment-id':pc.id, 
+            })
+        self.assertEqual(response.status_code, 200)
+        # But check there isn't a new comment
+        pc2 = PigeonComment.objects.all()[0]
+        self.assertEqual(pc2.is_removed, False)
+        self.assertEqual(pc, pc2)
+
+    def test_no_comments_post(self):
+        slug = self._create_test_post('albert-ross', self.everyone_read_listing)
+
+        # Comments currently okay
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
+
+        # Disable comments on post, even though they are allowed on the listing
+        p = Post.objects.get(name=slug)
+        p.enable_comments = False
+        p.save()
+
+        # Comments forbidden
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 403)
+
+        # Even to staff members
+        response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_only_write_public_read(self):
+        slug = self._create_test_post('albert-ross', self.staff_only_write_listing)
+
+        # Users not allowed to post to "staff write" listing
+        self.client.login(username='sooty-shearwater', password="foo")
+        response = self.client.post(reverse('new-post'), {
+            'post-title': 'Test normal user',
+            'post-text': 'This is a test post', 
+            'post-listing': self.staff_only_write_listing, 
+            'post-seabird_families': [1, 2]})
+        self.assertTrue('Select a valid choice' in response.content)
+
+        # But users can see the post
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 200)
+
+        # Comments are okay though
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
+
+    def test_comment_deletion(self):
+        slug = self._create_test_post('albert-ross', self.staff_only_write_listing)
+
+        # Create comment
+        response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 200)
+        pc = PigeonComment.objects.all()[0]
+        self.assertEqual(pc.user, User.objects.get(username='albert-ross'))
+
+        # check sooty can't delete albert's comments
+        self.client.login(username='sooty-shearwater', password="foo")
+        comment_response = self.client.post(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }), {
+            'delete_comment': 'Post',
+            'comment-id':pc.id, 
+            })
+        self.assertEqual(comment_response.status_code, 403)
+        pc = PigeonComment.objects.all()[0]
+        self.assertEqual(pc.is_removed, False)
+
+        # check albert can delete
+        self.client.login(username='albert-ross', password="foo")
+        comment_response = self.client.post(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }), {
+            'delete_comment': 'Post',
+            'comment-id':pc.id, 
+            })
+        self.assertEqual(comment_response.status_code, 200)
+        pc = PigeonComment.objects.all()[0]
+        self.assertEqual(pc.is_removed, True)
+
+
+    def test_staff_only_read(self):
+        slug = self._create_test_post('albert-ross', self.staff_only_read_listing)
+
+        # Users not allowed to post to "staff read" listing
+        # (technically this is not a required test, but
+        # the fixture data is set up to support this and
+        # allowing writes by normal users would be weird)
+        self.client.login(username='sooty-shearwater', password="foo")
+        response = self.client.post(reverse('new-post'), {
+            'post-title': 'Test normal user',
+            'post-text': 'This is a test post', 
+            'post-listing': self.staff_only_read_listing, 
+            'post-seabird_families': [1, 2]})
+        self.assertTrue('Select a valid choice' in response.content)
+
+        # normal users can't see the post
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 404)
+
+        # staff can see the post though
+        self.client.login(username='albert-ross', password="foo")
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 200)
+        # and can comment
+        response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 200)
+
 
 class TestDigest(TestCase):
     fixtures = ['test-data/profile.json']
@@ -187,3 +550,4 @@ class TestDigest(TestCase):
 #            r = self.client.get('/gallery/' + slugify(str(s)))
 #            assert r.status_code == 200
 #
+

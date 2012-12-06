@@ -41,25 +41,12 @@ class ProfileRegistrationForm(ProfileForm):
         """
         Construct the username out of the firstname and the lastname, 
         """
+        from utils import get_first_available_label
+
         first = unidecode(self.cleaned_data['first_name'])
         last = unidecode(self.cleaned_data['last_name'])
-        username = slugify('%s %s' % (first, last))[:30].rstrip('-').lower()
-        try:
-            User.objects.get(username__iexact=username)
-            user_root = user[:26]
-            if user_root.endswith('-'):
-                suffix_join = ''
-            else:
-                suffix_join = '-'
-            for suffix in range(2, 1000):
-                try:
-                    username = '%s%s%s'%(user_root, suffix_join, suffix)
-                    User.objects.get(username__iexact=username)
-                except User.DoesNotExist:
-                    break
-        except User.DoesNotExist:
-            pass
-        return username
+        username = slugify('%s %s' % (first, last)).lower() #[:30].rstrip('-').lower()
+        return get_first_available_label(model=User, start_name=username, field='username', iexact=True)
 
     def clean(self):
         """

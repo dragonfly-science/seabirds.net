@@ -3,12 +3,17 @@ import datetime
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.dispatch import receiver
 
 from profile.models import UserProfile
+from pigeonpost.signals import pigeonpost_queue
 from pigeonpost.tasks import add_to_outbox
-from cms.models import Listing, Post
+from cms.models import Post
 
 def send_digest(earliest=36, latest=12):
+    """
+    TODO: Convert this to use pigeon post.
+    """
     now = datetime.datetime.now() 
     earliest_datetime = now - datetime.timedelta(seconds=earliest*60*60) 
     latest_datetime = now - datetime.timedelta(seconds=latest*60*60) 
@@ -43,4 +48,26 @@ def send_digest(earliest=36, latest=12):
         post._sent_to_list = True
         post.save()
 
+# This is the correct signal to listen to, but the way comments were
+# integrate does not seem to be the way django comments expects.
+#from django.contrib.comments.signals import comment_was_posted
+#@receiver(comment_was_posted)
+# Instead we just listen to the post save signal.
+from django.db.models.signals import post_save
+from django.contrib import comments
+@receiver(post_save, sender=comments.get_model())
+def generate_comment_pigeons(sender, **kwargs):
+    """ Whenever a comment is received, we create a number of pigeons """
+    # (use 'comment' from kwargs if changing back to comment_was_posted signal)
+    comment = kwargs.get('instance')
+    post = comment.content_object
 
+    # The first pigeon is to the post author
+    pigeonpost_queue.send(sender=comment,
+         render_email_method='email_author_about_comment',
+         send_to=post.author)
+
+    # The second pigeon is for any commenters on the post
+    pigeonpost_queue.send(sender=comment,
+         render_email_method='email_commenters',
+         send_to_method='get_commenters')

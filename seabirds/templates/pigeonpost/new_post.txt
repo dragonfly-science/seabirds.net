@@ -1,0 +1,11 @@
+{% if user.firstname %}Dear {{ user.firstname }},
+
+{% endif %}There has been a new post to the Seabirds.net {{ post.listing.description }} list
+
+{{ text }}
+
+To comment on this post, or to view it online visit http://{{ site }}{{ post.get_absolute_url }}.
+You received this message because you are subscribed to the {{ post.listing.description }} list,
+to unsubscribe or alter your preferences please visit http://{{ site }}/petrel/edit
+
+To make a new posting to Seabirds.net visit http://{{ site }}edit/post/

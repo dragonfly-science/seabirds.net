@@ -72,7 +72,7 @@ urlpatterns += patterns('',
     (r'^favicon\.ico$', redirect_to, {'url': settings.STATIC_URL + 'favicon.ico'}),
     #(r'^login',   'django.contrib.auth.views.login',    {'template_name': 'account/login.html'}),
     (r'^accounts/logout/',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
-    ('^petrel/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}),
+    url('^petrel/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}, name='profile_edit'),
     ('^petrel/create', 'profiles.views.create_profile', {'form_class': ProfileForm,}),
     ('^petrel/users/(?P<rest>.*)$', redirect_to, {'url': '/users/%(rest)s'}), #Catch to fix the use of a relative url in the profile edit function ...
     url(r'^petrel/(?P<username>[\w.@+-]+)/$', 'profiles.views.profile_detail', name='profiles_profile_detail'),

@@ -2,8 +2,8 @@ import os
 
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.test.utils import override_settings
-from profile.models import UserProfile
+
+from profile.models import UserProfile, get_photo_path, CollaborationChoice, create_user_profile
 
 
 class TestTwitter(TestCase):
@@ -28,6 +28,14 @@ class TestTwitter(TestCase):
         response = self.client.get('/petrel/edit/')
         twitter_optout_in_form = 'Display your Twitter feed on your profile page' in response.content
         self.assertTrue(twitter_optout_in_form, msg=response.content)
+
+class TestProfile(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def test_misc(self):
+        sooty = User.objects.get(username='sooty-shearwater')
+        profile = sooty.profile.get()
+        self.assertTrue('Sooty' in str(profile))
 
 
 class TestAnonymous(TestCase):
@@ -103,8 +111,8 @@ class TestNewUser(TestCase):
     def tearDown(self):
         os.environ['RECAPTCHA_TESTING'] = 'False'
 
-    @override_settings(DEBUG=True)
     def test_create_user(self):
+        """ Ensure we can register new users """
         response = self.client.post('/accounts/register/',
             {
             'first_name':'Fairy',
@@ -119,6 +127,26 @@ class TestNewUser(TestCase):
         u = User.objects.get(first_name='Fairy')
         self.assertTrue(u.last_name, 'Prion')
 
+    def test_create_duplicate_user(self):
+        """ Test that users with the same name will generate a different username """
+        user_data = {
+            'first_name':'Fairy',
+            'last_name':'Prion',
+            'email': 'fairy@prion.net',
+            'accept_terms': True,
+            'recaptcha_response_field': 'PASSED',
+            'password1':'fairyprion',
+            'password2':'fairyprion',
+            }
+        response = self.client.post('/accounts/register/', user_data)
+        self.assertTrue(response.status_code == 302)
+        user_data['email'] = 'fairy2@prion.net'
+        response = self.client.post('/accounts/register/', user_data)
+        self.assertTrue(response.status_code == 302)
+        users = User.objects.filter(first_name='Fairy')
+        self.assertTrue(len(users), 2)
+        # First username will be the prefix of the second one
+        self.assertTrue(users[0].username in users[1].username)
 
 class TestCustomListView(TestCase):
     fixtures = ['test-data/profile.json']

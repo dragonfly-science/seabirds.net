@@ -1,7 +1,7 @@
 import logging
 import os
 
-logging.basicConfig(level = logging.WARN,)
+#logging.basicConfig(level = logging.WARN,)
 
 # These settings may be overridden in sitesettings
 SITE_ROOT = os.path.dirname(__file__)
@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'cms',
+    'comments',
     #'bibliography',
     'grappelli',
     'django.contrib.admin',
@@ -103,6 +104,8 @@ INSTALLED_APPS = (
     'django.contrib.comments',
     'longerusername',
 )
+
+COMMENTS_APP = 'comments'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -142,7 +145,19 @@ LOGIN_URL = '/accounts/login/'
 
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
 
-PIGEONPOST_DEFER_POST_MODERATOR = 30*60 #10 minutes
+# All delays are in seconds
+COMMENT_EDIT_GRACE_PERIOD = 10*60
+PIGEONPOST_DELAYS = {
+        'cms.Post': {
+            'moderator': 10*60,
+            'subscriber': 3*60*60, # 3 hours
+            'author': 10*60,
+            },
+        'cms.Comment': {
+            'post_author': COMMENT_EDIT_GRACE_PERIOD + 5*60,
+            'post_other_commenters': COMMENT_EDIT_GRACE_PERIOD + 5*60,
+            },
+}
 
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: "/petrel/%s/" % u.username,

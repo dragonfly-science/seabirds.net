@@ -12,6 +12,7 @@ dumps/*.sql
 
 seabirds/sitesettings.py
 seabirds/secrets.py
+seabirds/seabirds.sqlite3
 sitesettings_production.py
 sitesettings.py
 

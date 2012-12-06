@@ -5,16 +5,21 @@ from django.db import models
 from django.db.models import permalink
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, Resolver404
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 
 from pigeonpost.signals import pigeonpost_queue
+from pigeonpost.models import Pigeon
 from mptt.models import MPTTModel, TreeForeignKey
 
+from profile.models import UserProfile
 from license.models import License
 from categories.models import SeabirdFamily
+
+from utils import generate_email
 
 def get_image_path(instance, filename):
     base, ext = os.path.splitext(os.path.split(filename)[1])
@@ -70,12 +75,14 @@ class Image(models.Model):
             width = int(float(self.image.width*height)/self.image.height)
         if max_height and height > max_height:
             height = max_height
+            # I feel as though this is wrong since it will never change the width
             width = int(float(width*height)/max_height)
+            # To keep aspect ratio it should be
+            #width = int(float(self.image.width*height)/self.image.height)
         return width, height       
 
     def get_qualified_url(self, width=None, height=None, max_height=None):
-	if not width or not height or max_height:
-	    width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
+        width, height = self.get_dimensions(width=width, height=height, max_height=max_height)
         base, ext = os.path.splitext(os.path.split(self.image.path)[1])
         return os.path.join('/images', '%s-%ix%i%s'%(base, width, height, ext))
 
@@ -96,12 +103,12 @@ class File(models.Model):
    def __str__(self):
       return self.title
    def get_absolute_url(self):
-      return  "%s/%s" % (settings.SITE_URL, self.file.url)
+      return  "%s%s" % (settings.SITE_URL, self.file.url)
    def html(self):
-      return "<a href=\"%s/%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
+      return "<a href=\"%s%s\">%s</a>" % (settings.SITE_URL, self.file.url, self.title)
 
 # Depends on models.Image and models.File
-from cms.utils import markdownplus
+from utils.markdownplus import markdownplus
 
 class Page(models.Model):
     title = models.CharField(max_length = 100, 
@@ -131,11 +138,13 @@ class Page(models.Model):
     
     @property   
     def markdown_text(self):
-        return markdownplus(self, self.text)
+        return markdownplus(self.text)
     
     @property   
     def markdown_sidebar(self):
-        return markdownplus(self, self.sidebar)
+        if self.sidebar:
+            return markdownplus(self.sidebar)
+        return ''
 
     @permalink
     def get_absolute_url(self):
@@ -162,20 +171,31 @@ class Post(models.Model):
     enable_comments = models.BooleanField()
     listing = models.ForeignKey('Listing', related_name='posts', default=1,
         help_text='List that the post is published in')
-    _notify_moderator = models.BooleanField(default=False, editable=False,
-        help_text='True if the moderator should be notified of edits to this post') 
     _sent_to_list = models.BooleanField(default=False, editable=False, 
         help_text='True if the post has been sent to lists')
+    
+    # This generic relation ensures that when a Post is deleted, so are any associated
+    # Pigeons (and due to the link from Outbox to Pigeon, so are Outbox messages)
+    pigeons = generic.GenericRelation(Pigeon,
+            content_type_field='source_content_type',
+            object_id_field='source_id')
+
+    # These templates are used for notifying the author/subscriber/moderator
+    # about a new post
+    text_template = 'pigeonpost/new_post.txt'
+    html_template = 'pigeonpost/new_post.html'
 
     def __str__(self):
         return self.name
 
     @property
     def markdown_text(self):
-        return markdownplus(self, self.text)
+        return markdownplus(self.text)
 
     @property
-    def markdown_teaser(self, max_length=200):
+    def markdown_teaser(self):
+        # This was a method argument, but @properties can't be called with arguments!
+        max_length=200
         chars = [(len(x), x) for x in self.text.split('\n')]
         n = 0
         i = 0
@@ -185,7 +205,7 @@ class Post(models.Model):
             teaser += '\n'
             teaser += chars[i][1]
             i += 1
-        return markdownplus(self, teaser.strip())
+        return markdownplus(teaser.strip())
             
     @permalink
     def get_absolute_url(self):
@@ -200,25 +220,101 @@ class Post(models.Model):
             'slug': self.name})
 
     def email_moderator(self, user):
-        if user.profile.get().is_moderator:
-            subject = render_to_string('email_list_subject.txt', {'title': self.title, 'user': user, 'post': self})
-            body = render_to_string('email_list_body.txt', {'text': self.text, 'user': user, 'post': self})
-            return EmailMessage(subject, body, to=[user.email])
+        """ Email moderator when new post is made by a non-staff member
+        
+        This is to allow for the message to edited if necessary before they
+        get sent to all subscribers. The moderator only gets emailed once it
+        looks like there are no further changes from the author (i.e. after
+        there are no new edits for a given time).
+        """
+        if not self.author.profile.get().is_moderator and user.profile.get().is_moderator:
+            subject = '[seabirds.net] New post by %s' % self.author
+            editable_until = (self.date_updated +
+                    datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
+            # If it's in the past, don't show it
+            if editable_until < datetime.datetime.now():
+                editable_until = None
+            template_data = { 'user': user, 'post': self, 'is_moderator': True,
+                    'editable_until': editable_until}
+            return generate_email(user, subject, template_data, self.text_template, self.html_template)
+
+    def email_author(self, user):
+        """ Email author when they make a new post
+        
+        This lets the author know they have a while to make edits before
+        it's checked by a moderator and sent out to subscibers.
+
+        TODO: Think about if we really need this, since the user will
+        already be aware they created it (and presumedly see the ability
+        to edit it)
+        """
+        if user == self.author:
+            subject = '[seabirds.net] Your new post "%s"' % self.title
+            editable_until = (self.date_updated +
+                    datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
+            # If it's in the past, don't show it
+            if editable_until < datetime.datetime.now():
+                editable_until = None
+            template_data = { 'user': user, 'post': self, 'editable_until': editable_until }
+            return generate_email(user, subject, template_data, self.text_template, self.html_template)
+
+    def email_subscriber(self, user):
+        """ Email subscribers to the listing this post is part of """
+        if user != self.author:
+            subject = '[seabirds.net] New %s post "%s"' % (self.listing, self.title)
+            template_data = { 'user': user, 'post': self }
+            return generate_email(user, subject, template_data, self.text_template, self.html_template)
 
     def save(self, *args, **kwargs):
+        just_published_now = False
+
         # The first time it is saved it is published
         if not self.date_published:
             self.published = True
             self.date_published = datetime.date.today()
             self.enable_comments = self.listing.allow_comments
+            just_published_now = True
+
+            # Check that the author is allowed to post to this list
+            if not self.author.is_staff and self.listing.staff_only_write:
+                raise PermissionDenied
+
         super(Post, self).save(*args, **kwargs)
         
         # When the post is saved, the moderators are notified, with a delay
-        if self.published and self._notify_moderator and kwargs.get('commit', True):
-            pigeonpost_queue.send(sender=self, 
-                render_email_method='email_moderator', 
-                defer_for=settings.PIGEONPOST_DEFER_POST_MODERATOR)
-            self._notify_moderator = False
+        pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
+            defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['moderator'])
+
+        if just_published_now:
+            # We send the pigeonpost to the author via just_published_now because
+            # pigeonpost needs the Post.id for source_id
+            #
+            # We send the author an email to let them know they can edit it
+            pigeonpost_queue.send(sender=self, render_email_method='email_author', 
+                defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['author'],
+                send_to=self.author)
+
+            # Let subscribers to the listing of this post know about it
+            pigeonpost_queue.send(sender=self, render_email_method='email_subscriber', 
+                defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber'],
+                send_to_method='get_subscribers')
+
+    def get_subscribers(self):
+        subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
+        subscribers = [p.user for p in subscriber_profiles]
+        return subscribers
+
+    def can_user_comment(self, user):
+        if not user.is_authenticated():
+            return False
+        if not user.is_staff and self.listing.staff_only_read:
+            return False
+        return self.enable_comments and self.published
+
+    def can_user_modify(self, user):
+        if not user.is_authenticated():
+            return False
+        return user == self.author or user.is_staff or user.profile.get().is_moderator
 
     class Meta:
         ordering = ['-date_published', '-date_created']
@@ -257,11 +353,14 @@ class Navigation(MPTTModel):
 class Listing(models.Model):
     key = models.SlugField(max_length=50)
     description = models.TextField()
+
+    # Permissions
     staff_only_write = models.BooleanField()
     staff_only_read = models.BooleanField()
     allow_comments = models.BooleanField()
+
     optional_list = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.description
-    
+
