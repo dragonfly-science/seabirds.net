@@ -2,7 +2,6 @@ import logging
 import re
 
 from django.template.loader import render_to_string
-from cms.models import Image, File
 from markdown import markdown
 
 log = logging.getLogger(__name__)
@@ -28,6 +27,7 @@ def _insert_references(m, check):
 
 def _insert_file(m, check):
     try:
+        from cms.models import File
         file = File.objects.get(name=m.group(1))
         return file.html()
     except:
@@ -38,6 +38,7 @@ def markdownplus(text, check=False):
     text = markdown(text)
     def insert_image(m):
         try:
+            from cms.models import Image
             image = Image.objects.get(key=m.group(1))
             try:
                 width = int(re.findall('width=([\d]+)', m.group(2))[0])
