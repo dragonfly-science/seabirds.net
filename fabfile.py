@@ -166,7 +166,7 @@ def deploy(production=False):
             run('python manage.py cuckoo run')
             run('python manage.py syncdb')
             run('python manage.py validate')
-            run('python manage.py collectstatic')
+            run('python manage.py collectstatic --noinput')
             run('cd .. && make test')
 
     # TODO: make this match a functional wsgi.py on the server
