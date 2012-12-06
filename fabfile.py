@@ -123,11 +123,26 @@ def push():
     validate()
     restart()
 
-def deploy(production=False):
+def deploy(environment='staging'):
+    """ Deploy to server
+
+    By default we deploy to staging. If environment is set to 'production', then we'll
+    deploy to production (TODO: needs to be tested and setup, since production still
+    uses the old webapp layout).
+
+    Deploy will sync from the master branch of the seabirds.net git repo, so
+    make sure your local changes are pushed if you want to see them on the site.
+    """
     app_dir = '/home/seabirds/webapps/'
     production_dir = '/home/seabirds/seabirds.net'
     # When proper setup is used it should be
     #production_dir = app_dir + 'django/seabirds.net'
+
+    # Deploy to production or staging?
+    production = False
+    if environment == 'production':
+        production = True
+
     if production:
         env.remote_dir = production_dir
         settings_file = 'sitesettings_production.py'
@@ -144,51 +159,37 @@ def deploy(production=False):
             # Expects password credentials to be in ~/.pgpass
             run('pg_dump -U seabirds -c seabirds > seabirds.sql')
             run('psql -U seabirds_dev -d seabirds_dev -f seabirds.sql')
-        with cd('%(remote_dir)s' % env):
+            # clean up
+            run('rm seabirds.sql')
+        with cd(env.remote_dir):
             run('rsync -avz %s/seabirds/media %s/seabirds/. --exclude=*.css --exclude=*.js' % (
                 production_dir, env.remote_dir))
             # This dir can probably be ignored since it is created by collecstatic (or at least it should be)
             run('rsync -avz %s/static %s/. --exclude=*.css --exclude=*.js' % (
                 production_dir, env.remote_dir))
     
-    with cd('%(remote_dir)s' % env):
+    with cd(env.remote_dir):
         # Fetch latest code and then upload our local copies of sitesettings and secrets
         run('git pull')
         with prefix('source /home/seabirds/.virtualenvs/%s/bin/activate' % venv):
             run('pip install -r requirements.txt')
         put(settings_file, remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
         put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
+        run('make clean') # remove pyc and pyo
 
     with cd('%(remote_dir)s/seabirds' % env):
         # Run migrations, syncdb and our test suite
         with prefix('source /home/seabirds/.virtualenvs/%s/bin/activate' % venv):
-            run('cd .. && make clean') # remove pyc and pyo
             run('python manage.py cuckoo run')
             run('python manage.py syncdb')
             run('python manage.py validate')
             run('python manage.py collectstatic --noinput')
             run('cd .. && make test')
 
-    # TODO: make this match a functional wsgi.py on the server
-    wsgipy = """import os
-import sys
-import site
+    from fabric.contrib.files import upload_template
 
-# add virtualenv python libs
-#site.addsitedir('/home/seabirds/.virtualenvs/%s/lib/python2.7/site-packages')
-
-# add virtualenv python libs
-sys.path.insert(0, '/home/seabirds/.virtualenvs/%s/lib/python2.7/site-packages')
-# add django app
-sys.path.insert(0, '/home/seabirds/webapps/%s/seabirds')
-
-# set the settings module
-os.environ['DJANGO_SETTINGS_MODULE'] = 'seabirds.settings'
-
-# init the wsgi handler
-from django.core.handlers.wsgi import WSGIHandler
-application = WSGIHandler()
-""" % (venv, venv, env.remote_dir)
+    upload_template('wsgi.py.TEMPLATE', '%(remote_dir)s/wsgi.py' % env,
+            context={'venv':venv, 'webapp':venv})
 
     # restart apache
     run('%(remote_dir)s/../apache2/bin/restart' % env)
