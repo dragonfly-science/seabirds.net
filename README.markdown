@@ -95,3 +95,17 @@ http://community.webfaction.com/questions/4253/simple-virtualenv-usage-with-djan
 
 The development webapp has HTTP auth setup as specified here:
 http://community.webfaction.com/questions/256/apache-basic-authentication-for-mod_wsgi-inc-django-applications
+
+### Cron jobs
+
+You need to set up the deploy_pigeons management command to run reasonably frequently
+to send out notification emails. Something like:
+
+```
+SHELL=/bin/bash
+MAILTO=joel@joelpitt.com
+MAILFROM=admin@seabirds.net
+*/5 * * * * source ~/.virtualenvs/seabirds/bin/activate && cd ~/webapps/seabirds/seabirds.net/seabirds && ./manage.py deploy_pigeons
+```
+
+`MAILFROM` is needed because of [this](http://community.webfaction.com/questions/3956/getting-email-to-work-with-crontab) issue.
