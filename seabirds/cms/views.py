@@ -40,6 +40,62 @@ from utils import get_first_available_label
 from license.models import License
 from profile.models import UserProfile
 
+from django.views.generic.dates import ArchiveIndexView
+
+class PostArchiveView(ArchiveIndexView):
+    model = Post
+    
+    def get(self, request, *args, **kwargs):
+        """
+        Taken from django.views.generic.dates.BaseDateListView
+        """
+        listing = kwargs.get('listing', None)
+        self.date_list, self.object_list, extra_context = self.get_dated_items(request, listing)
+        context = self.get_context_data(object_list=self.object_list,
+                                        date_list=self.date_list)
+        context.update(extra_context)
+        context.update({"twitter" : "seabirders"})
+        #context.update({'listings': self.visible_listings})
+        return self.render_to_response(context)
+
+    def get_dated_items(self, request, listing):
+        """
+        Return (date_list, items, extra_context) for this request.
+
+        Taken from django.views.generic.dates.BaseArchiveIndexView
+
+        Extended to take account of user and what posts they are allowed to see,
+        and allows viewing posts in a given listing.
+        """
+        show_staff = request.user.is_authenticated() and request.user.is_staff
+
+        if show_staff:
+            # For staff members we let them access any listings
+            if listing:
+                qs = self.get_dated_queryset(listing__key=listing)
+            else:
+                qs = self.get_dated_queryset()
+        else:
+            # Normal site members should not be able to see
+            # the existance of staff_only_read Listings
+            if listing:
+                listing_object = get_object_or_404(Listing, key=listing)
+                if listing_object.staff_only_read:
+                    raise Http404
+                else:
+                    qs = self.get_dated_queryset(listing=listing_object)
+            else:
+                qs = self.get_dated_queryset(listing__staff_only_read=False)
+
+        date_list = self.get_date_list(qs, 'year')
+
+        if date_list:
+            object_list = qs.order_by('-' + self.get_date_field())
+        else:
+            object_list = qs.none()
+        return (date_list, object_list, {})
+
+
 def page(request, name):
     context_instance=RequestContext(request)
     context_instance.autoescape=False
@@ -72,12 +128,6 @@ def page(request, name):
 def home(request):
     return page(request, 'home')
 
-#def people(request):
-#    persons = Person.objects.all().order_by('order')
-#    page = Page.objects.get(name = 'people')
-#    return render_to_response('people.html', dict(person_list=persons, page=page, navigation=get_navigation('/people.html')),
-#        RequestContext(request))
-		
 def image(request, filename):
     #Return the file if it is in the  images directory
     if os.path.exists(os.path.join(settings.MEDIA_ROOT, 'images', filename)):
@@ -126,27 +176,45 @@ def reference(request, key):
             navigation = get_navigation('/publications.html'),
         ), RequestContext(request))
 
-def get_navigation(url):
+def get_navigation(url, staff=False):
+    """
+    Create the navigation data structure that is used for rendering
+    the navigation sidebar.
+
+    There are parts in this which are a bit of hack to allow the 
+    Discussion entry to have Listing objects as it's children.
+    """
     try:
         home = Navigation.objects.root_nodes()[0]
     except IndexError:
         return []
+    selected_listing = None
     try:
-        node = Navigation.objects.get(url=url)
-    except:
-        node = home
-    actives = [node] + list(node.get_ancestors())
+        selected_node = Navigation.objects.get(url=url)
+    except Navigation.DoesNotExist:
+        try:
+            selected_listing = Listing.objects.get(url=url, staff_only_read=staff)
+            selected_node = Navigation.objects.get(name='Discussion')
+        except Listing.DoesNotExist:
+            selected_node = home
+    active_nodes = [selected_node] + list(selected_node.get_ancestors())
     links = []
     for child in home.get_children():
-        if child == node:
-            grandchildren = child.get_children()
-            sublinks = [(g, False, []) for g in grandchildren]
+        if child == selected_node:
+            if selected_node.name == 'Discussion':
+                grandchildren = Listing.objects.filter(staff_only_read=staff)
+                sublinks = []
+                for g in grandchildren:
+                    sublinks.append((g, False, []))
+            else:
+                grandchildren = child.get_children()
+                sublinks = [(g, False, []) for g in grandchildren]
             links.append((child, True, sublinks))
-        elif child in actives:
+        elif child in active_nodes:
             grandchildren = child.get_children()
             sublinks = []
             for g in grandchildren:
-                if g in actives:
+                if g in active_nodes:
                     sublinks.append((g, True, []))
                 else:
                     sublinks.append((g, False, []))
@@ -157,17 +225,25 @@ def get_navigation(url):
             
 def get_base_navigation(request):
     try:
-        root = Navigation.objects.root_nodes()[0]
-    except IndexError:
-        return []
-    return {'navigation': get_navigation(root.url)}
+        node = Navigation.objects.get(url=request.path)
+    except Navigation.DoesNotExist:
+        node = None
+    if not node:
+        try:
+            node = Navigation.objects.root_nodes()[0]
+        except IndexError:
+            return {'navigation':[]}
+    show_staff = request.user.is_authenticated() and request.user.is_staff
+    return {'navigation': get_navigation(node.url, show_staff)}
 
-
-def get_initial_data(request):
+def get_initial_image_data(request):
     if request.user.is_authenticated():
-        initial = {'owner': '%s %s'%(request.user.first_name.capitalize(), request.user.last_name.capitalize()), 
-            'license': License.objects.get(name='BY-SA'), 
-            'author': request.user}
+        initial = { 'owner': '%s %s' % (
+                        request.user.first_name.capitalize(),
+                        request.user.last_name.capitalize()
+                        ), 
+                    'license': License.objects.get(name='BY-SA'), 
+                    'author': request.user}
         try:
             profile = UserProfile.objects.get(user = request.user)
             initial['owner_url'] = settings.SITE_URL + reverse('profiles_profile_detail', 
@@ -182,7 +258,8 @@ def get_initial_data(request):
 def process_image_form(request, image_id=None):
     if request.method == 'POST':
         if not image_id:
-            form = ImageForm(request.POST, request.FILES, prefix='image') # A form bound to the POST data
+            # form bound to the POST data
+            form = ImageForm(request.POST, request.FILES, prefix='image')
         else:
             image = get_object_or_404(Image, id=image_id)
             form = ImageForm(request.POST, request.FILES, prefix='image', instance=image)
@@ -215,10 +292,10 @@ def process_image_form(request, image_id=None):
             form.redirect_url = image.get_absolute_url()
     else: #unbound forms
         if not image_id:
-            form = ImageForm(initial=get_initial_data(request), prefix='image')
+            form = ImageForm(initial=get_initial_image_data(request), prefix='image')
         else:
             image = get_object_or_404(Image, id=image_id)
-            #form = ImageForm(initial=get_initial_data(request), prefix='image', instance=image) 
+            #form = ImageForm(initial=get_initial_image_data(request), prefix='image', instance=image) 
             form = ImageForm(prefix='image', instance=image)
     return form
 
@@ -392,14 +469,14 @@ def edit_post(request, post_id=None):
         if not post_id:
             # unbound forms
             postform = PostForm(request.user, prefix='post')
-            imageform = ImageForm(initial=get_initial_data(request), prefix='image')
+            imageform = ImageForm(initial=get_initial_image_data(request), prefix='image')
         else:
             postform = PostForm(request.user, instance=post, prefix='post')
             if not post.image:
                 # unbound form
-                imageform = ImageForm(initial=get_initial_data(request), prefix='image')
+                imageform = ImageForm(initial=get_initial_image_data(request), prefix='image')
             else:
-                imageform = ImageForm(instance=post.image, initial=get_initial_data(request), prefix='image')
+                imageform = ImageForm(instance=post.image, initial=get_initial_image_data(request), prefix='image')
                 hasimage = True
     if post_id:
         action = reverse('edit-post', args=(), kwargs={'post_id': post.id})

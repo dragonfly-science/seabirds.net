@@ -158,21 +158,6 @@
         }
     }, 
     {
-        "pk": 11, 
-        "model": "cms.navigation", 
-        "fields": {
-            "rght": 18, 
-            "name": "Petrel", 
-            "parent": 5, 
-            "title": "Petrel", 
-            "url": "/petrel/", 
-            "level": 2, 
-            "lft": 17, 
-            "tree_id": 1, 
-            "order": 330
-        }
-    }, 
-    {
         "pk": 4, 
         "model": "cms.navigation", 
         "fields": {

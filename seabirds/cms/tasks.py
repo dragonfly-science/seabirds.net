@@ -8,7 +8,8 @@ from django.dispatch import receiver
 from profile.models import UserProfile
 from pigeonpost.signals import pigeonpost_queue
 from pigeonpost.tasks import add_to_outbox
-from cms.models import Post
+
+from cms.models import Post, Listing, Navigation
 
 def send_digest(earliest=36, latest=12):
     """
@@ -71,3 +72,4 @@ def generate_comment_pigeons(sender, **kwargs):
     pigeonpost_queue.send(sender=comment,
          render_email_method='email_commenters',
          send_to_method='get_commenters')
+

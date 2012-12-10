@@ -3,9 +3,13 @@
 {% load cms_filters %}
 
 {% block title %}Discussion{% endblock %}
-<p> A forum for discussion on seabirds and seabird research </p>
+
+{# We have to override the navigation block because the Listing model is not
+tied to the Navigation at all, but here we pretend it is for a convenient UI
+experience. #}
 
 {% block content %}
+<p> A forum for discussion on seabirds and seabird research.</p>
 {% for object in latest %}
   {% if object.published or user.is_authenticated and perms.website.administration %}
     <div class="post-list ym-contain-dt">
@@ -19,7 +23,7 @@
       <!--<p><a class="pageedit" href="{% url admin:cms_post_change object.id %}">Edit post</a></p>-->
     {% endif %}
     {% autoescape off %}
-      <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3>
+      <h3><a href="{{ object.get_absolute_url }}">{% if not object.published %}[DRAFT] {% endif %}{{ object.title }}</a></h3>
    <p class="byline">
    {% if object.author %}
         {% if object.author.is_active %}
@@ -28,7 +32,8 @@
             {{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }},
         {% endif %}
     {% endif %}
-      {{ object.date_published|date:"F j, Y" }}</p>
+    <a href="{{ object.listing.get.get_absolute_url }}">{{ object.listing.description }}</a>,
+      <span>{{ object.date_published|date:"F j, Y" }}</span></p>
     {% endautoescape %}
     {% if not object.published %}</div>{% endif %}
     </div>

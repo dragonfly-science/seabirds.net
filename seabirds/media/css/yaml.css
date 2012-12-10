@@ -434,3 +434,8 @@ color: #fff;
 .flexible img {
     max-width: 100%;
 }
+
+/* Draft post headers are colored differently */
+.pagedraft h3 a {
+    color: #CD8747;
+}

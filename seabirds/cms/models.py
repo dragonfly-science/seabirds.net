@@ -9,7 +9,6 @@ from django.contrib.contenttypes import generic
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, Resolver404
-from django.core.mail import EmailMultiAlternatives
 
 from pigeonpost.signals import pigeonpost_queue
 from pigeonpost.models import Pigeon
@@ -328,7 +327,7 @@ class Navigation(MPTTModel):
     title = models.CharField(max_length = 100,
         help_text="Text that appears when you mouse over the menu item")
     order = models.PositiveIntegerField(
-        help_text="Order of the items in the fully expanded menu (a postive integer)")
+        help_text="Order of the items in the fully expanded menu (a positive integer)")
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
         help_text="Parent navigation item, used to define the navigation hierarchy")
 
