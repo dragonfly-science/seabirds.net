@@ -1,4 +1,4 @@
-{% if user.firstname %}Dear {{ user.firstname }},
+{% if user.first_name %}Dear {{ user.first_name }},
 
 {% endif %}There has been a new post to the Seabirds.net {{ post.listing.description }} list
 
