@@ -10,7 +10,7 @@ SITE_URL = 'http://localhost:8000'
 SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-ADMINS = ()
+ADMINS = (('Seabirds Admin', 'admin@seabirds.net'),)
 MANAGERS = ADMINS
 
 DATABASES = {

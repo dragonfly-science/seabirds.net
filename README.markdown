@@ -103,7 +103,7 @@ to send out notification emails. Something like:
 
 ```
 SHELL=/bin/bash
-MAILTO=joel@joelpitt.com
+MAILTO=admin@seabirds.net
 MAILFROM=admin@seabirds.net
 */5 * * * * source ~/.virtualenvs/seabirds/bin/activate && cd ~/webapps/seabirds/seabirds.net/seabirds && ./manage.py deploy_pigeons
 ```
