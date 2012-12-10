@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.template.loader import render_to_string
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.core.urlresolvers import resolve, Resolver404
 
 from pigeonpost.signals import pigeonpost_queue
@@ -267,7 +267,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         just_published_now = False
 
-        # The first time it is saved it is published
+        # The first time it is saved it is published automatically
         if not self.date_published:
             self.published = True
             self.date_published = datetime.date.today()
@@ -279,15 +279,19 @@ class Post(models.Model):
                 raise PermissionDenied
 
         super(Post, self).save(*args, **kwargs)
+
+        # We send out the pigeons after the save statement because pigeonpost needs
+        # the Post.id for source_id.
+        #
+        # Note that all pigeonpost signals won't send an email if there is already
+        # a pigeon with the same parameters and to_send=False.
         
-        # When the post is saved, the moderators are notified, with a delay
-        pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
-            defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['moderator'])
+        if self.published:
+            # When the post is saved, the moderators are notified, with a delay
+            pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
+                defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['moderator'])
 
         if just_published_now:
-            # We send the pigeonpost to the author via just_published_now because
-            # pigeonpost needs the Post.id for source_id
-            #
             # We send the author an email to let them know they can edit it
             pigeonpost_queue.send(sender=self, render_email_method='email_author', 
                 defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['author'],
