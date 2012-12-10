@@ -126,6 +126,8 @@ class TestNewUser(TestCase):
         self.assertTrue(response.status_code == 302)
         u = User.objects.get(first_name='Fairy')
         self.assertTrue(u.last_name, 'Prion')
+        # When profiles are created they should not be valid researchers
+        self.assertFalse(u.profile.get().is_valid_seabirder)
 
     def test_create_duplicate_user(self):
         """ Test that users with the same name will generate a different username """
@@ -209,3 +211,4 @@ class TestCustomListView(TestCase):
           '<a href="/petrel/?r=1" class="badge activebadge">Albatrosses</a>'
         ]
         self.check_desired(link, desired)
+

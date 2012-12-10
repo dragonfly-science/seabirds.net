@@ -51,6 +51,7 @@ class UserProfile(models.Model):
     date_updated = models.DateField(auto_now = True)
     wid = models.IntegerField(null=True, blank=True, editable=False)
     subscriptions = models.ManyToManyField('cms.Listing', related_name='profiles', null=True, blank=True)
+    is_valid_seabirder = models.BooleanField(default=False)
     is_moderator = models.BooleanField(default=False, editable=False)
 
     def __str__(self):
