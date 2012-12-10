@@ -2,14 +2,10 @@
 {% load thumbnail %}
 {% load cms_filters %}
 
-{% block title %}Discussion{% endblock %}
-
-{# We have to override the navigation block because the Listing model is not
-tied to the Navigation at all, but here we pretend it is for a convenient UI
-experience. #}
+{% block title %}{% if listing %}{{listing.description}}{% else %}Recent discussions{% endif %}{% endblock %}
 
 {% block content %}
-<p> A forum for discussion on seabirds and seabird research.</p>
+{% if latest %}
 {% for object in latest %}
   {% if object.published or user.is_authenticated and perms.website.administration %}
     <div class="post-list ym-contain-dt">
@@ -38,7 +34,10 @@ experience. #}
     {% if not object.published %}</div>{% endif %}
     </div>
   {% endif %}
-{% endfor  %}
+{% endfor %}
+{% else %}
+<p>Sorry - there are no posts available in the "{{listing.description}}" group.<p>
+{% endif %}
 {% endblock %}
 
 {% block sidebar %}

@@ -360,6 +360,17 @@ class Listing(models.Model):
 
     optional_list = models.BooleanField(default=True)
 
+    @property
+    def name(self):
+        return self.description
+
+    @property
+    def url(self):
+        return self.get_absolute_url()
+
+    def get_absolute_url(self):
+        return '/groups/' + self.key
+
     def __unicode__(self):
         return self.description
 
