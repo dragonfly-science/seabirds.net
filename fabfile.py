@@ -157,6 +157,9 @@ def deploy(environment='staging', specific_commit=None):
         with cd('%(remote_dir)s/..' % env):
             # Expects password credentials to be in ~/.pgpass
             run('pg_dump -U seabirds -c seabirds > seabirds.sql')
+            # Horrible hack to clear the dev database of all data, since we
+            # can't programmatically create/drop dbs within webfaction
+            run("""psql -U seabirds_dev -d seabirds_dev -qAtX -c "select 'TRUNCATE table ' || quote_ident(table_schema) || '.' || quote_ident(table_name) || ' CASCADE;' from information_schema.tables where table_type = 'BASE TABLE' and not table_schema ~ '^(information_schema|pg_.*)$'" | psql -U seabirds_dev -d seabirds_dev -qAtX""")
             run('psql -U seabirds_dev -d seabirds_dev -f seabirds.sql')
             # clean up
             run('rm seabirds.sql')

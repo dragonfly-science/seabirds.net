@@ -37,6 +37,8 @@ class PigeonComment(Comment):
         return False
 
     def email_author_about_comment(self, user):
+        if self.is_removed:
+            return None
         assert user == self.content_object.author
         # Prevent sending a notification when a user comments on
         # something they authored.
@@ -52,6 +54,8 @@ class PigeonComment(Comment):
         # TODO: If there is an op out for a conversation, or being emailed
         # about comments, then it could be checked here
 
+        if self.is_removed:
+            return None
         # Do not email the commenter, or the author (the author is notified
         # by `email_author_about_comment`
         if user == self.user or user == self.content_object.author:

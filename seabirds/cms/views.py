@@ -348,7 +348,7 @@ def process_comment(request, commentform, post):
 def individual_post(request, year=None, month=None, day=None, slug=None):
     """ View a post and handle dispatching various POST requests to the url """
     if not slug:
-        return Http404
+        raise Http404
     post = get_object_or_404(Post, name=slug)
 
     # Only authenticated users are allowed to POST any data
@@ -378,7 +378,7 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
                     else:
                         raise PermissionDenied
                 except comments.get_model().DoesNotExist:
-                    return Http404
+                    raise Http404
         else:
             if not post.can_user_modify(request.user):
                 raise PermissionDenied
