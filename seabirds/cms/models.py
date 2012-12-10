@@ -259,6 +259,8 @@ class Post(models.Model):
 
     def email_subscriber(self, user):
         """ Email subscribers to the listing this post is part of """
+        if not self.published:
+            return None
         if user != self.author:
             subject = '[seabirds.net] New %s post "%s"' % (self.listing, self.title)
             template_data = { 'user': user, 'post': self }
