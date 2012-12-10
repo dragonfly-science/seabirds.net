@@ -44,6 +44,10 @@ from django.views.generic.dates import ArchiveIndexView
 
 class PostArchiveView(ArchiveIndexView):
     model = Post
+    allow_empty = True # Don't 404 on an empty queryset
+    # This would show 10 discussions at a time, but we have not added pagination to
+    # our templates yet
+    #paginate_by = 10
     
     def get(self, request, *args, **kwargs):
         """
@@ -68,18 +72,20 @@ class PostArchiveView(ArchiveIndexView):
         and allows viewing posts in a given listing.
         """
         show_staff = request.user.is_authenticated() and request.user.is_staff
+        listing_object = None
 
+        if listing:
+            listing_object = get_object_or_404(Listing, key=listing)
         if show_staff:
             # For staff members we let them access any listings
             if listing:
-                qs = self.get_dated_queryset(listing__key=listing)
+                qs = self.get_dated_queryset(listing=listing_object)
             else:
                 qs = self.get_dated_queryset()
         else:
             # Normal site members should not be able to see
             # the existance of staff_only_read Listings
             if listing:
-                listing_object = get_object_or_404(Listing, key=listing)
                 if listing_object.staff_only_read:
                     raise Http404
                 else:
@@ -93,7 +99,7 @@ class PostArchiveView(ArchiveIndexView):
             object_list = qs.order_by('-' + self.get_date_field())
         else:
             object_list = qs.none()
-        return (date_list, object_list, {})
+        return (date_list, object_list, {'listing': listing_object})
 
 
 def page(request, name):
@@ -182,7 +188,7 @@ def get_navigation(url, staff=False):
     the navigation sidebar.
 
     There are parts in this which are a bit of hack to allow the 
-    Discussion entry to have Listing objects as it's children.
+    "Discussion" entry to have Listing objects as it's children.
     """
     try:
         home = Navigation.objects.root_nodes()[0]
@@ -191,9 +197,14 @@ def get_navigation(url, staff=False):
     selected_listing = None
     try:
         selected_node = Navigation.objects.get(url=url)
+        key = None
     except Navigation.DoesNotExist:
         try:
-            selected_listing = Listing.objects.get(url=url, staff_only_read=staff)
+            key = os.path.split(url)[-1]
+            if staff:
+                selected_listing = Listing.objects.get(key=key)
+            else:
+                selected_listing = Listing.objects.get(key=key, staff_only_read=False)
             selected_node = Navigation.objects.get(name='Discussion')
         except Listing.DoesNotExist:
             selected_node = home
@@ -202,14 +213,18 @@ def get_navigation(url, staff=False):
     for child in home.get_children():
         if child == selected_node:
             if selected_node.name == 'Discussion':
-                grandchildren = Listing.objects.filter(staff_only_read=staff)
+                if staff:
+                    grandchildren = Listing.objects.all()
+                else:
+                    grandchildren = Listing.objects.filter(staff_only_read=False)
                 sublinks = []
                 for g in grandchildren:
-                    sublinks.append((g, False, []))
+                    sublinks.append((g, key and g.key == key, []))
+                links.append((child, key is None, sublinks))
             else:
                 grandchildren = child.get_children()
                 sublinks = [(g, False, []) for g in grandchildren]
-            links.append((child, True, sublinks))
+                links.append((child, True, sublinks))
         elif child in active_nodes:
             grandchildren = child.get_children()
             sublinks = []
@@ -224,17 +239,8 @@ def get_navigation(url, staff=False):
     return links
             
 def get_base_navigation(request):
-    try:
-        node = Navigation.objects.get(url=request.path)
-    except Navigation.DoesNotExist:
-        node = None
-    if not node:
-        try:
-            node = Navigation.objects.root_nodes()[0]
-        except IndexError:
-            return {'navigation':[]}
     show_staff = request.user.is_authenticated() and request.user.is_staff
-    return {'navigation': get_navigation(node.url, show_staff)}
+    return {'navigation': get_navigation(request.path, show_staff)}
 
 def get_initial_image_data(request):
     if request.user.is_authenticated():
