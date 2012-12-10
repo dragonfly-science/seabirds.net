@@ -51,18 +51,19 @@ def get_live_media():
 
 def get_live_database():
     "Copy live database from the production server to the local machine"
-    with cd('%(remote_dir)s' % env):
+    with cd(env.remote_dir), lcd(env.local_dir):
         run('pg_dump -U seabirds -C seabirds > dumps/latest.sql')
         get('dumps/latest.sql', local_path='dumps')
+        run('rm dumps/latest.sql')
         with settings(warn_only=True):
             local('dropdb seabirds')
         local('psql postgres -f dumps/latest.sql')
+        # Change the site object to use localhost:8000
+        local("""echo "update django_site set domain = 'localhost:8000', name = 'Seabirds.net (local)' where domain='seabirds.net'" | psql -d seabirds""")
 
 def runserver():
-    with lcd('seabirds'):
-        with _virtualenv():
-            with settings(warn_only=True):
-                local('python manage.py runserver')
+    with lcd('seabirds'), _virtualenv(), settings(warn_only=True):
+        local('python manage.py runserver')
 
 def pull():
     local('git pull')
@@ -159,6 +160,8 @@ def deploy(environment='staging', specific_commit=None):
             run('psql -U seabirds_dev -d seabirds_dev -f seabirds.sql')
             # clean up
             run('rm seabirds.sql')
+            # Change the site object to use dev.seabirds.net
+            run("echo update django_site set domain = 'dev.seabirds.net', name = 'Seabirds.net (dev)' where domain='seabirds.net' | psql -U seabirds_dev -d seabirds_dev")
         with cd(env.remote_dir):
             run('rsync -avz %s/seabirds/media %s/seabirds/. --exclude=*.css --exclude=*.js' % (
                 production_dir, env.remote_dir))
