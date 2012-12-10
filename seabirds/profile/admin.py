@@ -17,8 +17,16 @@ def mark_as_invalid(modeladmin, request, queryset):
         profile.user.save()
 mark_as_invalid.short_description='Mark selected users as invalid'
 
+def google_search_field(self):
+    return '<a href="http://google.com/#q=%s+%s+%s&output=search">Search</a>' % (
+            self.user.first_name, self.user.last_name, self.institution
+        )
+google_search_field.allow_tags = True
+google_search_field.short_description = 'Search'
+
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'institution', 'country', 'is_valid_seabirder', 'date_created')
+    list_display = ('user', 'institution', 'country', 'is_valid_seabirder', 
+        'date_created', google_search_field)
     list_filter = ('institution','country', 'is_valid_seabirder', 'date_created')
     actions = [mark_as_valid, mark_as_invalid]
 admin.site.register(UserProfile, UserProfileAdmin)
