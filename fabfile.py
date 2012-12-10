@@ -161,7 +161,7 @@ def deploy(environment='staging', specific_commit=None):
             # clean up
             run('rm seabirds.sql')
             # Change the site object to use dev.seabirds.net
-            run("echo update django_site set domain = 'dev.seabirds.net', name = 'Seabirds.net (dev)' where domain='seabirds.net' | psql -U seabirds_dev -d seabirds_dev")
+            run("""echo "update django_site set domain = 'dev.seabirds.net', name = 'Seabirds.net (dev)' where domain='seabirds.net'" | psql -U seabirds_dev -d seabirds_dev""")
         with cd(env.remote_dir):
             run('rsync -avz %s/seabirds/media %s/seabirds/. --exclude=*.css --exclude=*.js' % (
                 production_dir, env.remote_dir))

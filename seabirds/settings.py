@@ -1,7 +1,7 @@
 import logging
 import os
 
-#logging.basicConfig(level = logging.WARN,)
+logging.basicConfig(level = logging.WARN,)
 
 # These settings may be overridden in sitesettings
 SITE_ROOT = os.path.dirname(__file__)
