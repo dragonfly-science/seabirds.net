@@ -12,7 +12,7 @@ env.production_server = 'seabirds.webfactional.com'
 env.local_user = os.environ['USER']
 
 env.hosts = [env.production_server]
-env.remote_dir = '/home/seabirds/seabirds.net'
+env.remote_dir = '/home/seabirds/webapps/seabirds_live/seabirds.net/'
 env.local_dir = os.path.dirname(__file__)
 
 #### Private functions ####
