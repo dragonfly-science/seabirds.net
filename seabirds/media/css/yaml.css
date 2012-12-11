@@ -445,10 +445,22 @@ h2 .pagedraft {
 }
 
 /* Activity stream */
+.activity h2 {
+    font-family: "Droid Sans", Arial, Helvetica, sans-serif;
+    margin-left: 1em;
+}
+
 .activity {
     font-size: 70%;
 }
 
+.activity .timeline {
+    color: #888;
+    text-align: right;
+    list-style-type: none;
+}
+
+/* Reduce size of markdown headers */
 .post h1,.post h2,.post h3,.post h4 {
     font-size:116.67%;
 }

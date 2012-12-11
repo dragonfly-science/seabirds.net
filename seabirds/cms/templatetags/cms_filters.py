@@ -68,11 +68,19 @@ def edit_comment(comment, user):
         return { 'id': 'new', 'commentform': SimpleComment(prefix='comment') }
 
 @register.inclusion_tag('cms/activity.html')
-def activity_stream():
-    latest_posts = list(Post.objects.filter(listing__staff_only_read=False).order_by('-date_published')[:5])
-    # TODO hide comments by staff
-    #if user.is_authenticated():
-    latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:5])
+def activity_stream(user):
+    if user.is_authenticated() and user.is_staff:
+        latest_posts = list(Post.objects.all().order_by('-date_published')[:5])
+        latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:5])
+    else:
+        latest_posts = list(Post.objects.filter(listing__staff_only_read=False).order_by('-date_published')[:5])
+        latest_comments_qs = PigeonComment.objects.all().order_by('-submit_date')
+        latest_comments = []
+        for c in latest_comments_qs:
+            if c.can_be_seen_by(user):
+                latest_comments.append(c)
+            if len(latest_comments) > 5:
+                break
     activity = latest_posts + latest_comments
     def sort_activity(a, b):
         def get_time(x):
@@ -89,7 +97,12 @@ def activity_stream():
             results.append( ('post', a) )
         else:
             results.append( ('comment', a) )
-    print results
     return {'activity': results}
 
-
+@register.filter
+def show_user(user):
+    print user
+    if user.first_name:
+        return user.first_name + ' ' + user.last_name
+    else:
+        return user.username
