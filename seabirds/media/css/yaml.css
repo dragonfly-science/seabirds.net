@@ -439,3 +439,12 @@ color: #fff;
 .pagedraft h3 a {
     color: #CD8747;
 }
+
+.post h1,.post h2,.post h3,.post h4 {
+    font-size:116.67%;
+}
+.comment h1,.comment h2,.comment h3,.comment h4 {
+    font-size:116.67%;
+}
+
+
