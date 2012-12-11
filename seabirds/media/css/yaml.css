@@ -451,7 +451,8 @@ h2 .pagedraft {
 }
 
 .activity {
-    font-size: 70%;
+    font-size: 87%;
+    margin-right: 0.5em;
 }
 
 .activity .timeline {
