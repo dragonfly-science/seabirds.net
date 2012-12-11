@@ -10,10 +10,8 @@
     <h1>Seabirds.net</h1>
     </table><!-- top message -->  
     <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="600" align="center">  
-    <p>{% if user.first_name %}Dear {{ user.first_name }},
-{% elif user.username %}Dear {{ user.username }},
-{% endif %}</p>
-<p>A new comment from {% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{%else%}{{comment.user.username}}{%endif%} was added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} <a href="http://{{ site }}{{ comment.content_object.get_absolute_url }}">"{{comment.content_object.title}}"</a> on Seabirds.net:
+    <p>Dear {{ user|show_user_short }},</p>
+<p>A new comment from {{ comment.user|show_user }} was added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} <a href="http://{{ site }}{{ comment.content_object.get_absolute_url }}">"{{comment.content_object.title}}"</a> on Seabirds.net:
 <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="500" align="center">  
 <p>"{{ comment.comment|markdownplus }}"</p>
 </table><!-- comment -->  

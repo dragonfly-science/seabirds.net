@@ -101,8 +101,14 @@ def activity_stream(user):
 
 @register.filter
 def show_user(user):
-    print user
     if user.first_name:
         return user.first_name + ' ' + user.last_name
+    else:
+        return user.username
+
+@register.filter
+def show_user_short(user):
+    if user.first_name:
+        return user.first_name
     else:
         return user.username
