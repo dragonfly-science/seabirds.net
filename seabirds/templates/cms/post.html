@@ -20,7 +20,9 @@
 {% endblock extrahead %}
 
 {% block title %}
+{% if not object.published %}<span class="pagedraft">[DRAFT] {% endif %}
 {{ object.title|capfirst }}
+{% if not object.published %}</span>{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -92,9 +94,14 @@
         <h3>Article Admin</h3>
             <input type="submit" name="edit" value="Edit" id="edit"></input>
             {% if not object.published and not object.date_published %}<input type="submit" name="publish" value="Publish" id="publish"></input>
-            {% else %} {% if not object.published and object.date_published %}<input type="submit" name="restore" value="Publish" id="publish"></input>
-            {% else %} <input type="submit" name="retract" value="Retract" id="retract"></input>
-            {% endif %}{% endif %}
+            {% else %}
+                {% if not object.published and object.date_published %}
+                <input type="submit" name="restore" value="Publish" id="publish"></input>
+                <input type="submit" name="delete" value="Delete" id="delete"></input>
+                {% else %}
+                <input type="submit" name="retract" value="Retract" id="retract"></input>
+                {% endif %}
+            {% endif %}
         </form>
     </div>
     {% endif %}
