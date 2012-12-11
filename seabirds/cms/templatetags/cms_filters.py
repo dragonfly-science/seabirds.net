@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 
 from cms.forms import SimpleComment
 
+import datetime
 from cms.models import Post
 from comments.models import PigeonComment
 
@@ -70,15 +71,16 @@ def edit_comment(comment, user):
 def activity_stream():
     # TODO hide staff only stuff
     #if user.is_authenticated():
-    latest_posts = list(Post.objects.all().order_by('-date_published')[:10])
-    latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:10])
+    latest_posts = list(Post.objects.all().order_by('-date_published')[:5])
+    latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:5])
     print "posts", latest_posts
     print "comments", latest_comments
     activity = latest_posts + latest_comments
     def sort_activity(a, b):
         def get_time(x):
             if isinstance(x, Post):
-                return x.date_published
+                d = x.date_published
+                return datetime.datetime(year=d.year, month=d.month, day=d.day)
             else:
                 return x.submit_date
         return 1 if get_time(b) > get_time(a) else -1
