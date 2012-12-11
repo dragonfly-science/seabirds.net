@@ -8,6 +8,8 @@ seabirds/media/images/cache/*
 seabirds/seabirds.sqlite
 seabirds/static/*
 seabirds/media/*
+seabirds/cover
+seabirds/.noseids
 dumps/*.sql
 
 seabirds/sitesettings.py

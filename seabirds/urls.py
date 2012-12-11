@@ -79,7 +79,6 @@ urlpatterns += patterns('',
     (r'^admin/tagging/(.*)$', 'bibliography.views.tagging'),
     (r'^admin/', include(admin.site.urls)),
     (r'^favicon\.ico$', redirect_to, {'url': settings.STATIC_URL + 'favicon.ico'}),
-    (r'^accounts/logout/',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
     url('^petrel/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}, name='profile_edit'),
     ('^petrel/create', 'profiles.views.create_profile', {'form_class': ProfileForm,}),
     # Catch to fix the use of a relative url in the profile edit function ...
@@ -91,6 +90,9 @@ urlpatterns += patterns('',
     url('^edit/post/(?P<post_id>\d*)/$', 'cms.views.edit_post', name='edit-post'),
     url('^edit/image/$', 'cms.views.edit_image', name='new-image'),
     url('^edit/image/(?P<image_id>\d*)/$', 'cms.views.edit_image', name='edit-image'),
+
+    # Account related urls
+    (r'^accounts/logout/',  'django.contrib.auth.views.logout',   {'next_page': '/'}),
     url(r'^accounts/register/$',
         register,
         {
@@ -104,7 +106,8 @@ urlpatterns += patterns('',
             'template_name': 'registration/login.html',
             'authentication_form': AuthenticationForm,
         }, name='auth_login'),
-    (r'^accounts/', include('registration.urls')),
+    (r'^accounts/', include('registration.backends.default.urls')),
+
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$', 'cms.views.reference'),
     url(r'^images/(?P<key>.*).html$', 'cms.views.imagepage', name='image'),

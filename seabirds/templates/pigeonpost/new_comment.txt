@@ -1,8 +1,7 @@
-{% if user.first_name %}Dear {{ user.first_name }},
-{% elif user.username %}Dear {{ user.username }},
-{% endif %}
+{% load cms_filters %}
+Dear {{ user|show_user_short }},
 
-A new comment from {{ comment.first_name }} {{ comment.last_name }} was added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} "{{comment.content_object.title}}" on Seabirds.net:
+A new comment from {{ comment.user|show_user }} was added to {% if comment.content_object.author == user %}your{%else%}the{%endif%} {{ comment.content_type.model }} "{{comment.content_object.title}}" on Seabirds.net:
 
 "{{ comment.comment }}"
 

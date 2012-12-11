@@ -440,11 +440,31 @@ color: #fff;
     color: #CD8747;
 }
 
+h2 .pagedraft {
+    color: #CD8747;
+}
+
+/* Activity stream */
+.activity h2 {
+    font-family: "Droid Sans", Arial, Helvetica, sans-serif;
+    margin-left: 1em;
+}
+
+.activity {
+    font-size: 87%;
+    margin-right: 0.5em;
+}
+
+.activity .timeline {
+    color: #888;
+    text-align: right;
+    list-style-type: none;
+}
+
+/* Reduce size of markdown headers */
 .post h1,.post h2,.post h3,.post h4 {
     font-size:116.67%;
 }
 .comment h1,.comment h2,.comment h3,.comment h4 {
     font-size:116.67%;
 }
-
-

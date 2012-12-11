@@ -2,6 +2,11 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from cms.forms import SimpleComment
+
+import datetime
+from cms.models import Post
+from comments.models import PigeonComment
+
 from utils.markdownplus import markdownplus as __markdownplus
 
 
@@ -61,3 +66,49 @@ def edit_comment(comment, user):
             return {}
     else:
         return { 'id': 'new', 'commentform': SimpleComment(prefix='comment') }
+
+@register.inclusion_tag('cms/activity.html')
+def activity_stream(user):
+    if user.is_authenticated() and user.is_staff:
+        latest_posts = list(Post.objects.all().order_by('-date_published')[:5])
+        latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:5])
+    else:
+        latest_posts = list(Post.objects.filter(listing__staff_only_read=False).order_by('-date_published')[:5])
+        latest_comments_qs = PigeonComment.objects.all().order_by('-submit_date')
+        latest_comments = []
+        for c in latest_comments_qs:
+            if c.can_be_seen_by(user):
+                latest_comments.append(c)
+            if len(latest_comments) > 5:
+                break
+    activity = latest_posts + latest_comments
+    def sort_activity(a, b):
+        def get_time(x):
+            if isinstance(x, Post):
+                d = x.date_published
+                return datetime.datetime(year=d.year, month=d.month, day=d.day)
+            else:
+                return x.submit_date
+        return 1 if get_time(b) > get_time(a) else -1
+    activity.sort(cmp=sort_activity)
+    results = []
+    for a in activity:
+        if isinstance(a, Post):
+            results.append( ('post', a) )
+        else:
+            results.append( ('comment', a) )
+    return {'activity': results}
+
+@register.filter
+def show_user(user):
+    if user.first_name:
+        return user.first_name + ' ' + user.last_name
+    else:
+        return user.username
+
+@register.filter
+def show_user_short(user):
+    if user.first_name:
+        return user.first_name
+    else:
+        return user.username

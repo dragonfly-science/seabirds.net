@@ -1,6 +1,7 @@
-{% if user.first_name %}Dear {{ user.first_name }},
+{% load cms_filters %}
+Dear {{ user|show_user_short }},
 
-{% endif %}There has been a new post to the Seabirds.net {{ post.listing.description }} list
+There has been a new post to the Seabirds.net {{ post.listing.description }} list
 
 {{ text }}
 
