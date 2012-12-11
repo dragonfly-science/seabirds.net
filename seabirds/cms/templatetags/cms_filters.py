@@ -2,6 +2,10 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from cms.forms import SimpleComment
+
+from cms.models import Post
+from comments.models import PigeonComment
+
 from utils.markdownplus import markdownplus as __markdownplus
 
 
@@ -61,3 +65,31 @@ def edit_comment(comment, user):
             return {}
     else:
         return { 'id': 'new', 'commentform': SimpleComment(prefix='comment') }
+
+@register.inclusion_tag('cms/activity.html')
+def activity_stream():
+    # TODO hide staff only stuff
+    #if user.is_authenticated():
+    latest_posts = list(Post.objects.all().order_by('-date_published')[:10])
+    latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:10])
+    print "posts", latest_posts
+    print "comments", latest_comments
+    activity = latest_posts + latest_comments
+    def sort_activity(a, b):
+        def get_time(x):
+            if isinstance(x, Post):
+                return x.date_published
+            else:
+                return x.submit_date
+        return 1 if get_time(b) > get_time(a) else -1
+    activity.sort(cmp=sort_activity)
+    results = []
+    for a in activity:
+        if isinstance(a, Post):
+            results.append( ('post', a) )
+        else:
+            results.append( ('comment', a) )
+    print results
+    return {'activity': results}
+
+

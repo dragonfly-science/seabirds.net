@@ -1,0 +1,12 @@
+<h3>Recent activity</h3>
+<ul class="activity">
+{% for act in activity %}
+<li>
+{% if act.0 == 'post' %}
+New post "{{act.1.title}}" by {{act.1.author}} at {{act.1.date_published }}.
+{% else %}
+New comment on "{{act.1.content_object.title}}" by {{act.1.user}} at {{act.1.submit_date|date:"r" }}.
+{% endif %}
+</li>
+{% endfor %}
+</ul>

@@ -1,7 +1,5 @@
 import datetime
 
-from django.db import models
-
 from django.contrib.comments.managers import CommentManager
 from django.contrib.comments.models import Comment
 from django.contrib import comments

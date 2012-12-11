@@ -1,4 +1,5 @@
 {% load markup %}
+{% load cms_filters %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -86,6 +87,7 @@
                                 </div>
                                 <div id="leftbar">
                                     {% block leftbar %}
+                                    {% activity_stream %}
                                     {% endblock leftbar %}
                                 </div>
                             </div>
