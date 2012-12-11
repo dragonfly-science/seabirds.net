@@ -24,9 +24,33 @@ def google_search_field(self):
 google_search_field.allow_tags = True
 google_search_field.short_description = 'Search'
 
+
+def edit_user_field(self):
+    return '<a href="/admin/auth/user/%s/">User</a>' % (
+            self.user.id,
+        )
+edit_user_field.allow_tags = True
+edit_user_field.short_description = 'Edit user'
+
+def first_name(self):
+    return self.user.first_name
+first_name.short_description = 'First name'
+
+def last_name(self):
+    return self.user.last_name
+last_name.short_description = 'Last name'
+
+def email(self):
+    return self.user.email
+email.short_description = 'Email'
+
+def last_login(self):
+    return self.user.last_login.strftime("%h. %d, %Y")
+last_login.short_description = 'Last login'
+
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'institution', 'country', 'is_valid_seabirder', 
-        'date_created', google_search_field)
+    list_display = ('user', first_name, last_name, email, 'institution', 'country', 'is_valid_seabirder', 
+        'date_created', last_login, google_search_field, edit_user_field)
     list_filter = ('institution','country', 'is_valid_seabirder', 'date_created')
     actions = [mark_as_valid, mark_as_invalid]
 admin.site.register(UserProfile, UserProfileAdmin)

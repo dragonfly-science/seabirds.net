@@ -43,9 +43,11 @@
       <a class="addthis_counter addthis_bubble_style"></a>
       </div></div>
 <div class="ym-clearfix">&nbsp;</div>
+<div class="post">
     {% autoescape off %}
        {{ object.markdown_text }}
     {% endautoescape %}
+</div>
     <div class="comments">
        {% get_comment_count for object as comment_count %}
        {% if comment_count %}<h3> Comments ( {{comment_count}} )</h3>{% endif %}
