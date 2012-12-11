@@ -69,12 +69,10 @@ def edit_comment(comment, user):
 
 @register.inclusion_tag('cms/activity.html')
 def activity_stream():
-    # TODO hide staff only stuff
+    latest_posts = list(Post.objects.filter(listing__staff_only_read=False).order_by('-date_published')[:5])
+    # TODO hide comments by staff
     #if user.is_authenticated():
-    latest_posts = list(Post.objects.all().order_by('-date_published')[:5])
     latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:5])
-    print "posts", latest_posts
-    print "comments", latest_comments
     activity = latest_posts + latest_comments
     def sort_activity(a, b):
         def get_time(x):
