@@ -100,10 +100,16 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'cuckoo',
     'pigeonpost',
-    'django_coverage',
     'django.contrib.comments',
     'longerusername',
+    'django_nose',
 )
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = [
+    '--with-cov', '--cov-report', 'html', '--cover-package=seabirds',
+    '--logging-clear-handlers',
+    ]
 
 COMMENTS_APP = 'comments'
 
