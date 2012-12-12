@@ -65,6 +65,7 @@ class ProfileRegistrationForm(ProfileForm):
             self.cleaned_data['username'] = self.get_username()
         else:
             raise forms.ValidationError(_('Both first and last names are required'))
+        print self.errors
         return self.cleaned_data
 
     def clean_email(self):

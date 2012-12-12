@@ -135,21 +135,23 @@ def home(request):
     return page(request, 'home')
 
 def image(request, filename):
-    #Return the file if it is in the  images directory
+    # Return the file if it is in the images directory
     if os.path.exists(os.path.join(settings.MEDIA_ROOT, 'images', filename)):
         return serve(request, filename, document_root=os.path.join(settings.MEDIA_ROOT, 'images'))
-    #If not then look for it in the  cache directory
+    # If not then look for it in the cache directory
     path = os.path.join(settings.MEDIA_ROOT, 'images', 'cache', filename)
     if os.path.exists(path):
         return serve(request, filename, document_root=os.path.join(settings.MEDIA_ROOT, 'images', 'cache'))
 
-    # If it  isn't their, then make the image
+    # If it isn't there, then make the image
     # look for an image that is the same without size info
     m = re.search('-(\d+)x(\d+)', filename)
-    if not m: raise Http404
+    if not m:
+        raise Http404
     origname = re.sub('-\d+x\d+', '', filename)
     origpath = os.path.join(settings.MEDIA_ROOT, 'images', origname)
-    if not os.path.exists(origpath): raise Http404
+    if not os.path.exists(origpath):
+        raise Http404
     orig = PILImage.open(origpath)
     format = orig.format
     (basewidth, baseheight) = (int(m.group(1)), int(m.group(2)))

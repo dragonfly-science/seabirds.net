@@ -20,14 +20,20 @@
 {% endblock extrahead %}
 
 {% block title %}
+{% if not object.published %}<span class="pagedraft">[DRAFT] {% endif %}
 {{ object.title|capfirst }}
+{% if not object.published %}</span>{% endif %}
 {% endblock %}
 
 {% block content %}
     <div class="ym-grid">
       <div class="ym-g75 ym-gl">
             {% if object.author %}
-            <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }}</a>, 
+                {% if object.author.is_active %}
+                <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author|show_user }}</a>, 
+                {% else %}
+                {{ object.author|show_user }}, 
+                {% endif %}
             {% endif %}
             {{ object.date_published|date:"F j, Y" }}
       </div>
@@ -53,8 +59,9 @@
             {% for comment in comment_list %}
             <div class="comment ym-clearfix">
             {% with comment.user.profile.get as profile %}
+               {% if comment.user.is_active %}
                {% thumbnail profile.photograph "40"  as im %}
-                <img src="{{ im.url }}" width="40" class="float-left"alt="{{ comment.user.first_name|capfirst }} {{ comment.user.last_name|capfirst }}"></a>  
+                <img src="{{ im.url }}" width="40" class="float-left"alt="{{ comment.user|show_user }}"></a>  
                {% endthumbnail %}   
                <h4><a href="{{ profile.get_absolute_url }}" id="comment-{{ comment.id }}" name="c{{ comment.id }}">{{ comment.name }}</a></h4>
                <div class="byline">
@@ -62,6 +69,13 @@
                </div>
                <p> {{ comment.comment|markdown }}</p>
                 {% edit_comment comment user %}
+                {% else %}
+               <h4>{{ comment.name }}<a id="comment-{{ comment.id }}" name="c{{ comment.id }}"/></h4>
+               <div class="byline">
+                   <a href="{% get_comment_permalink comment %}">{{ comment.submit_date|timesince }} ago</a>
+               </div>
+               <p> {{ comment.comment|markdown }}</p>
+                {% endif %}
             {% endwith %}
             </div>
             {% endfor %}
@@ -94,9 +108,14 @@
         <h3>Article Admin</h3>
             <input type="submit" name="edit" value="Edit" id="edit"></input>
             {% if not object.published and not object.date_published %}<input type="submit" name="publish" value="Publish" id="publish"></input>
-            {% else %} {% if not object.published and object.date_published %}<input type="submit" name="restore" value="Publish" id="publish"></input>
-            {% else %} <input type="submit" name="retract" value="Retract" id="retract"></input>
-            {% endif %}{% endif %}
+            {% else %}
+                {% if not object.published and object.date_published %}
+                <input type="submit" name="restore" value="Publish" id="publish"></input>
+                <input type="submit" name="delete" value="Delete" id="delete"></input>
+                {% else %}
+                <input type="submit" name="retract" value="Retract" id="retract"></input>
+                {% endif %}
+            {% endif %}
         </form>
     </div>
     {% endif %}

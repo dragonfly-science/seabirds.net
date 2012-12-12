@@ -1,0 +1,15 @@
+{% load cms_filters %}
+<div class="activity">
+<h2>Recent activity</h2>
+<ul>
+{% for act in activity %}
+{% if act.0 == 'post' %}
+<li>New post <a href="{{ act.1.get_absolute_url }}">"{{act.1.title}}"</a> by {{ act.1.author|show_user }}</li>
+<li class="timeline"> on {{act.1.date_published }}.</li>
+{% else %}
+<li>New <a href="{{ act.1.get_absolute_url }}">comment</a> on "{{act.1.content_object.title}}" by {{ act.1.user|show_user }}</li>
+<li class="timeline"> on {{act.1.submit_date|date:"M. j, Y" }}.</li>
+{% endif %}
+{% endfor %}
+</ul>
+</div>

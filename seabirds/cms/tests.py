@@ -72,6 +72,9 @@ class TestImages(TestCase):
         self.post = Post.objects.get(title='Test')
         self.image = Image.objects.get(owner='Duncan Wright')
 
+    def tearDown(self):
+        os.remove(self.image.image.file.name)
+
     def test_thumbnail(self):
         self.assertTrue('img src' in self.image.thumbnail())
 
@@ -181,6 +184,9 @@ class TestPosts(TestCase):
             'image-source_url': 'http://www.flickr.com/photos/angrysunbird/5187764485/',
             'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
         self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
+
+        i = Image.objects.get(owner='Duncan Wright')
+        os.remove(i.image.file.name)
  
     @override_settings(PIGEONPOST_DELAYS=TEST_EMAIL_DELAYS)
     def test_create_post(self):

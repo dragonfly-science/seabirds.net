@@ -145,7 +145,12 @@
 <input type="submit" name="submit" value="Update" id="submit">
 {% endblock %}
 </form>
- 
+
+<form id="warning-delete" method="POST" action="{% url profile_delete %}" class="ym-form ym-columnar" enctype="multipart/form-data" onsubmit="return confirm('Are you sure you wish to delete your profile from seabirds.net?\nNote, any posts and comments you have made will remain on the site, but your profile will not be accessable.\nSelect OK to confirm.')">
+<div>Warning, this button will delete your account and prevent you logging in. Your profile will no longer be accessable publicly, but any comments and posts you've made will remain.</div>
+{% csrf_token %}
+<input type="submit" name="submit" value="Delete">
+</form>
 {% endblock content %}
 
 {% block leftbar %}

@@ -1,9 +1,8 @@
 import datetime
 
-from django.db import models
-
 from django.contrib.comments.managers import CommentManager
 from django.contrib.comments.models import Comment
+from django.contrib.contenttypes.models import ContentType
 from django.contrib import comments
 from django.conf import settings
 
@@ -25,6 +24,19 @@ class PigeonComment(Comment):
 
     template = 'pigeonpost/new_comment.txt'
     html_template = 'pigeonpost/new_comment.html'
+
+    def can_be_seen_by(self, user):
+        if user.is_authenticated() and user.is_staff:
+            # Authenticated staff members can see everything
+            return True
+        else:
+            post_type = ContentType.objects.get(app_label="cms", model="post")
+            # Otherwise, comments on staff only posts are invisible
+            # everything else assumed to be public
+            if self.content_type == post_type and self.content_object.listing.staff_only_read:
+                return False
+            else:
+                return True
 
     def can_be_edited_by(self, user):
         """ Return True if the user is allowed to edit or delete comment """
