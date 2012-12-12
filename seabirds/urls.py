@@ -72,7 +72,7 @@ urlpatterns += patterns('',
     # Our custom implementation ensures we don't leak information about staff only discussions
     (r'^posts/$', PostArchiveView.as_view(date_field='date_published',template_name='cms/list.html')),
     (r'^groups/(?P<listing>[a-zA-Z0-9_\-]+)$', PostArchiveView.as_view(date_field='date_published',template_name='cms/list.html')),
-    (r'^feed/posts$', LatestPostsFeed()),
+    (r'^feed/rss/posts$', LatestPostsFeed()),
 )
 
 urlpatterns += patterns('',

@@ -18,19 +18,23 @@ class LatestPostsFeed(Feed):
 
     def items(self):
         items = []
+        # filter out staff only posts
         qs = Post.objects.filter(listing__staff_only_read=False).order_by('-date_published')
         now = datetime.datetime.now()
         for post in qs:
             try:
-                # check whether subscriber pigeon has been sent
-                pigeon = post.pigeons.get(send_to_method='email_subscriber')
-                print pigeon
-                if pigeon and pigeon.sent_at > now:
+                # check whether pigeon for post subscribers has been sent
+                # if so, we make it available in the feed
+                pigeon = post.pigeons.get(render_email_method='email_subscriber')
+                if pigeon and pigeon.sent_at < now:
                     items.append(post)
                     if len(items) > self.feed_length:
                         break
             except Pigeon.DoesNotExist:
-                pass
+                # automatically show any posts that don't have pigeons
+                # as we assume these were added outside of the normal
+                # publishing process
+                items.append(post)
         return items
 
     def item_title(self, item):
