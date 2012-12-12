@@ -202,8 +202,9 @@ def deploy(environment='staging', specific_commit=None):
     debug_print = 'print sys.path'
     if production:
         debug_print = ''
-    upload_template('wsgi.py.TEMPLATE', '%(remote_dir)s/wsgi.py' % env,
-            context={'venv':venv, 'webapp':venv, 'debug_print': debug_print})
+    with lcd(env.local_dir):
+        upload_template('wsgi.py.TEMPLATE', '%(remote_dir)s/wsgi.py' % env,
+                context={'venv':venv, 'webapp':venv, 'debug_print': debug_print})
 
     # restart apache
     run('%(remote_dir)s/../apache2/bin/restart' % env)
