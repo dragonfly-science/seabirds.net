@@ -29,7 +29,11 @@
     <div class="ym-grid">
       <div class="ym-g75 ym-gl">
             {% if object.author %}
-            <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author.first_name|capfirst }} {{ object.author.last_name|capfirst }}</a>, 
+                {% if object.author.is_active %}
+                <a href="{{ object.author.profile.get.get_absolute_url }}">{{ object.author|show_user }}</a>, 
+                {% else %}
+                {{ object.author|show_user }}, 
+                {% endif %}
             {% endif %}
             {{ object.date_published|date:"F j, Y" }}
       </div>
