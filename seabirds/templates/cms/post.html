@@ -59,8 +59,9 @@
             {% for comment in comment_list %}
             <div class="comment ym-clearfix">
             {% with comment.user.profile.get as profile %}
+               {% if comment.user.is_active %}
                {% thumbnail profile.photograph "40"  as im %}
-                <img src="{{ im.url }}" width="40" class="float-left"alt="{{ comment.user.first_name|capfirst }} {{ comment.user.last_name|capfirst }}"></a>  
+                <img src="{{ im.url }}" width="40" class="float-left"alt="{{ comment.user|show_user }}"></a>  
                {% endthumbnail %}   
                <h4><a href="{{ profile.get_absolute_url }}" id="comment-{{ comment.id }}" name="c{{ comment.id }}">{{ comment.name }}</a></h4>
                <div class="byline">
@@ -68,6 +69,13 @@
                </div>
                <p> {{ comment.comment|markdown }}</p>
                 {% edit_comment comment user %}
+                {% else %}
+               <h4>{{ comment.name }}<a id="comment-{{ comment.id }}" name="c{{ comment.id }}"/></h4>
+               <div class="byline">
+                   <a href="{% get_comment_permalink comment %}">{{ comment.submit_date|timesince }} ago</a>
+               </div>
+               <p> {{ comment.comment|markdown }}</p>
+                {% endif %}
             {% endwith %}
             </div>
             {% endfor %}
