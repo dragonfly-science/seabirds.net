@@ -181,9 +181,10 @@ def deploy(environment='staging', specific_commit=None):
             run('git clean -f -d')
         with prefix('source /home/seabirds/.virtualenvs/%s/bin/activate' % venv):
             run('pip install -r requirements.txt')
-        put(settings_file, remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
-        put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
-        run('make clean') # remove pyc and pyo
+        with lcd(env.local_dir):
+            put(settings_file, remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
+            put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
+            run('make clean') # remove pyc and pyo
 
     with cd('%(remote_dir)s/seabirds' % env):
         # Run migrations, syncdb and our test suite
