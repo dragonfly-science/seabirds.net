@@ -25,4 +25,5 @@ django-grappelli==2.4.2
 coverage
 git+git://github.com/dragonfly-science/django-pigeonpost@v0.1.6
 unidecode
+django-nose
 nose-cov
