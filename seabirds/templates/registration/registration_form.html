@@ -78,7 +78,6 @@ attribution share-alike license</a>.
         </strong>
     </div>
 {% endblock terms  %}
-{% if not debug %}
 {% block captcha %}
 <h6> A quick check that you are human and then you are done </h6>
 <p>
@@ -90,7 +89,6 @@ The challenge is deliberately difficult, as it is designed to stop computers fro
     </div>
 
 {% endblock captcha %}
-{% endif %}
 {% block submit %}
 <input type="submit" name="submit" value="Register me" >
 {% endblock submit %}

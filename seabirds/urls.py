@@ -73,7 +73,7 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('',
-    (r'^$', 'cms.views.home'),
+    url(r'^$', 'cms.views.home', name='home'),
     #The top pages
     (r'^grappelli/', include('grappelli.urls')),
     (r'^admin/tagging/(.*)$', 'bibliography.views.tagging'),
@@ -81,6 +81,7 @@ urlpatterns += patterns('',
     (r'^favicon\.ico$', redirect_to, {'url': settings.STATIC_URL + 'favicon.ico'}),
     url('^petrel/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}, name='profile_edit'),
     ('^petrel/create', 'profiles.views.create_profile', {'form_class': ProfileForm,}),
+    url('^petrel/delete', 'profile.views.delete_profile', name='profile_delete'),
     # Catch to fix the use of a relative url in the profile edit function ...
     ('^petrel/users/(?P<rest>.*)$', redirect_to, {'url': '/users/%(rest)s'}),
     url(r'^petrel/(?P<username>[\w.@+-]+)/$', 'profiles.views.profile_detail', name='profiles_profile_detail'),

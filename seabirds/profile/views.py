@@ -1,12 +1,14 @@
 from urllib import urlencode
 
-from profiles.views import profile_detail
 from profiles import utils
 from django.http import Http404, HttpResponseRedirect
 from django.utils.encoding import force_unicode
 from django.views.generic.list_detail import object_list
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.contrib.auth import logout
+from django.core.urlresolvers import reverse
 
 from django_countries.countries import COUNTRIES
 
@@ -20,6 +22,15 @@ def profile(request):
     else:
         raise Http404
 
+@require_POST
+def delete_profile(request):
+    if request.user.is_authenticated():
+        request.user.is_active = False
+        request.user.save()
+        logout(request)
+        return HttpResponseRedirect(reverse('home'))
+
+
 COUNTRIES_REVERSED = dict((force_unicode(c[1]), c[0]) for c in COUNTRIES)
 COUNTRIES = dict((c[0], force_unicode(c[1])) for c in COUNTRIES)
 
@@ -29,7 +40,7 @@ def custom_list(request, template_name='profiles/profile_list.html', **kwargs):
     https://bitbucket.org/ubernostrum/django-profiles
     """
     profile_model = utils.get_profile_model()
-    queryset = profile_model._default_manager.all()
+    queryset = profile_model._default_manager.filter(user__is_active=True)
     birds_queryset = profile_model._default_manager.all()
     countries_queryset = profile_model._default_manager.all()
     collaboration_queryset = utils.get_model('profile', 'collaborationchoice')._default_manager.all()

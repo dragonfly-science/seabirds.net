@@ -468,3 +468,9 @@ h2 .pagedraft {
 .comment h1,.comment h2,.comment h3,.comment h4 {
     font-size:116.67%;
 }
+
+/* highlight delete form to indicate DANGER! */
+#warning-delete {
+    border-color: #faa;
+    background: #fbb;
+}
