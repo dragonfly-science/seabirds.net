@@ -14,6 +14,8 @@ from registration.views import register
 from profile.custom_registration import ProfileRegistrationForm
 from longerusername.forms import AuthenticationForm
 
+from cms.feeds import LatestPostsFeed
+
 admin.autodiscover()
 
 #from django.contrib.auth.models import User, Group
@@ -70,6 +72,7 @@ urlpatterns += patterns('',
     # Our custom implementation ensures we don't leak information about staff only discussions
     (r'^posts/$', PostArchiveView.as_view(date_field='date_published',template_name='cms/list.html')),
     (r'^groups/(?P<listing>[a-zA-Z0-9_\-]+)$', PostArchiveView.as_view(date_field='date_published',template_name='cms/list.html')),
+    (r'^feed/rss/posts$', LatestPostsFeed()),
 )
 
 urlpatterns += patterns('',

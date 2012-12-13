@@ -181,9 +181,10 @@ def deploy(environment='staging', specific_commit=None):
             run('git clean -f -d')
         with prefix('source /home/seabirds/.virtualenvs/%s/bin/activate' % venv):
             run('pip install -r requirements.txt')
-        put(settings_file, remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
-        put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
-        run('make clean') # remove pyc and pyo
+        with lcd(env.local_dir):
+            put(settings_file, remote_path='%(remote_dir)s/seabirds/sitesettings.py' % env)
+            put('seabirds/secrets.py', remote_path='%(remote_dir)s/seabirds' % env)
+            run('make clean') # remove pyc and pyo
 
     with cd('%(remote_dir)s/seabirds' % env):
         # Run migrations, syncdb and our test suite
@@ -201,7 +202,7 @@ def deploy(environment='staging', specific_commit=None):
     debug_print = 'print sys.path'
     if production:
         debug_print = ''
-    upload_template('wsgi.py.TEMPLATE', '%(remote_dir)s/wsgi.py' % env,
+    upload_template('%(local_dir)s/wsgi.py.TEMPLATE' % env, '%(remote_dir)s/wsgi.py' % env,
             context={'venv':venv, 'webapp':venv, 'debug_print': debug_print})
 
     # restart apache
