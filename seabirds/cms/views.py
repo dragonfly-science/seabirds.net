@@ -55,6 +55,11 @@ class PostArchiveView(ArchiveIndexView):
         """
         listing = kwargs.get('listing', None)
         self.date_list, self.object_list, extra_context = self.get_dated_items(request, listing)
+        if listing is None:
+            # On general recent posts page, we limit to the last couple of months or so
+            today = datetime.date.today()
+            two_months_ago = today- datetime.timedelta(days=2*31)
+            self.object_list = self.object_list.filter(**{self.get_date_field() + '__gt':two_months_ago})
         context = self.get_context_data(object_list=self.object_list,
                                         date_list=self.date_list)
         context.update(extra_context)
