@@ -125,7 +125,7 @@ urlpatterns += patterns('',
     url(r'^gallery/(?P<seabird_family>.*)$', 'cms.views.gallery', name='gallery'),
 
     # Used by Axiom system to match seabirds.net theme
-    url(r'^_template.html', TemplateView.as_view(template_name='axiom.html')),
+    url(r'^_template.html$', TemplateView.as_view(template_name='axiom.html')),
 
     # Statically served content..
     # TODO: This should be served directly instead of via Django
@@ -140,6 +140,3 @@ urlpatterns += patterns('',
 
 )
 
-if settings.DEBUG:
-    urlpatterns += patterns('',
-        )
