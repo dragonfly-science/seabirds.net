@@ -146,16 +146,23 @@
 {% endblock %}
 </form>
 
-<form id="warning-delete" method="POST" action="{% url profile_delete %}" class="ym-form ym-columnar" enctype="multipart/form-data" onsubmit="return confirm('Are you sure you wish to delete your profile from seabirds.net?\nNote, any posts and comments you have made will remain on the site, but your profile will not be accessable.\nSelect OK to confirm.')">
-<div>Warning, this button will delete your account and prevent you logging in. Your profile will no longer be accessable publicly, but any comments and posts you've made will remain.</div>
-{% csrf_token %}
-<input type="submit" name="submit" value="Delete">
-</form>
 {% endblock content %}
 
 {% block leftbar %}
 {% if request.user == profile.user %}
 <button class="ym-button" style="width:80%; margin-left: 10%; margin-right:10%"><a href="/accounts/password/change/">Change your password</a></button>
+
+
 {% endif %}
 {% endblock leftbar %}
 
+{% block sidebar %}
+{% if request.user == profile.user %}
+<form  method="POST" action="{% url profile_delete %}" class="ym-form ym-columnar" enctype="multipart/form-data" onsubmit="return confirm('Are you sure you wish to leave Seabirds.net?\nSelect OK to confirm.')">
+{% csrf_token %}
+<h6> Say goodbye </h6>
+<p> We are always sad to see people go, but if you want to leave Seabirds.net, then click the button below.  You will no longer be contacted, and your profile will be deleted. </p>
+<p><input type="submit" name="submit" value="Leave Seabirds.net" style="width:80%; margin-left: 10%; margin-right:10%"></p>
+</form>
+{% endif %}
+{% endblock sidebar %}
