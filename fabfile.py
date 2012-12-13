@@ -151,6 +151,9 @@ def deploy(environment='staging', specific_commit=None):
         settings_file = 'sitesettings_dev.py'
         venv = 'seabirds_dev'
 
+    # apache stop
+    run('%(remote_dir)s/../apache2/bin/stop' % env)
+
     if not production:
         # Whenever we deploy to the dev server, we take a snapshot of
         # the production database and media/static content
@@ -206,4 +209,4 @@ def deploy(environment='staging', specific_commit=None):
             context={'venv':venv, 'webapp':venv, 'debug_print': debug_print})
 
     # restart apache
-    run('%(remote_dir)s/../apache2/bin/restart' % env)
+    run('%(remote_dir)s/../apache2/bin/start' % env)

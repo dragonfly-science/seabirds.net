@@ -124,6 +124,9 @@ urlpatterns += patterns('',
     url(r'^gallery/create$', 'cms.views.edit_image', name='new-image'),
     url(r'^gallery/(?P<seabird_family>.*)$', 'cms.views.gallery', name='gallery'),
 
+    # Used by Axiom system to match seabirds.net theme
+    url(r'^_template.html', TemplateView.as_view(template_name='axiom.html')),
+
     # Statically served content..
     # TODO: This should be served directly instead of via Django
     (r'^resources/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'resources')}),
@@ -134,9 +137,9 @@ urlpatterns += patterns('',
     (r'^js/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'js')}),
     (r'^users/(?P<path>.*)$','django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'users')}),
     (r'^yaml/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, 'yaml')}),
+
 )
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-        url(r'^_template.html', TemplateView.as_view(template_name='axiom.html')),
         )
