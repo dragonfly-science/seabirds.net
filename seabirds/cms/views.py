@@ -41,6 +41,8 @@ from license.models import License
 from profile.models import UserProfile
 
 from django.views.generic.dates import ArchiveIndexView
+from django.views.generic import TemplateView
+
 
 class PostArchiveView(ArchiveIndexView):
     model = Post

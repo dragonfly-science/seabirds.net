@@ -112,6 +112,9 @@ urlpatterns += patterns('',
         }, name='auth_login'),
     (r'^accounts/', include('registration.backends.default.urls')),
 
+    # Used by Axiom system to match seabirds.net theme
+    url(r'^_template.html$', TemplateView.as_view(template_name='axiom.html')),
+
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.bib$', 'bibliography.views.get_bib'),
     (r'references/(?P<key>[a-zA-Z0-9_\-]+)\.html$', 'cms.views.reference'),
     url(r'^images/(?P<key>.*).html$', 'cms.views.imagepage', name='image'),
@@ -119,13 +122,14 @@ urlpatterns += patterns('',
     url(r'^comments/', include('django.contrib.comments.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+
+    ### This should always be last as it will shortcut any other xxxx.html routes,
+    # like _template.html etc
     url(r'^(?P<name>[-\w]+)\.html', 'cms.views.page', name='page'),
+
     url(r'^jobs/$', 'cms.views.jobs', name='jobs'),
     url(r'^gallery/create$', 'cms.views.edit_image', name='new-image'),
     url(r'^gallery/(?P<seabird_family>.*)$', 'cms.views.gallery', name='gallery'),
-
-    # Used by Axiom system to match seabirds.net theme
-    url(r'^_template.html$', TemplateView.as_view(template_name='axiom.html')),
 
     # Statically served content..
     # TODO: This should be served directly instead of via Django
