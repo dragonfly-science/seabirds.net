@@ -23,7 +23,7 @@ hg+https://bitbucket.org/ubernostrum/django-registration
 django-coverage
 django-grappelli==2.4.2
 coverage
-git+git://github.com/dragonfly-science/django-pigeonpost@v0.1.7
+git+git://github.com/dragonfly-science/django-pigeonpost@v0.1.8
 unidecode
 django-nose
 nose-cov
