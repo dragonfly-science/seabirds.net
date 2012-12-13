@@ -26,7 +26,7 @@ class LatestPostsFeed(Feed):
                 # check whether pigeon for post subscribers has been sent
                 # if so, we make it available in the feed
                 pigeon = post.pigeons.get(render_email_method='email_subscriber')
-                if pigeon and pigeon.sent_at < now:
+                if pigeon and pigeon.sent_at and pigeon.sent_at < now:
                     items.append(post)
                     if len(items) > self.feed_length:
                         break
