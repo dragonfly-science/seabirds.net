@@ -152,6 +152,7 @@ def deploy(environment='staging', specific_commit=None):
         venv = 'seabirds_dev'
 
     # apache stop
+    # TODO: Ideally this should put up a "maintenance mode" static html page
     run('%(remote_dir)s/../apache2/bin/stop' % env)
 
     if not production:
