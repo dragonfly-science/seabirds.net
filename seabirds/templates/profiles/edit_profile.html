@@ -125,15 +125,21 @@
     <h6> Mailing lists </h6>
     <p> Members of Seabird.net may choose to be  sent emails from a number of different seabirds.net mailing lists.
     To receive these emails, please select the lists you would like to follow below.</p>
-    <div class="ym-fbox-select {% if form.subscriptions.errors %}ym-error{% endif %}">
-        <label for="id_subscriptions">Mailing lists
+    <div class="ym-fbox-check {% if form.subscriptions.errors %}ym-error{% endif %}">
+        <label style="float: left; width: 30%" for="id_subscriptions">Mailing lists
         <div class="form-help"> Select the mailing lists that you would like to subscribe to.
         Use the Ctrl or Command key to select more than one.
         </div>
         {{ form.subscriptions.errors }}
         </label>
         <div id="subscriptions">
-        {{ form.subscriptions }}</div>
+            {% for choice_id, choice_label in form.subscriptions.field.choices %}
+            <div>
+                <input style="margin-left: 10px;" id="subscription-{{choice_id}}" type="checkbox" value="{{ choice_id }}" name="subscriptions" {% if choice_id in form.subscriptions.value %}checked="true"{% endif %}/>
+            <label for="subscription-{{choice_id}}">{{choice_label}}</label>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 {% block terms %}
 {% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from django.forms.widgets import CheckboxSelectMultiple
+from django.forms import widgets
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from PIL import Image as PILImage
@@ -32,13 +32,24 @@ class ProfileForm(forms.ModelForm):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict, maxlength=75)))
     first_name = forms.CharField(label="First name", help_text='', max_length=30)
     last_name = forms.CharField(label="Last name", help_text='', max_length=30)
-    collaboration_choices = forms.ModelMultipleChoiceField(queryset=CollaborationChoice.objects.order_by("label"), required=False)
-    subscriptions = forms.ModelMultipleChoiceField(queryset=Listing.objects.filter(optional_list=True), required=False)
+
+    # This is currently not shown in edit_profile.html template
+    collaboration_choices = forms.ModelMultipleChoiceField(
+            queryset=CollaborationChoice.objects.order_by("label"),
+            required=False)
+
+    subscriptions = forms.ModelMultipleChoiceField(
+            queryset=Listing.objects.filter(optional_list=True),
+            required=False,
+            widget=widgets.CheckboxSelectMultiple,
+            )
+
     research_field = forms.ModelMultipleChoiceField(
         queryset=ResearchField.objects.all(),
         required=False,
         initial="Not a researcher",
-        validators=[research_field_validation])
+        validators=[research_field_validation],
+        )
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
