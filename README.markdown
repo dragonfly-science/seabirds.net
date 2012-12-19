@@ -77,7 +77,7 @@ link to the live site (e.g. generated comment urls).
     fab deploy
 
 ...can be used to deploy to the development server at http://dev.seabirds.net
-- while it has the same security as the main site, it also requires HTTP
+- it has the same user security as the main site, but also requires HTTP
 authentication to see anything.
 
 To deploy to production:
