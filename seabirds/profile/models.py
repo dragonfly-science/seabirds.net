@@ -11,14 +11,14 @@ from unidecode import unidecode
 
 def get_photo_path(instance, filename):
     if filename:
-        print 'get path'
         base, ext = os.path.splitext(os.path.split(filename)[1])
+        userid = str(instance.user.id)
         try: 
-            os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', '%s'%instance.user.id))
+            os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', '%s' % userid))
         except OSError:
             pass
-        print 'Upload image', '%s'%instance.user.id
-        return os.path.join('users', '%s'%instance.user.id, '%s%s'%(slugify(unidecode(str(instance)).lower()), ext))
+        slugified_fn = '%s%s' % (slugify(unidecode(unicode(instance)).lower()), ext)
+        return os.path.join('users', userid, slugified_fn)
 
 class CollaborationChoice(models.Model):
     label = models.CharField(max_length=50)

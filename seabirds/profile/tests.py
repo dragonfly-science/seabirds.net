@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
 import os
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from mock import patch
 
 from profile.models import UserProfile, get_photo_path, CollaborationChoice, create_user_profile
 
@@ -49,6 +52,24 @@ class TestAnonymous(TestCase):
         response = self.client.get('/petrel/edit/', follow=True)
         self.assertTrue('login' in response.content, msg='Not redirected to the login page')
 
+class TestUnicodeNames(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def setUp(self):
+        u = User(username='unicode-jack', first_name=u'Κνωσός', last_name=u'the_symbol_㉓')
+        u.set_password('test')
+        u.save()
+        self.unicode_user = u
+        self.client.login(username='unicode-jack', password='test')
+
+    def test_profile_editable(self):
+        response = self.client.get('/petrel/edit/')
+        self.assertTrue(response.status_code==200)
+
+    @patch('os.mkdir')
+    def test_get_photo_path(self, mkdir):
+        photo_path = get_photo_path(self.unicode_user.profile.get(), 'test.jpg')
+        self.assertEqual(photo_path,'users/3/knosos-the_symbol_.jpg')
 
 class TestUsername(TestCase):
     fixtures = ['test-data/profile.json']

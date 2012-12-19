@@ -27,3 +27,4 @@ git+git://github.com/dragonfly-science/django-pigeonpost@v0.1.8
 unidecode
 django-nose
 nose-cov
+mock
