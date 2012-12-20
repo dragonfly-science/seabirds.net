@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from PIL import Image as PILImage
 from form_utils.widgets import ImageWidget
 
-from profile.models import UserProfile, CollaborationChoice, ResearchField
+from profile.models import UserProfile, CollaborationChoice, ResearchField, SeabirdFamily
 from cms.models import Listing
 
 attrs_dict = {'class': 'required'}
@@ -38,8 +38,18 @@ class ProfileForm(forms.ModelForm):
             queryset=CollaborationChoice.objects.order_by("label"),
             required=False)
 
+    # We use a CheckboxSelectMultiple widget, but we actually customise the rendering
+    # since Django insists on displaying it as part of a <ul> element
     subscriptions = forms.ModelMultipleChoiceField(
             queryset=Listing.objects.filter(optional_list=True),
+            required=False,
+            widget=widgets.CheckboxSelectMultiple,
+            )
+
+    # We use a CheckboxSelectMultiple widget, but we actually customise the rendering
+    # since Django insists on displaying it as part of a <ul> element
+    seabirds = forms.ModelMultipleChoiceField(
+            queryset=SeabirdFamily.objects.all(),
             required=False,
             widget=widgets.CheckboxSelectMultiple,
             )
@@ -49,6 +59,7 @@ class ProfileForm(forms.ModelForm):
         required=False,
         initial="Not a researcher",
         validators=[research_field_validation],
+        widget=widgets.CheckboxSelectMultiple,
         )
 
     def __init__(self, *args, **kwargs):

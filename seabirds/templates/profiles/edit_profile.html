@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block extrahead %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+{% endblock extrahead %}
 {% block title %}Edit your profile{% endblock %}
  
 {% block content %}
@@ -73,12 +76,73 @@
         <label for="id_display_twitter">Display your Twitter feed on your profile page</label>
     </div>
     <h6> Professional information </h6>
-    <div class="ym-fbox-select {% if form.research_field.errors %}ym-error{% endif %}">
-        <label for="id_research_field">{{ form.research_field.label }}
+    <div class="ym-fbox-check">
+        <label>Are you a seabird researcher?
         <div class="form-help"></div>
+        </label>
+        <input type="radio" name="is_researcher_x" value="0" id="id_is_not_researcher" />
+        <label for="id_is_not_researcher">No</label>
+        <input type="radio" name="is_researcher_x" value="1" id="id_is_researcher" />
+        <label for="id_is_researcher">Yes</label>
+<script type="text/javascript">
+$(document).ready(function() {
+        // Set aside the original state of each checkbox.
+        $("#research_field input").each(function() {
+            $(this).data("originallyChecked", $(this).is(":checked"));
+            if ($(this).attr('value') == 1) {
+                // Whether "Not a researcher" is checked determines initial
+                // visibility of things
+                if ($(this).attr("checked") == 1) {
+                    console.log($(this).attr('id') + ' is checked')
+                    $("#id_is_not_researcher").attr("checked", "true");
+                    $("#id_is_not_researcher").change();
+                    $(".research_fields").hide();
+                } else {
+                    $("#id_is_researcher").attr("checked", "true");
+                    $("#id_is_researcher").change();
+                    $(".research_fields").show();
+                }
+            }
+        });
+        $("#id_is_researcher").click(function () {
+            $(".research_fields").show();
+            $("#research_field input").each(function() {
+                    if ($(this).attr('value') == 1) {
+                        $(this).removeAttr('checked');
+                    } else {
+                        $(this).attr('checked', $(this).data("originallyChecked"));
+                    }
+                    $(this).change();
+                });
+            });
+        $("#id_is_not_researcher").click(function () {
+            $(".research_fields").hide();
+            $("#research_field input").each(function() {
+                    $(this).data("originallyChecked", $(this).is(":checked"));
+                    if ($(this).attr('value') == 1) {
+                        $(this).attr('checked', 1);
+                    } else {
+                        $(this).removeAttr('checked');
+                    }
+                    $(this).change();
+                });
+            });
+    });
+</script>
+    </div>
+    <div class="research_fields ym-fbox-check {% if form.research_field.errors %}ym-error{% endif %}">
+        <label for="id_research_field" style="cursor: default; float: left; width: 30%">{{ form.research_field.label }}
+        <div class="form-help">What is your research field?</div>
         {{ form.research_field.errors }}
         </label>
-        {{ form.research_field }}
+        <div id="research_field" style="float: left; margin-left: 0px;">
+            {% for choice_id, choice_label in form.research_field.field.choices %}
+            <div{% if choice_id == 1 %} style="display: none;"{% endif %}>
+                <input style="margin-left: 0px;" id="research_field-{{choice_id}}" type="checkbox" value="{{ choice_id }}" name="research_field" {% if choice_id in form.research_field.value %}checked="true"{% endif %}/>
+            <label for="research_field-{{choice_id}}">{{choice_label}}</label>
+            </div>
+            {% endfor %}
+        </div>
     </div>
     <div class="ym-fbox-text {% if form.institution.errors %}ym-error{% endif %}">
         <label for="id_institution">{{ form.institution.label }}
@@ -108,12 +172,19 @@
        </label>
        {{ form.research }}
     </div>
-    <div class="ym-fbox-select {% if form.seabirds.errors %}ym-error{% endif %}">
-        <label for="id_seabirds">{{ form.seabirds.label }}
+    <div class="ym-fbox-check {% if form.seabirds.errors %}ym-error{% endif %}">
+        <label style="cursor: default; float: left; width: 30%" for="id_seabirds">{{ form.seabirds.label }}
         <div class="form-help"> Select the families of the seabirds you primarily study. Use the Ctrl or Command key to select more than one. </div>
         {{ form.seabirds.errors }}
         </label>
-        {{ form.seabirds }}
+        <div id="seabirds" style="float: left; margin-left: 0px;">
+            {% for choice_id, choice_label in form.seabirds.field.choices %}
+            <div>
+                <input style="margin-left: 0px;" id="seabirds-{{choice_id}}" type="checkbox" value="{{ choice_id }}" name="seabirds" {% if choice_id in form.seabirds.value %}checked="true"{% endif %}/>
+            <label for="seabirds-{{choice_id}}">{{choice_label}}</label>
+            </div>
+            {% endfor %}
+        </div>
     </div>
     <!--<div class="ym-fbox-select">
         <label for="id_collaboration_choices">Looking for
@@ -126,16 +197,16 @@
     <p> Members of Seabird.net may choose to be  sent emails from a number of different seabirds.net mailing lists.
     To receive these emails, please select the lists you would like to follow below.</p>
     <div class="ym-fbox-check {% if form.subscriptions.errors %}ym-error{% endif %}">
-        <label style="float: left; width: 30%" for="id_subscriptions">Mailing lists
+        <label style="cursor: default; float: left; width: 30%" for="id_subscriptions">Mailing lists
         <div class="form-help"> Select the mailing lists that you would like to subscribe to.
         Use the Ctrl or Command key to select more than one.
         </div>
         {{ form.subscriptions.errors }}
         </label>
-        <div id="subscriptions">
+        <div id="subscriptions" style="float: left; margin-left: 0px;">
             {% for choice_id, choice_label in form.subscriptions.field.choices %}
             <div>
-                <input style="margin-left: 10px;" id="subscription-{{choice_id}}" type="checkbox" value="{{ choice_id }}" name="subscriptions" {% if choice_id in form.subscriptions.value %}checked="true"{% endif %}/>
+                <input style="margin-left: 0px;" id="subscription-{{choice_id}}" type="checkbox" value="{{ choice_id }}" name="subscriptions" {% if choice_id in form.subscriptions.value %}checked="true"{% endif %}/>
             <label for="subscription-{{choice_id}}">{{choice_label}}</label>
             </div>
             {% endfor %}
