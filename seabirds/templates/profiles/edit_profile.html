@@ -86,8 +86,8 @@
         <label for="id_is_researcher">Yes</label>
 <script type="text/javascript">
 $(document).ready(function() {
-        // Set aside the original state of each checkbox.
         $("#research_field input").each(function() {
+            // Save the the original state of each checkbox
             $(this).data("originallyChecked", $(this).is(":checked"));
             if ($(this).attr('value') == 1) {
                 // Whether "Not a researcher" is checked determines initial
