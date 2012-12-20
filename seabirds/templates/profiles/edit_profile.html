@@ -92,8 +92,7 @@ $(document).ready(function() {
             if ($(this).attr('value') == 1) {
                 // Whether "Not a researcher" is checked determines initial
                 // visibility of things
-                if ($(this).attr("checked") == 1) {
-                    console.log($(this).attr('id') + ' is checked')
+                if ($(this).is(":checked")) {
                     $("#id_is_not_researcher").attr("checked", "true");
                     $("#id_is_not_researcher").change();
                     $(".research_fields").hide();
@@ -138,7 +137,7 @@ $(document).ready(function() {
         <div id="research_field" style="float: left; margin-left: 0px;">
             {% for choice_id, choice_label in form.research_field.field.choices %}
             <div{% if choice_id == 1 %} style="display: none;"{% endif %}>
-                <input style="margin-left: 0px;" id="research_field-{{choice_id}}" type="checkbox" value="{{ choice_id }}" name="research_field" {% if choice_id in form.research_field.value %}checked="true"{% endif %}/>
+                <input style="margin-left: 0px;" id="research_field-{{choice_id}}" type="checkbox" value="{{ choice_id }}" name="research_field" {% if choice_id in form.research_field.value or not form.research_field.value and choice_id == 1 %}checked="checked"{% endif %}/>
             <label for="research_field-{{choice_id}}">{{choice_label}}</label>
             </div>
             {% endfor %}

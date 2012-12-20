@@ -57,7 +57,6 @@ class ProfileForm(forms.ModelForm):
     research_field = forms.ModelMultipleChoiceField(
         queryset=ResearchField.objects.all(),
         required=False,
-        initial="Not a researcher",
         validators=[research_field_validation],
         widget=widgets.CheckboxSelectMultiple,
         )
