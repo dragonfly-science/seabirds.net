@@ -7,7 +7,7 @@ from django.contrib import admin
 from django.views.generic.simple import redirect_to
 from django.views.generic import TemplateView
 
-from cms.models import Page, Post
+from cms.models import Page
 from cms.views import PostArchiveView
 from profile.forms import ProfileForm
 from registration.views import register
@@ -82,6 +82,7 @@ urlpatterns += patterns('',
     (r'^admin/tagging/(.*)$', 'bibliography.views.tagging'),
     (r'^admin/', include(admin.site.urls)),
     (r'^favicon\.ico$', redirect_to, {'url': settings.STATIC_URL + 'favicon.ico'}),
+    url('^petrel/mailinglist$', 'account.views.edit_profile_mailing_list', name='subscription_edit'), 
     url('^petrel/edit', 'profiles.views.edit_profile', {'form_class': ProfileForm,}, name='profile_edit'),
     ('^petrel/create', 'profiles.views.create_profile', {'form_class': ProfileForm,}),
     url('^petrel/delete', 'profile.views.delete_profile', name='profile_delete'),

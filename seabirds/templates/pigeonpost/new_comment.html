@@ -22,7 +22,7 @@ http://{{ site }}{{ comment.content_object.get_absolute_url }}</p>
 <p>You received this message because {% if comment.content_object.author == user %}you are the author of the {{ comment.content_type.model }}.
 {% else %}you previously commented on the {{ comment.content_type.model }}.
 {% endif %}</p>
-<p>You can unsubscribe or alter your preferences <a href="http://{{ site }}{% url profile_edit %}">here</a>.</p>
+<p>You can unsubscribe or alter your preferences <a href="http://{{ site }}{% url subscription_edit %}">here</a>.</p>
     </table><!-- bottom message -->
 </tr></td></table><!-- wrapper -->
 </body>

@@ -1,13 +1,28 @@
+import logging
+
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_protect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.views import logout
+from django.contrib.auth.decorators import login_required
 
 from account.forms import *
 
-import logging
+
+@login_required
+def edit_profile_mailing_list(request):
+    """
+    This is a hack to allow a user to get passed a hash fragment identifier,
+    even if they are not logged in (e.g. they have to use ?next= on login.
+
+    We need this because hash fragments are not sent to the server, so get lost
+    after the login.
+
+    This view forces login first, and THEN redirects to a url with fragment identifier.
+    """
+    return HttpResponseRedirect('/petrel/edit#mailing_lists')
 
 def profile(request):
     """The profile page checks to see where you should go next"""
@@ -17,7 +32,6 @@ def profile(request):
         return logout(request, template_name='account/permission_denied.html')
     
     return HttpResponseRedirect('/')
-
 
 # login not required
 @csrf_protect
