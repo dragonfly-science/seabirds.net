@@ -3,5 +3,5 @@ clean:
 	find . -name "*.pyo" -delete
 
 test:
-	cd seabirds && ./manage.py test cms profile comments
+	./runtests.sh
 	
