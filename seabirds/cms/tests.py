@@ -27,31 +27,6 @@ class TestFilter(TestCase):
         widget_src = twitter_widget('@seabirders')
         assert '"seabirders"' in widget_src
 
-class TestPages(TestCase):
-    fixtures = ['test-data/profile.json']
-    def setUp(self):
-        try:
-            Page.objects.get(name='home')
-        except Page.DoesNotExist:
-            home = Page(name='home', title='home')
-            home.save()
-
-    def test_page_absolute_url(self):
-        home = Page.objects.get(name='home')
-        self.assertEqual(home.get_absolute_url(), '/home.html')
-
-    def test_index(self):
-        response = self.client.get('/index.html')
-        self.assertEqual(response.status_code, 200)
-
-    def test_home(self):
-        response = self.client.get('/home.html')
-        self.assertEqual(response.status_code, 200)
-    
-    def test_posts(self):
-        response = self.client.get('/posts/')
-        self.assertEqual(response.status_code, 200)
-
 class TestImages(TestCase):
     fixtures = ['test-data/profile.json']
 
@@ -118,10 +93,16 @@ class TestFiles(TestCase):
         self.assertTrue(str(f))
 
 class TestPages(TestCase):
+    fixtures = ['test-data/profile.json']
 
     def setUp(self):
         self.p = Page(title='A great page', name='great-page', text='A great page on a great site')
         self.p.save()
+        try:
+            Page.objects.get(name='home')
+        except Page.DoesNotExist:
+            home = Page(name='home', title='home')
+            home.save()
 
     def test_new_page(self):
         self.assertTrue(str(self.p))
@@ -136,6 +117,21 @@ class TestPages(TestCase):
         self.p.save()
         self.assertTrue(self.p.markdown_sidebar)
 
+    def test_page_absolute_url(self):
+        home = Page.objects.get(name='home')
+        self.assertEqual(home.get_absolute_url(), '/home.html')
+
+    def test_index(self):
+        response = self.client.get('/index.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_home(self):
+        response = self.client.get('/home.html')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_posts(self):
+        response = self.client.get('/posts/')
+        self.assertEqual(response.status_code, 200)
 
 class TestPosts(TestCase):
     fixtures = ['test-data/profile.json']
