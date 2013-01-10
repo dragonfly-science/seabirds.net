@@ -107,8 +107,8 @@ INSTALLED_APPS = (
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
-    '--with-cov', '--cov-report', 'html', '--cover-package=seabirds',
-    '--logging-clear-handlers',
+    '--with-cov', '--cov-report', 'html', '--cov-report', 'xml', '--cover-package=seabirds',
+    '--logging-clear-handlers', '--with-xunit',
     ]
 
 COMMENTS_APP = 'comments'
