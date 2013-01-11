@@ -124,16 +124,7 @@ def push():
     validate()
     restart()
 
-def deploy(environment='staging', specific_commit=None):
-    """ Deploy to server
-
-    By default we deploy to staging. If environment is set to 'production', then we'll
-    deploy to production (TODO: needs to be tested and setup, since production still
-    uses the old webapp layout).
-
-    Deploy will sync from the master branch of the seabirds.net git repo, so
-    make sure your local changes are pushed if you want to see them on the site.
-    """
+def _environment_settings(environment):
     app_dir = '/home/seabirds/webapps/'
     production_dir = app_dir + 'seabirds_live/seabirds.net'
 
@@ -143,19 +134,33 @@ def deploy(environment='staging', specific_commit=None):
         production = True
 
     if production:
-        env.remote_dir = production_dir
+        remote_dir = production_dir
         settings_file = 'sitesettings_production.py'
         venv = 'seabirds_live'
     else:
-        env.remote_dir = app_dir + 'seabirds_dev/seabirds.net'
+        remote_dir = app_dir + 'seabirds_dev/seabirds.net'
         settings_file = 'sitesettings_dev.py'
         venv = 'seabirds_dev'
 
+    return production, settings_file, venv, remote_dir, production_dir
+
+
+def deploy(environment='staging', specific_commit=None):
+    """ Deploy to server
+
+    By default we deploy to staging. If environment is set to 'production', then we'll
+    deploy to production.
+
+    Deploy will sync from the master branch of the seabirds.net git repo, so
+    make sure your local changes are pushed if you want to see them on the site.
+    """
+    is_production, settings_file, venv, env.remote_dir, production_dir = _environment_settings(environment)
+    
     # apache stop
     # TODO: Ideally this should put up a "maintenance mode" static html page
     run('%(remote_dir)s/../apache2/bin/stop' % env)
 
-    if not production:
+    if not is_production:
         # Whenever we deploy to the dev server, we take a snapshot of
         # the production database and media/static content
         with cd('%(remote_dir)s/..' % env):
@@ -204,10 +209,20 @@ def deploy(environment='staging', specific_commit=None):
     # Unless this is production, print out the sys.path in wsgi.py after setting 
     # up virtualenv
     debug_print = 'print sys.path'
-    if production:
+    if is_production:
         debug_print = ''
     upload_template('%(local_dir)s/wsgi.py.TEMPLATE' % env, '%(remote_dir)s/wsgi.py' % env,
             context={'venv':venv, 'webapp':venv, 'debug_print': debug_print})
 
     # restart apache
     run('%(remote_dir)s/../apache2/bin/start' % env)
+
+def fetch_results(environment='staging', specific_commit=None):
+    """ Just fetch the test results from the remote server.  """
+    _, _, _, env.remote_dir, _ = _environment_settings(environment)
+
+    with cd('%(remote_dir)s/seabirds' % env):
+        get('nosetests.xml', '%(local_dir)s/seabirds/.' % env)
+        get('coverage.xml', '%(local_dir)s/seabirds/.' % env)
+        get('htmlcov', '%(local_dir)s/seabirds/.' % env)
+
