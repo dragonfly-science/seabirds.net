@@ -305,8 +305,12 @@ class Post(models.Model):
                 send_to_method='get_subscribers')
 
     def get_subscribers(self):
-        subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
-        subscribers = [p.user for p in subscriber_profiles]
+        if not self.listing.optional_list:
+            # If the list is mandatory, then all active users are subscribed
+            subscribers = User.objects.filter(is_active=True)
+        else:
+            subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
+            subscribers = [p.user for p in subscriber_profiles]
         return subscribers
 
     def can_user_comment(self, user):

@@ -630,6 +630,18 @@
             "staff_only_read": false,
             "allow_comments": false
         }
+    },
+    {
+        "pk": 5, 
+        "model": "cms.listing", 
+        "fields": {
+            "key": "announce", 
+            "description": "Announcements",
+            "staff_only_write": true,
+            "staff_only_read": false,
+            "allow_comments": false,
+            "optional": false
+        }
     }
 ]
 

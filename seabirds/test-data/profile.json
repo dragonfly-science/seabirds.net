@@ -236,6 +236,18 @@
         }
     }, 
     {
+        "pk": 5, 
+        "model": "cms.listing", 
+        "fields": {
+            "allow_comments": true, 
+            "description": "announcements", 
+            "staff_only_write": true, 
+            "staff_only_read": true, 
+            "key": "announce", 
+            "optional_list": false
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "profile.collaborationchoice", 
         "fields": {

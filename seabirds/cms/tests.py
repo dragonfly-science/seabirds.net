@@ -261,6 +261,22 @@ class TestPosts(TestCase):
         p = Post.objects.get(title='Test')
         self.assertEqual(len(p.get_subscribers()), 2)
 
+        self.client.login(username="albert-ross", password="foo")
+        self.client.post(reverse('new-post'), {'post-title':'Test2', 
+            'post-text':'This is a test post' + 'x\n'*200, 
+            'post-listing':2, 
+            'post-seabird_families':[1, 2]}, follow=True)
+        p = Post.objects.get(title='Test2')
+        self.assertEqual(len(p.get_subscribers()), 1)
+
+    def test_get_subscribers_mandatory(self):
+        self.client.login(username="albert-ross", password="foo")
+        self.client.post(reverse('new-post'), {'post-title':'Test', 
+            'post-text':'This is a test announcement ' + 'x\n'*200, 
+            'post-listing':5, 
+            'post-seabird_families':[]}, follow=True)
+        p = Post.objects.get(title='Test')
+        self.assertEqual(len(p.get_subscribers()), 2)
 
     def test_email_rendering(self):
         self.client.post(reverse('new-post'), {'post-title':'Test', 

@@ -7,7 +7,6 @@
 {% if user.is_authenticated and perms.website.administration %}
   <p><a class="pageedit" href="{% url admin:cms_page_change page.id %}">Edit page</a></p>
 {% endif %}
-<br>
 {% if page.published or user.is_authenticated and perms.website.administration %}
   {% if not page.published %}
     <div class="pagedraft">
