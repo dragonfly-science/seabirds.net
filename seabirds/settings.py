@@ -145,10 +145,6 @@ except ImportError:
 EMAIL_NOREPLY = 'noreply@seabirds.net'
 SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
-# Required by LoginRequiredMiddleware which enforces a global login during testing
-# This is not currently active.
-LOGIN_URL = '/accounts/login/'
-
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
 
 # All delays are in seconds

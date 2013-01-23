@@ -18,15 +18,7 @@ from cms.feeds import LatestPostsFeed
 
 admin.autodiscover()
 
-#from django.contrib.auth.models import User, Group
-#from django.contrib.sites.models import Site
-#for model in (Group, Site, User):
-#    try:
-#        admin.site.unregister(model)
-#    except:
-#        pass
-
-#Sitemaps
+# Sitemaps
 class PublicationsSitemap(Sitemap):
     def items(self):
         return os.listdir(os.path.join(settings.MEDIA_ROOT, 'publications'))
@@ -38,34 +30,19 @@ class PublicationsSitemap(Sitemap):
     priority = 0.4
 
 
-page_dict = {'queryset': Page.objects.all()}
+parent_page_dict = {'queryset': Page.objects.filter(published=True, parent=None)}
+child_page_dict = {'queryset': Page.objects.filter(published=True, parent__isnull=False)}
 
 sitemaps = {
-    'pages': GenericSitemap(page_dict, priority=0.6, changefreq='weekly'),
-    'publications': PublicationsSitemap()
+    'root_pages': GenericSitemap(parent_page_dict, priority=0.7, changefreq='weekly'),
+    'content_pages': GenericSitemap(child_page_dict, priority=0.5, changefreq='weekly'),
+    # This is disabled until we actually support publications, since
+    # the needed media dir does not exist
+    #'publications': PublicationsSitemap()
 }
 
 # Urls
 urlpatterns = []
-
-## Date based views for posts
-#info_dict = {
-    #'queryset': Post.objects.all(),
-    #'date_field': 'date_published',
-#}
-#urlpatterns += patterns('django.views.generic.date_based',
-        # These views won't work because they all use object_list instead of latest in the template
-        # and list.html is designed for the archive_index view. However, none of these
-        # views are currently or accessable from the UI, so I've disabled them for now...
-        #  -- Joel, 2012/12/10
-        #(r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$','archive_day',dict(info_dict,template_name='cms/list.html')),
-        #(r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/$','archive_month', dict(info_dict, template_name='cms/list.html')),
-        #(r'^posts/(?P<year>\d{4})/$','archive_year', dict(info_dict, make_object_list=True, template_name='cms/list.html')),
-
-        # This was an old view which would show staff only discussions, replaced below
-        #(r'^posts/$','archive_index', dict(info_dict, template_name='cms/list.html', extra_context={"twitter" : "seabirders"})),
-#)
-
 urlpatterns += patterns('', 
     url(r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/$', 'cms.views.individual_post', name='individual-post'),
     # This uses the new Generic Class views of Django 1.3+
