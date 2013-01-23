@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load thumbnail %}
+{% load staticfiles %}
 {% load cms_filters %}
 
 {% block title %}{% if listing %}{{listing.description}}{% else %}Recent discussions{% endif %}{% endblock %}
@@ -41,5 +42,8 @@
 {% endblock %}
 
 {% block sidebar %}
+<!-- static files are kind of busted with the current media path setup
+<a href="{% url rssfeed %}"><img src="{% static '/images/feed-icon-28x28.png' %}" alt="rss feed" />Subscribe to RSS feed</a> -->
+<a href="{% url rssfeed %}"><img src="/images/feed-icon-28x28.png" alt="rss feed" />Subscribe to RSS feed</a>
   {% if twitter %}{{ twitter|twitter_widget|safe }}{% endif %}
 {% endblock sidebar %}
