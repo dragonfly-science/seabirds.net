@@ -84,6 +84,10 @@ To deploy to production:
 
     fab deploy:production
 
+NOTE: The current seabirds setup uses media/static directories in a way that's
+different from Django customs. Usually media is for user uploaded content, but
+in this project it's been used to store everything (js/css/images).
+
 ### Environment setup
 
 Webfaction's webapp template is used for both the live and development server.
