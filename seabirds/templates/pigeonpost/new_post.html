@@ -11,7 +11,8 @@
     <body>
     <table width="100%" cellpadding="0" cellspacing="0" bgcolor="e4e4e4"><tr><td>
     <table id="top-message" cellpadding="20" cellspacing="0" width="600" align="center">  
-    <h1><a href="http://{{ site }}/">Seabirds.net</a></h1>
+    <div style="background: #0d1626 url(http://seabirds.net/css/bullers-albatross-stormpetrel1.jpg) no-repeat right top; height:80px;">
+    <a style="text-decoration:none"><img src='http://seabirds.net/css/wsu-world.png'></a>
     </table><!-- top message -->  
     <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="600" align="center">  
     <p>Dear {{ user|show_user_short }},</p>
@@ -24,14 +25,13 @@
     <p>You have until {{ editable_until|date:"SHORT_DATETIME_FORMAT" }} to make any changes before it gets sent out to discussion subscribers.</p>
 {% endif %}
     <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="500" align="center">  
-    <p>"{{ post.text|markdownplus }}"</p>
+    <p>{{ post.text|markdownplus }}</p>
     </table><!-- post -->  
     <p>To comment on this post, or to view it online, visit:</p>
     <p><a href="http://{{ site }}{{ post.get_absolute_url }}">http://{{ site }}{{ post.get_absolute_url }}</a></p>
     </table><!-- main -->  
     <table id="bottom-message" cellpadding="20" cellspacing="0" width="600" align="center">  
-        <p>You received this message because you are subscribed to the "{{ post.listing.description }}" discussion group on <a href="http://{{site}}/">seabirds.net</a>.</p>
-        <p>You can unsubscribe or alter your preferences <a href="http://{{ site }}{% url subscription_edit %}">here</a>.</p>
+        <p>You received this message because you are subscribed to the "{{ post.listing.description }}" discussion group on <a href="http://{{site}}/">Seabirds.net</a>. You can unsubscribe or alter your preferences <a href="http://{{ site }}{% url subscription_edit %}">here</a>.</p>
     </table><!-- bottom message -->
 </tr></td></table><!-- wrapper -->
 </body>
