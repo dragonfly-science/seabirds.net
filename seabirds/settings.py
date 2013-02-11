@@ -102,6 +102,7 @@ INSTALLED_APPS = (
     'pigeonpost',
     'django.contrib.comments',
     'longerusername',
+
     'django_nose',
 )
 
@@ -142,7 +143,7 @@ except ImportError:
     EMAIL_HOST_USER = ''
     SERVER_EMAIL = ''
     DEFAULT_FROM_EMAIL = ''
-EMAIL_NOREPLY = 'noreply@seabirds.net'
+DEFAULT_FROM_EMAIL = 'Seabirds.net <noreply@seabirds.net>'
 SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
 COVERAGE_REPORT_HTML_OUTPUT_DIR = 'htmlcov'
