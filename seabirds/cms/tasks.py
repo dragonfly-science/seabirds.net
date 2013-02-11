@@ -38,7 +38,6 @@ def send_digest(earliest=36, latest=12):
             body = render_to_string('pigeonpost/email_list_digest_body.txt', context).strip()
             message = EmailMessage(subject, 
                 body, 
-                from_email=settings.EMAIL_NOREPLY, 
                 to=[profile.user.email])
             add_to_outbox(message=message, user=profile.user)
             # mark posts as sent

@@ -15,7 +15,7 @@ Markdown==2.0.3
 # PIL replacement
 pillow
 psycopg2
-Fabric
+fabric
 pycrypto
 ssh
 git+https://github.com/praekelt/django-recaptcha
