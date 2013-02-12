@@ -309,7 +309,7 @@ class Post(models.Model):
             # If the list is mandatory, then all active users are subscribed
             subscribers = User.objects.filter(is_active=True)
         else:
-            subscriber_profiles = UserProfile.objects.filter(subscriptions = self.listing)
+            subscriber_profiles = UserProfile.objects.filter(subscriptions=self.listing)
             subscribers = [p.user for p in subscriber_profiles]
         return subscribers
 

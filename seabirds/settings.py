@@ -134,15 +134,14 @@ from secrets import RECAPTCHA_PRIVATE_KEY, DISQUS_API_KEY, SECRET_KEY
 
 #EMAIL_USE_TLS = True
 try:
-    from secrets import EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_HOST_USER, SERVER_EMAIL, DEFAULT_FROM_EMAIL
+    from secrets import EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_HOST_USER
 except ImportError:
     # Should we really nuke these? What if they are already setup in
     # sitesettings?
     EMAIL_HOST_PASSWORD = ''
     EMAIL_HOST = ''
     EMAIL_HOST_USER = ''
-    SERVER_EMAIL = ''
-    DEFAULT_FROM_EMAIL = ''
+SERVER_EMAIL = 'Seabirds.net <noreply@seabirds.net>'
 DEFAULT_FROM_EMAIL = 'Seabirds.net <noreply@seabirds.net>'
 SUPPORT_EMAIL = 'Edward Abraham <edward@dragonfly.co.nz>'
 
