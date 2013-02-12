@@ -3,18 +3,18 @@
 <head>  
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">  
 {% if post.author == user %}
-<title>Your new post on seabirds.net</title>  
+<title>Your new post on Seabirds.net</title>  
 {% else %}
-<title>A new post on seabirds.net</title>  
+<title>A new post on Seabirds.net</title>  
 {% endif %}
 </head>
     <body>
     <table width="100%" cellpadding="0" cellspacing="0" bgcolor="e4e4e4"><tr><td>
     <table id="top-message" cellpadding="0" cellspacing="0" width="100%!important" align="center"><tr><td>
     <div style="background: #0d1626 url(http://seabirds.net/css/bullers-albatross-stormpetrel1.jpg) no-repeat right top; height:80px;">
-    <a style="text-decoration:none"><img src='http://seabirds.net/css/wsu-world.png'></a>
+    <img src='http://seabirds.net/css/wsu-world.png'>
     </td></tr></table><!-- top message -->  
-    <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="600" align="center">  
+    <table id="main" cellpadding="0" cellspacing="15" bgcolor="ffffff" width="600" align="center" style="margin-top: 20px">  
     <p>Dear {{ user|show_user_short }},</p>
 {% if post.author == user %}
 <p>You made a post to the Seabirds.net <a href="http://{{ site }}{{ post.listing.get_absolute_url }}">{{ post.listing.description }}</a> discussion group.</p>
