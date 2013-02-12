@@ -153,7 +153,7 @@ COMMENT_EDIT_GRACE_PERIOD = 10*60
 PIGEONPOST_DELAYS = {
         'cms.Post': {
             'moderator': 10*60,
-            'subscriber': 3*60*60, # 3 hours
+            'subscriber': 12*60*60, # 12 hours
             'author': 10*60,
             },
         'cms.Comment': {
