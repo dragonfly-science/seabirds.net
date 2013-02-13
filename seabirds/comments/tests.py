@@ -19,7 +19,12 @@ from profile.models import UserProfile
 from comments.models import PigeonComment
 from cms.tasks import generate_comment_pigeons
 
-from pigeonpost.tasks import deploy_pigeons
+from pigeonpost.tasks import process_queue, process_outbox
+
+def deploy_pigeons():
+    """ This version of deploy doesn't get blocked by a pid file """
+    process_queue()
+    process_outbox()
 
 class CommentEmailTest(TestCase):
     fixtures = ['test-data/profile.json']
