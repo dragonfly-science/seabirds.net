@@ -25,3 +25,5 @@ proposal.*
 README.tex
 .coverage
 htmlcov/
+*coverage.xml
+*nosetests.xml

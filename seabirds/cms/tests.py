@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 import pickle
+import time
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -395,6 +396,65 @@ class TestPermissions(TestCase):
         # Even to staff members
         response = self._post_comment('albert-ross', slug)
         self.assertEqual(response.status_code, 403)
+    
+    def test_edited_comments_keep_user(self):
+        albert = User.objects.get(username='albert-ross')
+        sooty  = User.objects.get(username='sooty-shearwater')
+        slug = self._create_test_post('albert-ross', self.everyone_read_listing)
+
+        # Login as sooty shearwater
+        self.client.login(username='sooty-shearwater', password="foo")
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
+
+        pc = PigeonComment.objects.all()[0]
+        self.assertEqual(pc.comment, 'test comment')
+        self.assertEqual(pc.user, sooty)
+
+        #Now login as albert-ross and edit the comment
+        self.client.login(username='albert-ross', password="foo")
+        comment_response = self.client.post(reverse('individual-post', kwargs={
+                'slug':slug,
+                'year':'2012',
+                'month':'2',
+                'day':'2',
+            }), {
+                'edit_comment': 'Post',
+                'comment-id':pc.id,
+                'comment-comment': 'comment by sooty, edited by albert',
+            }, follow=True)
+        pc = PigeonComment.objects.get(id=pc.id)
+        self.assertEqual(pc.comment, 'comment by sooty, edited by albert')
+        self.assertEqual(pc.user, sooty)
+    
+    def test_edited_comments_keep_datetime(self):
+        slug = self._create_test_post('albert-ross', self.everyone_read_listing)
+
+        # Make a comment and get the submit time
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
+
+        pc = PigeonComment.objects.all()[0]
+        self.assertEqual(pc.comment, 'test comment')
+        submit_date = pc.submit_date
+
+        #Now wait a bit and edit the comment
+        time.sleep(0.1)
+        comment_response = self.client.post(reverse('individual-post', kwargs={
+                'slug':slug,
+                'year':'2012',
+                'month':'2',
+                'day':'2',
+            }), {
+                'edit_comment': 'Post',
+                'comment-id':pc.id,
+                'comment-comment': 'edited by sooty',
+            }, follow=True)
+        pc = PigeonComment.objects.get(id=pc.id)
+        # Confirm that we have modified the comment
+        self.assertEqual(pc.comment, 'edited by sooty')
+        # Confirm that the submit date is the same
+        self.assertEqual(pc.submit_date, submit_date)
 
     def test_staff_only_write_public_read(self):
         slug = self._create_test_post('albert-ross', self.staff_only_write_listing)

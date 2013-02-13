@@ -338,19 +338,19 @@ def process_comment(request, commentform, post):
         if not post.can_user_comment(request.user):
             raise PermissionDenied
         comment = C()
-    comment.content_object = post
-    comment.site = Site.objects.get_current()
-    comment.user = request.user
-    try:
-        profile = UserProfile.objects.get(user = request.user)
-        comment.user_url = profile.get_absolute_url()
-    except UserProfile.DoesNotExist:
-        pass
+        comment.content_object = post
+        comment.site = Site.objects.get_current()
+        comment.user = request.user
+        try:
+            profile = UserProfile.objects.get(user = request.user)
+            comment.user_url = profile.get_absolute_url()
+        except UserProfile.DoesNotExist:
+            pass
+        comment.submit_date = datetime.datetime.now()
+        comment.ip_address = request.META['REMOTE_ADDR']
+        comment.is_public = True
+        comment.is_removed = False
     comment.comment = strip_tags(commentform.cleaned_data['comment'])
-    comment.submit_date = datetime.datetime.now()
-    comment.ip_address = request.META['REMOTE_ADDR']
-    comment.is_public = True
-    comment.is_removed = False
     comment.save()
     return comment
 
