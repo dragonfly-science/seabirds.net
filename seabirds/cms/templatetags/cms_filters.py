@@ -69,7 +69,7 @@ def edit_comment(comment, user):
 
 @register.inclusion_tag('cms/activity.html')
 def activity_stream(user):
-    if user.is_authenticated() and user.is_staff:
+    if user and user.is_authenticated() and user.is_staff:
         latest_posts = list(Post.objects.all().order_by('-date_published')[:5])
         latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:5])
     else:

@@ -151,6 +151,11 @@ class TestPosts(TestCase):
     def setUp(self):
         self.client.login(username="sooty-shearwater", password="foo")
 
+    def tearDown(self):
+        images = Image.objects.filter(owner='Duncan Wright')
+        for i in images:
+            os.remove(i.image.file.name)
+
     def test_have_albert(self):
         albert = User.objects.get(username='albert-ross')
         self.assertTrue(albert.profile.get().is_moderator)
@@ -182,8 +187,32 @@ class TestPosts(TestCase):
             'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
         self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
 
-        i = Image.objects.get(owner='Duncan Wright')
-        os.remove(i.image.file.name)
+    def test_post_with_duplicate_image_key(self):
+        """ Test that two images with the same potential key don't break things """
+        # First save an image whose name will clash
+        from django.core.files import File
+        fid = open(os.path.join(settings.SITE_ROOT, 
+                'test-data', 'bullers-and-cape-angrysunbird.jpg'), 'r')
+        albert = User.objects.get(username='albert-ross')
+        i = Image(image=File(fid),
+                title="Buller's albatross and Cape Petrel",
+                key="bullers-albatross-and-cape-petrel",
+                uploaded_by=albert)
+        i.save()
+        fid.close()
+
+        fid = open(os.path.join(settings.SITE_ROOT, 
+                'test-data', 'bullers-and-cape-angrysunbird.jpg'), 'r')
+        response = self.client.post(reverse('new-post'), {'post-title':'Test2', 
+            'post-text':'This is another test post', 
+            'post-listing':1, 
+            'post-seabird_families':[1, 2],
+            'image-image': fid,
+            'image-owner': 'Duncan Wright',
+            'image-source_url': 'http://www.flickr.com/photos/angrysunbird/000/',
+            'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
+        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
+        fid.close()
  
     @override_settings(PIGEONPOST_DELAYS=TEST_EMAIL_DELAYS)
     def test_create_post(self):

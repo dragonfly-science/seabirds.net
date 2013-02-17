@@ -3,6 +3,7 @@ build/*
 *.pyc
 *~
 *.swp
+*.swo
 fabfile.py
 seabirds/media/images/cache/*
 seabirds/seabirds.sqlite

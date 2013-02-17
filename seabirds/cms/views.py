@@ -284,19 +284,7 @@ def process_image_form(request, image_id=None):
                 form.cleaned_data['image'] = image
             # Get the key
             if not image_id:
-                key = slugify(form.cleaned_data['title'])
-                try:
-                    Image.objects.get(key=key)
-                except Image.DoesNotExist:
-                    count = 1
-                    while True:
-                        newkey = '%s-%s'%(key, count)
-                        try:
-                            Image.objects.get(key=newkey)
-                            count += 1
-                        except Image.DoesNotExist:
-                            key = newkey
-                            break
+                key = get_first_available_label(Image, slugify(form.cleaned_data['title']), 'key')
                 image.key = key
             if not image_id:
                 if not request.user.is_authenticated():
@@ -310,7 +298,6 @@ def process_image_form(request, image_id=None):
             form = ImageForm(initial=get_initial_image_data(request), prefix='image')
         else:
             image = get_object_or_404(Image, id=image_id)
-            #form = ImageForm(initial=get_initial_image_data(request), prefix='image', instance=image) 
             form = ImageForm(prefix='image', instance=image)
     return form
 
