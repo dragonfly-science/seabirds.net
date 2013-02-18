@@ -211,6 +211,8 @@ class TestPosts(TestCase):
             'image-owner': 'Duncan Wright',
             'image-source_url': 'http://www.flickr.com/photos/angrysunbird/000/',
             'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
+        image_count = Image.objects.all().count()
+        self.assertEqual(image_count, 3) # One image in fixture
         self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
         fid.close()
  
