@@ -310,7 +310,7 @@ class Post(models.Model):
             subscribers = User.objects.filter(is_active=True)
         else:
             subscriber_profiles = UserProfile.objects.filter(subscriptions=self.listing)
-            subscribers = [p.user for p in subscriber_profiles]
+            subscribers = [p.user for p in subscriber_profiles if p.user.is_active]
         return subscribers
 
     def can_user_comment(self, user):
