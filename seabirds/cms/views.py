@@ -78,27 +78,30 @@ class PostArchiveView(ArchiveIndexView):
         Extended to take account of user and what posts they are allowed to see,
         and allows viewing posts in a given listing.
         """
-        show_staff = request.user.is_authenticated() and request.user.is_staff
+        is_staff = request.user.is_authenticated() and request.user.is_staff
+        u = request.user if request.user.is_authenticated else None
         listing_object = None
 
+        # TODO: get all listings current user is allowed to see and select using those,
+        # (since there are only a handful of listings to check)
+
         if listing:
-            listing_object = get_object_or_404(Listing, key=listing)
-        if show_staff:
-            # For staff members we let them access any listings
-            if listing:
-                qs = self.get_dated_queryset(listing=listing_object)
+            l = [ get_object_or_404(Listing, key=listing) ]
+            if is_staff or (u and l.read_permission and u.has_perm(l.read_permission)):
+                viewable_listings = [ l ]
+                listing_object = l
             else:
-                qs = self.get_dated_queryset()
+                raise Http404
         else:
-            # Normal site members should not be able to see
-            # the existance of staff_only_read Listings
-            if listing:
-                if listing_object.staff_only_read:
-                    raise Http404
-                else:
-                    qs = self.get_dated_queryset(listing=listing_object)
+            if is_staff:
+                viewable_listings = list(Listing.objects.all())
             else:
-                qs = self.get_dated_queryset(listing__staff_only_read=False)
+                viewable_listings = []
+                for l in Listing.objects.all():
+                    if u and u.has_perm(l.read_permission):
+                        viewable_listings.append(l)
+
+        qs = self.get_dated_queryset(listing__in=viewable_listings)
 
         date_list = self.get_date_list(qs, 'year')
 
@@ -106,7 +109,7 @@ class PostArchiveView(ArchiveIndexView):
             object_list = qs.order_by('-' + self.get_date_field())
         else:
             object_list = qs.none()
-        return (date_list, object_list, {'listing': listing_object})
+        return (date_list, object_list, {'listing': listing_object })
 
 
 def page(request, name):
@@ -125,7 +128,7 @@ def page(request, name):
         navigation = level.get_absolute_url()
     c = dict(
             page = page, 
-            navigation = get_navigation(navigation),
+            navigation = get_navigation(request, navigation),
             twitter = False
             )
     if name in (u'home',):
@@ -188,10 +191,10 @@ def reference(request, key):
         current = r
     return render_to_response('references/view.html', dict(
             current = current, page = dict(title=current.title),
-            navigation = get_navigation('/publications.html'),
+            navigation = get_navigation(request, '/publications.html'),
         ), RequestContext(request))
 
-def get_navigation(url, staff=False):
+def get_navigation(request, url, staff=False):
     """
     Create the navigation data structure that is used for rendering
     the navigation sidebar.
@@ -204,17 +207,19 @@ def get_navigation(url, staff=False):
     except IndexError:
         return []
     selected_listing = None
+    u = request.user if request.user.is_authenticated() else None
     try:
         selected_node = Navigation.objects.get(url=url)
         key = None
     except Navigation.DoesNotExist:
         try:
             key = os.path.split(url)[-1]
-            if staff:
-                selected_listing = Listing.objects.get(key=key)
-            else:
-                selected_listing = Listing.objects.get(key=key, staff_only_read=False)
-            selected_node = Navigation.objects.get(name='Discussion')
+            # TODO: not too sure why we are getting "selected_listing" since
+            # it doesn't seem like it's used elsewhere...
+            selected_listing = Listing.objects.get(key=key)
+            if not staff:
+                if selected_listing.read_permission and not u.has_perm(selected_listing.read_permission):
+                    selected_listing = Navigation.objects.get(name='Discussion')
         except Listing.DoesNotExist:
             selected_node = home
     active_nodes = [selected_node] + list(selected_node.get_ancestors())
@@ -222,10 +227,12 @@ def get_navigation(url, staff=False):
     for child in home.get_children():
         if child == selected_node:
             if selected_node.name == 'Discussion':
-                if staff:
-                    grandchildren = Listing.objects.all()
-                else:
-                    grandchildren = Listing.objects.filter(staff_only_read=False)
+                grandchildren = Listing.objects.all()
+                if not staff:
+                    grandchildren = [
+                            g for g in grandchildren if not g.read_permission or
+                            (u and u.has_perm(g.read_permission))
+                            ]
                 sublinks = []
                 for g in grandchildren:
                     sublinks.append((g, key and g.key == key, []))
@@ -249,7 +256,7 @@ def get_navigation(url, staff=False):
             
 def get_base_navigation(request):
     show_staff = request.user.is_authenticated() and request.user.is_staff
-    return {'navigation': get_navigation(request.path, show_staff)}
+    return {'navigation': get_navigation(request, request.path, show_staff)}
 
 def get_initial_image_data(request):
     if request.user.is_authenticated():
@@ -411,7 +418,8 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             'add_comment': True,
             }
             )
-    elif post.date_published and not post.listing.staff_only_read:
+    elif post.date_published and (not post.listing.read_permission
+            or request.user.has_perm(post.listing.read_permission)):
         # We show the post if it published, but provide no forms
         navigation = get_base_navigation(request)
         return render(request, 'cms/post.html', {

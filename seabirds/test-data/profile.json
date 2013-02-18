@@ -187,66 +187,110 @@
             "order": 500
         }
     }, 
-    {
-        "pk": 1, 
-        "model": "cms.listing", 
-        "fields": {
-            "allow_comments": true, 
-            "description": "Member discussion", 
-            "staff_only_write": false, 
-            "staff_only_read": false, 
-            "key": "discussion", 
-            "optional_list": true
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "cms.listing", 
-        "fields": {
-            "allow_comments": true, 
-            "description": "WSU news", 
-            "staff_only_write": true, 
-            "staff_only_read": false, 
-            "key": "news", 
-            "optional_list": true
-        }
-    }, 
-    {
-        "pk": 4, 
-        "model": "cms.listing", 
-        "fields": {
-            "allow_comments": false, 
-            "description": "Job postings", 
-            "staff_only_write": true, 
-            "staff_only_read": true, 
-            "key": "jobs", 
-            "optional_list": true
-        }
-    }, 
-    {
-        "pk": 3, 
-        "model": "cms.listing", 
-        "fields": {
-            "allow_comments": true, 
-            "description": "Staff only discussion", 
-            "staff_only_write": true, 
-            "staff_only_read": true, 
-            "key": "staff", 
-            "optional_list": false
-        }
-    }, 
-    {
-        "pk": 5, 
-        "model": "cms.listing", 
-        "fields": {
-            "allow_comments": true, 
-            "description": "announcements", 
-            "staff_only_write": true, 
-            "staff_only_read": true, 
-            "key": "announce", 
-            "optional_list": false
-        }
-    }, 
+  {
+    "pk": 1, 
+    "model": "cms.listing", 
+    "fields": {
+      "allow_comments": true, 
+      "moderation_permission": null, 
+      "description": "Member discussion", 
+      "read_permission": null, 
+      "comment_permission": null, 
+      "staff_only_write": false, 
+      "staff_only_read": false, 
+      "key": "discussion", 
+      "optional_list": true, 
+      "post_permission": null
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "cms.listing", 
+    "fields": {
+      "allow_comments": false, 
+      "moderation_permission": null, 
+      "description": "Announcements", 
+      "read_permission": null, 
+      "comment_permission": null, 
+      "staff_only_write": true, 
+      "staff_only_read": false, 
+      "key": "announce", 
+      "optional_list": false, 
+      "post_permission": [
+        "site-announce", 
+        "cms", 
+        "listing"
+      ]
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "cms.listing", 
+    "fields": {
+      "allow_comments": true, 
+      "moderation_permission": null, 
+      "description": "Staff only discussion", 
+      "read_permission": [
+        "committee", 
+        "cms", 
+        "listing"
+      ], 
+      "comment_permission": [
+        "committee", 
+        "cms", 
+        "listing"
+      ], 
+      "staff_only_write": true, 
+      "staff_only_read": true, 
+      "key": "staff", 
+      "optional_list": false, 
+      "post_permission": [
+        "committee", 
+        "cms", 
+        "listing"
+      ]
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "cms.listing", 
+    "fields": {
+      "allow_comments": true, 
+      "moderation_permission": null, 
+      "description": "WSU news", 
+      "read_permission": null, 
+      "comment_permission": null, 
+      "staff_only_write": true, 
+      "staff_only_read": false, 
+      "key": "news", 
+      "optional_list": true, 
+      "post_permission": [
+        "wsu-announce", 
+        "cms", 
+        "listing"
+      ]
+    }
+  },
+  {
+    "pk": 5, 
+    "model": "cms.listing", 
+    "fields": {
+      "allow_comments": false, 
+      "moderation_permission": null, 
+      "description": "Job postings", 
+      "read_permission": null, 
+      "comment_permission": null, 
+      "staff_only_write": true, 
+      "staff_only_read": false, 
+      "key": "jobs", 
+      "optional_list": true, 
+      "post_permission": [
+        "site-announce", 
+        "cms", 
+        "listing"
+      ]
+    }
+  },
     {
         "pk": 1, 
         "model": "profile.collaborationchoice", 

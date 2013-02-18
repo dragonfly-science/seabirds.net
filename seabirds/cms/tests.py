@@ -18,6 +18,7 @@ from cms.templatetags.cms_filters import twitter_widget
 from comments.models import PigeonComment
 from pigeonpost.models import Pigeon, Outbox
 from profile.models import UserProfile
+from django.contrib.auth.models import Permission
 
 class TestFilter(TestCase):
 
@@ -303,7 +304,7 @@ class TestPosts(TestCase):
         self.client.login(username="albert-ross", password="foo")
         self.client.post(reverse('new-post'), {'post-title':'Test', 
             'post-text':'This is a test announcement ' + 'x\n'*200, 
-            'post-listing':5, 
+            'post-listing':4, 
             'post-seabird_families':[]}, follow=True)
         p = Post.objects.get(title='Test')
         self.assertEqual(len(p.get_subscribers()), 2)

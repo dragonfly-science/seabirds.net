@@ -49,7 +49,7 @@ class FileAdmin(admin.ModelAdmin):
 admin.site.register(File, FileAdmin)
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('key', 'description', 'staff_only_write', 'staff_only_read', 
+    list_display = ('key', 'description', 'read_permission', 'post_permission', 
         'allow_comments', 'optional_list')
 admin.site.register(Listing, ListingAdmin)
     

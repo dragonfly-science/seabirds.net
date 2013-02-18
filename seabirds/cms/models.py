@@ -277,7 +277,7 @@ class Post(models.Model):
             just_published_now = True
 
             # Check that the author is allowed to post to this list
-            if not self.author.is_staff and self.listing.staff_only_write:
+            if self.listing.post_permission and not self.author.has_perm(self.listing.post_permission):
                 raise PermissionDenied
 
         super(Post, self).save(*args, **kwargs)
@@ -316,14 +316,15 @@ class Post(models.Model):
     def can_user_comment(self, user):
         if not user.is_authenticated():
             return False
-        if not user.is_staff and self.listing.staff_only_read:
+        if self.listing.read_permission and not user.has_perm(self.listing.read_permission):
             return False
         return self.enable_comments and self.published
 
     def can_user_modify(self, user):
         if not user.is_authenticated():
             return False
-        return user == self.author or user.is_staff or user.profile.get().is_moderator
+        return user == self.author or user.is_staff \
+                or user.has_perm(self.listing.moderation_permission)
 
     class Meta:
         ordering = ['-date_published', '-date_created']
@@ -379,6 +380,7 @@ class Listing(models.Model):
     read_permission = models.ForeignKey(Permission, null=True, blank=True,
             related_name='+',
             limit_choices_to = {'content_type': get_listing_content_type})
+    # TODO: remove comment permission, listings just have comments or none
     comment_permission = models.ForeignKey(Permission, null=True, blank=True,
             related_name='+',
             limit_choices_to = {'content_type': get_listing_content_type})

@@ -19,7 +19,7 @@ class LatestPostsFeed(Feed):
     def items(self):
         items = []
         # filter out staff only posts
-        qs = Post.objects.filter(listing__staff_only_read=False).order_by('-date_published')
+        qs = Post.objects.filter(listing__read_permission=None).order_by('-date_published')
         now = datetime.datetime.now()
         for post in qs:
             try:
