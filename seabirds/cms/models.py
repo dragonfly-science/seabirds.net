@@ -28,7 +28,7 @@ class Image(models.Model):
     image = models.ImageField(upload_to = get_image_path)
     title = models.CharField(max_length = 100, 
         help_text="The title is displayed when you mouse over the image")
-    source_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG, 
+    source_url = models.URLField(null=True, blank=True,
         help_text="Optional. A url used to link to the original image (e.g. http://www.flickr.com/picture.png).")
     caption = models.TextField(null=True, blank=True, 
         help_text="Optional. Displayed under the image.")
@@ -37,7 +37,7 @@ class Image(models.Model):
     seabird_families = models.ManyToManyField(SeabirdFamily, related_name='images', null=True, blank=True, help_text="Optional. If this is an image of a seabird or seabirds, please select the correct families.") 
     owner = models.CharField(max_length = 200, 
         help_text="The name of the copyright holder of the image")
-    owner_url = models.URLField(null=True, blank=True, verify_exists = not settings.DEBUG,
+    owner_url = models.URLField(null=True, blank=True,
         help_text="Optional. A url linking to a website giving more information on the copyright owner (e.g., http://www.people.com/mr-nice.html)")
     license = models.ForeignKey(License, null=True, blank=True, 
         help_text="Optional copyright license. Available licenses include <a href='http://creativecommons.org/'>creative commons</a> or public domain licenses. If no license is specified it is assumed that the owner has the copyright and has granted permission for the image to be used")

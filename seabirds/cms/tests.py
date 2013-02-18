@@ -209,12 +209,11 @@ class TestPosts(TestCase):
             'post-seabird_families':[1, 2],
             'image-image': fid,
             'image-owner': 'Duncan Wright',
-            'image-source_url': 'http://www.flickr.com/photos/angrysunbird/000/',
             'image-title': "Buller's albatross and Cape Petrel"}, follow=True)
-        image_count = Image.objects.all().count()
-        self.assertEqual(image_count, 3) # One image in fixture
-        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
         fid.close()
+        images = list(Image.objects.all())
+        self.assertEqual(len(images), 3) # One image in fixture
+        self.assertTrue('src="/images/bullers' in response.content, msg=response.content)
  
     @override_settings(PIGEONPOST_DELAYS=TEST_EMAIL_DELAYS)
     def test_create_post(self):
