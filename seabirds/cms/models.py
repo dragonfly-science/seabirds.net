@@ -328,7 +328,6 @@ class Post(models.Model):
     class Meta:
         ordering = ['-date_published', '-date_created']
 
-
 class Navigation(MPTTModel):
     name = models.CharField(max_length=20,
         help_text="Text that appears in the navigation menu")
@@ -359,6 +358,12 @@ class Navigation(MPTTModel):
     class Meta:
         verbose_name_plural = 'navigation'
         
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+
+def get_listing_content_type():
+    return ContentType.objects.get(app_label="cms", model="listing")
+
 class Listing(models.Model):
     key = models.SlugField(max_length=50)
     description = models.TextField()
@@ -367,6 +372,19 @@ class Listing(models.Model):
     staff_only_write = models.BooleanField()
     staff_only_read = models.BooleanField()
     allow_comments = models.BooleanField()
+
+    post_permission = models.ForeignKey(Permission, null=True, blank=True,
+            related_name='+',
+            limit_choices_to = {'content_type': get_listing_content_type})
+    read_permission = models.ForeignKey(Permission, null=True, blank=True,
+            related_name='+',
+            limit_choices_to = {'content_type': get_listing_content_type})
+    comment_permission = models.ForeignKey(Permission, null=True, blank=True,
+            related_name='+',
+            limit_choices_to = {'content_type': get_listing_content_type})
+    moderation_permission = models.ForeignKey(Permission, null=True, blank=True,
+            related_name='+',
+            limit_choices_to = {'content_type': get_listing_content_type})
 
     optional_list = models.BooleanField(default=True)
 
@@ -384,3 +402,10 @@ class Listing(models.Model):
     def __unicode__(self):
         return self.description
 
+    class Meta:
+        permissions = (
+                ('committee', 'Can access and post to WSU committee listings'),
+                ('site-announce', 'Can post to announcement list'),
+                ('wsu-announce', 'Can post to WSU announcement list'),
+                ('moderator', 'Can moderate all posts'),
+                )

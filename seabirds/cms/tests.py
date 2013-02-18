@@ -17,7 +17,6 @@ from cms.templatetags.cms_filters import twitter_widget
 
 from comments.models import PigeonComment
 from pigeonpost.models import Pigeon, Outbox
-from pigeonpost.tasks import process_outbox
 from profile.models import UserProfile
 
 class TestFilter(TestCase):
@@ -326,6 +325,7 @@ class TestPosts(TestCase):
 
         self.assertTrue(p.email_subscriber(albert))
         self.assertFalse(p.email_subscriber(sooty))
+
 
 class TestPermissions(TestCase):
     fixtures = ['test-data/profile.json']
