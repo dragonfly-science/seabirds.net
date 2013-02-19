@@ -183,6 +183,10 @@ footer img {
     background-color: #f2e587
 }
 
+.ym-vlist li ul li a.active:visited {
+    background-color: #f2e587
+}
+
 .figure {
     background-color: red;
     font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif;
