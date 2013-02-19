@@ -78,28 +78,16 @@ class PostArchiveView(ArchiveIndexView):
         Extended to take account of user and what posts they are allowed to see,
         and allows viewing posts in a given listing.
         """
-        is_staff = request.user.is_authenticated() and request.user.is_staff
         u = request.user if request.user.is_authenticated else None
-        listing_object = None
-
-        # TODO: get all listings current user is allowed to see and select using those,
-        # (since there are only a handful of listings to check)
 
         if listing:
-            l = [ get_object_or_404(Listing, key=listing) ]
-            if is_staff or (u and l.read_permission and u.has_perm(l.read_permission)):
-                viewable_listings = [ l ]
-                listing_object = l
-            else:
+            listing_object = get_object_or_404(Listing, key=listing)
+            viewable_listings = Listing.objects.user_readable(u)
+            if listing_object not in viewable_listings:
                 raise Http404
         else:
-            if is_staff:
-                viewable_listings = list(Listing.objects.all())
-            else:
-                viewable_listings = []
-                for l in Listing.objects.all():
-                    if u and u.has_perm(l.read_permission):
-                        viewable_listings.append(l)
+            listing_object = None
+            viewable_listings = Listing.objects.user_readable(u)
 
         qs = self.get_dated_queryset(listing__in=viewable_listings)
 
@@ -217,9 +205,9 @@ def get_navigation(request, url, staff=False):
             # TODO: not too sure why we are getting "selected_listing" since
             # it doesn't seem like it's used elsewhere...
             selected_listing = Listing.objects.get(key=key)
-            if not staff:
-                if selected_listing.read_permission and not u.has_perm(selected_listing.read_permission):
-                    selected_listing = Navigation.objects.get(name='Discussion')
+            if not staff and not selected_listing.user_can_read(u):
+                selected_listing = None
+            selected_node = Navigation.objects.get(name='Discussion')
         except Listing.DoesNotExist:
             selected_node = home
     active_nodes = [selected_node] + list(selected_node.get_ancestors())
@@ -418,8 +406,7 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             'add_comment': True,
             }
             )
-    elif post.date_published and (not post.listing.read_permission
-            or request.user.has_perm(post.listing.read_permission)):
+    elif post.date_published and (post.listing.user_can_read(request.user)):
         # We show the post if it published, but provide no forms
         navigation = get_base_navigation(request)
         return render(request, 'cms/post.html', {
@@ -461,7 +448,7 @@ def edit_post(request, post_id=None):
 
         # All validation rules pass
         # Via the post form, this also ensures the listing specified is allowed
-        # and prevents users from posting to staff_only lists.
+        # and prevents users from posting to lists they don't have permission for
         if postform.is_valid():
             post = postform.save(commit=False)
             if imageform and imageform.is_valid():

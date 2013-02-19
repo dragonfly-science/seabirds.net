@@ -365,6 +365,20 @@ from django.contrib.contenttypes.models import ContentType
 def get_listing_content_type():
     return ContentType.objects.get(app_label="cms", model="listing")
 
+class ListingManager(models.Manager):
+    
+    def user_readable(self, user):
+        u = user if user.is_authenticated else None
+        all_listings = Listing.objects.all()
+        if u.is_staff:
+            return list(all_listings)
+
+        viewable_listings = []
+        for l in all_listings:
+            if l.user_can_read(user):
+                viewable_listings.append(l)
+        return viewable_listings
+
 class Listing(models.Model):
     key = models.SlugField(max_length=50)
     description = models.TextField()
@@ -390,6 +404,8 @@ class Listing(models.Model):
 
     optional_list = models.BooleanField(default=True)
 
+    objects = ListingManager()
+
     @property
     def name(self):
         return self.description
@@ -403,6 +419,15 @@ class Listing(models.Model):
 
     def __unicode__(self):
         return self.description
+
+    def user_can_post(self, user):
+        return not self.post_permission or user.has_perm(self.post_permission)
+
+    def user_can_read(self, user):
+        return not self.read_permission or user.has_perm(self.read_permission)
+
+    def user_can_moderate(self, user):
+        return self.moderation_permission and user.has_perm(self.moderation_permission)
 
     class Meta:
         permissions = (
