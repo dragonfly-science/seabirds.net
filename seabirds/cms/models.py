@@ -395,10 +395,6 @@ class Listing(models.Model):
     read_permission = models.ForeignKey(Permission, null=True, blank=True,
             related_name='+',
             limit_choices_to = {'content_type': get_listing_content_type})
-    # TODO: remove comment permission, listings just have comments or none
-    comment_permission = models.ForeignKey(Permission, null=True, blank=True,
-            related_name='+',
-            limit_choices_to = {'content_type': get_listing_content_type})
     moderation_permission = models.ForeignKey(Permission, null=True, blank=True,
             related_name='+',
             limit_choices_to = {'content_type': get_listing_content_type})

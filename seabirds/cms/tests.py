@@ -569,10 +569,19 @@ class TestPermissions(TestCase):
         pc = PigeonComment.objects.all()[0]
         self.assertEqual(pc.is_removed, True)
 
-
     def test_committee_only_read(self):
         slug = self._create_test_post('albert-ross', self.committee_listing)
 
+        u = User.objects.get(username='albert-ross')
+        self.assertTrue(self.committee_listing.can_user_post(u))
+        self.assertTrue(self.committee_listing.can_user_moderate(u))
+
+        u = User.objects.get(username='sooty-shearwater')
+        self.assertFalse(self.committee_listing.can_user_post(u))
+        self.assertFalse(self.committee_listing.can_user_moderate(u))
+
+        self.assertFalse(self.committee_listing.can_user_post(None))
+        self.assertFalse(self.committee_listing.can_user_moderate(None))
         # Users not allowed to post to "staff read" listing
         # (technically this is not a required test, but
         # the fixture data is set up to support this and
