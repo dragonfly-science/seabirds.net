@@ -195,7 +195,6 @@
       "moderation_permission": null, 
       "description": "Member discussion", 
       "read_permission": null, 
-      "comment_permission": null, 
       "staff_only_write": false, 
       "staff_only_read": false, 
       "key": "discussion", 
@@ -211,7 +210,6 @@
       "moderation_permission": null, 
       "description": "Announcements", 
       "read_permission": null, 
-      "comment_permission": null, 
       "staff_only_write": true, 
       "staff_only_read": false, 
       "key": "announce", 
@@ -235,11 +233,6 @@
         "cms", 
         "listing"
       ], 
-      "comment_permission": [
-        "committee", 
-        "cms", 
-        "listing"
-      ], 
       "staff_only_write": true, 
       "staff_only_read": true, 
       "key": "staff", 
@@ -259,7 +252,6 @@
       "moderation_permission": null, 
       "description": "WSU news", 
       "read_permission": null, 
-      "comment_permission": null, 
       "staff_only_write": true, 
       "staff_only_read": false, 
       "key": "news", 
@@ -276,10 +268,13 @@
     "model": "cms.listing", 
     "fields": {
       "allow_comments": false, 
-      "moderation_permission": null, 
+      "moderation_permission": [
+        "committee", 
+        "cms", 
+        "listing"
+        ],
       "description": "Job postings", 
       "read_permission": null, 
-      "comment_permission": null, 
       "staff_only_write": true, 
       "staff_only_read": false, 
       "key": "jobs", 
@@ -785,7 +780,7 @@
         }
     }, 
     {
-        "pk": 3, 
+        "pk": 4, 
         "model": "auth.user", 
         "fields": {
             "username": "announcer-jill", 

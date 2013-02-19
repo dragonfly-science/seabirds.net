@@ -226,7 +226,7 @@ class Post(models.Model):
         looks like there are no further changes from the author (i.e. after
         there are no new edits for a given time).
         """
-        if not self.author.profile.get().is_moderator and user.profile.get().is_moderator:
+        if self.listing.can_user_moderate(user):
             subject = '[seabirds.net] New post by %s' % self.author
             editable_until = (self.date_updated +
                     datetime.timedelta(seconds=settings.PIGEONPOST_DELAYS['cms.Post']['subscriber']))
@@ -288,7 +288,8 @@ class Post(models.Model):
         # Note that all pigeonpost signals won't send an email if there is already
         # a pigeon with the same parameters and to_send=False.
         
-        if self.published:
+        # Staff and moderators can post without being moderated themselves
+        if self.published and not self.author.is_staff and not self.listing.can_user_moderate(self.author):
             # When the post is saved, the moderators are notified, with a delay
             pigeonpost_queue.send(sender=self, render_email_method='email_moderator', 
                 defer_for=settings.PIGEONPOST_DELAYS['cms.Post']['moderator'])
@@ -323,7 +324,8 @@ class Post(models.Model):
     def can_user_modify(self, user):
         if not user.is_authenticated():
             return False
-        return user == self.author or self.listing.can_user_moderate(user)
+        # The auhtor, staff and moderators can modify posts
+        return user == self.author or user.is_staff or self.listing.can_user_moderate(user)
 
     class Meta:
         ordering = ['-date_published', '-date_created']
@@ -432,9 +434,8 @@ class Listing(models.Model):
 
     def can_user_moderate(self, user):
         if user:
-            if user.is_staff:
-                return True
-            return self.moderation_permission and user.has_perm(perm_to_code(self.moderation_permission))
+            if self.moderation_permission:
+                return user.has_perm(perm_to_code(self.moderation_permission))
         return False
 
     class Meta:

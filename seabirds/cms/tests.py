@@ -307,7 +307,7 @@ class TestPosts(TestCase):
             'post-listing':4, 
             'post-seabird_families':[]}, follow=True)
         p = Post.objects.get(title='Test')
-        self.assertEqual(len(p.get_subscribers()), 3)
+        self.assertEqual(len(p.get_subscribers()), 4)
 
     def test_email_rendering(self):
         self.client.post(reverse('new-post'), {'post-title':'Test', 
@@ -318,7 +318,7 @@ class TestPosts(TestCase):
         albert = User.objects.get(username='albert-ross')
         sooty  = User.objects.get(username='sooty-shearwater')
 
-        self.assertTrue(p.email_moderator(albert))
+        self.assertFalse(p.email_moderator(albert))
         self.assertFalse(p.email_moderator(sooty))
 
         self.assertTrue(p.email_author(sooty))
@@ -327,6 +327,37 @@ class TestPosts(TestCase):
         self.assertTrue(p.email_subscriber(albert))
         self.assertFalse(p.email_subscriber(sooty))
 
+        self.client.login(username="albert-ross", password="foo")
+        self.client.post(reverse('new-post'), {'post-title':'Test2', 
+            'post-text':'This is a test post' + 'x\n'*200, 
+            'post-listing':5, 
+            'post-seabird_families':[1, 2]}, follow=True)
+        p = Post.objects.get(title='Test2')
+        jack = User.objects.get(username='committee-jack')
+        self.assertTrue(p.email_moderator(jack))
+        self.assertFalse(p.email_moderator(sooty))
+
+    def test_moderate_logic(self):
+        self.client.post(reverse('new-post'), {'post-title':'Test', 
+            'post-text':'This is a test post' + 'x\n'*200, 
+            'post-listing':1, 
+            'post-seabird_families':[1, 2]}, follow=True)
+        p = Post.objects.get(title='Test')
+        u = User.objects.get(username='albert-ross')
+        self.assertTrue(p.can_user_modify(u))
+        u = User.objects.get(username='sooty-shearwater')
+        self.assertTrue(p.can_user_modify(u))
+        u = User.objects.get(username='committee-jack')
+        self.assertFalse(p.can_user_modify(u))
+
+        self.client.login(username="albert-ross", password="foo")
+        self.client.post(reverse('new-post'), {'post-title':'Testjob', 
+            'post-text':'This is a test post' + 'x\n'*200, 
+            'post-listing':5, 
+            'post-seabird_families':[1, 2]}, follow=True)
+        p = Post.objects.get(title='Testjob')
+        u = User.objects.get(username='committee-jack')
+        self.assertTrue(p.can_user_modify(u))
 
 class TestPermissions(TestCase):
     fixtures = ['test-data/profile.json']
@@ -574,7 +605,7 @@ class TestPermissions(TestCase):
 
         u = User.objects.get(username='albert-ross')
         self.assertTrue(self.committee_listing.can_user_post(u))
-        self.assertTrue(self.committee_listing.can_user_moderate(u))
+        self.assertFalse(self.committee_listing.can_user_moderate(u))
 
         u = User.objects.get(username='sooty-shearwater')
         self.assertFalse(self.committee_listing.can_user_post(u))
