@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from cms.forms import SimpleComment
 
 import datetime
-from cms.models import Post
+from cms.models import Post, Listing
 from comments.models import PigeonComment
 
 from utils.markdownplus import markdownplus as __markdownplus
@@ -69,11 +69,15 @@ def edit_comment(comment, user):
 
 @register.inclusion_tag('cms/activity.html')
 def activity_stream(user):
-    if user and user.is_authenticated() and user.is_staff:
+    if not user:
+        user = None
+
+    if user and user.is_staff:
         latest_posts = list(Post.objects.all().order_by('-date_published')[:5])
         latest_comments = list(PigeonComment.objects.all().order_by('-submit_date')[:5])
     else:
-        latest_posts = list(Post.objects.filter(listing__staff_only_read=False).order_by('-date_published')[:5])
+        listings = Listing.objects.user_readable(user)
+        latest_posts = list(Post.objects.filter(listing__in=[l.id for l in listings]).order_by('-date_published')[:5])
         latest_comments_qs = PigeonComment.objects.all().order_by('-submit_date')
         latest_comments = []
         for c in latest_comments_qs:

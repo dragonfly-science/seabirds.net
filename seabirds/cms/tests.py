@@ -307,7 +307,7 @@ class TestPosts(TestCase):
             'post-listing':4, 
             'post-seabird_families':[]}, follow=True)
         p = Post.objects.get(title='Test')
-        self.assertEqual(len(p.get_subscribers()), 2)
+        self.assertEqual(len(p.get_subscribers()), 3)
 
     def test_email_rendering(self):
         self.client.post(reverse('new-post'), {'post-title':'Test', 
@@ -333,8 +333,8 @@ class TestPermissions(TestCase):
 
     def setUp(self):
         self.no_comments = Listing.objects.get(key='jobs')
-        self.staff_only_write_listing = Listing.objects.get(key='news')
-        self.staff_only_read_listing = Listing.objects.get(key='staff')
+        self.announce_listing = Listing.objects.get(key='news')
+        self.committee_listing = Listing.objects.get(key='staff')
         self.everyone_read_listing = Listing.objects.get(key='discussion')
         self.counter = 0
 
@@ -382,6 +382,7 @@ class TestPermissions(TestCase):
         slug = self._create_test_post('albert-ross', self.everyone_read_listing)
 
         response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
 
         total_comments = len(PigeonComment.objects.all())
         self.client.logout()
@@ -488,14 +489,14 @@ class TestPermissions(TestCase):
         self.assertEqual(pc.submit_date, submit_date)
 
     def test_staff_only_write_public_read(self):
-        slug = self._create_test_post('albert-ross', self.staff_only_write_listing)
+        slug = self._create_test_post('albert-ross', self.announce_listing)
 
-        # Users not allowed to post to "staff write" listing
+        # Users not allowed to post to "permission write" listing
         self.client.login(username='sooty-shearwater', password="foo")
         response = self.client.post(reverse('new-post'), {
             'post-title': 'Test normal user',
             'post-text': 'This is a test post', 
-            'post-listing': self.staff_only_write_listing, 
+            'post-listing': self.announce_listing, 
             'post-seabird_families': [1, 2]})
         self.assertTrue('Select a valid choice' in response.content)
 
@@ -512,8 +513,25 @@ class TestPermissions(TestCase):
         response = self._post_comment('sooty-shearwater', slug)
         self.assertEqual(response.status_code, 200)
 
+    def test_permission_only_write_public_read(self):
+        slug = self._create_test_post('announcer-jill', self.announce_listing)
+
+        # normal users can see the post
+        self.client.login(username='sooty-shearwater', password="foo")
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 200)
+
+        # Comments are good too
+        response = self._post_comment('sooty-shearwater', slug)
+        self.assertEqual(response.status_code, 200)
+
     def test_comment_deletion(self):
-        slug = self._create_test_post('albert-ross', self.staff_only_write_listing)
+        slug = self._create_test_post('albert-ross', self.announce_listing)
 
         # Create comment
         response = self._post_comment('albert-ross', slug)
@@ -552,8 +570,8 @@ class TestPermissions(TestCase):
         self.assertEqual(pc.is_removed, True)
 
 
-    def test_staff_only_read(self):
-        slug = self._create_test_post('albert-ross', self.staff_only_read_listing)
+    def test_committee_only_read(self):
+        slug = self._create_test_post('albert-ross', self.committee_listing)
 
         # Users not allowed to post to "staff read" listing
         # (technically this is not a required test, but
@@ -563,7 +581,7 @@ class TestPermissions(TestCase):
         response = self.client.post(reverse('new-post'), {
             'post-title': 'Test normal user',
             'post-text': 'This is a test post', 
-            'post-listing': self.staff_only_read_listing, 
+            'post-listing': self.committee_listing, 
             'post-seabird_families': [1, 2]})
         self.assertTrue('Select a valid choice' in response.content)
 
@@ -587,6 +605,19 @@ class TestPermissions(TestCase):
         self.assertEqual(response.status_code, 200)
         # and can comment
         response = self._post_comment('albert-ross', slug)
+        self.assertEqual(response.status_code, 200)
+
+        # committee members can read 
+        self.client.login(username='committee-jack', password="foo")
+        response = self.client.get(reverse('individual-post', kwargs={
+            'slug':slug,
+            'year':'2012',
+            'month':'2',
+            'day':'2',
+            }))
+        self.assertEqual(response.status_code, 200)
+        # and can comment
+        response = self._post_comment('committee-jack', slug)
         self.assertEqual(response.status_code, 200)
 
 

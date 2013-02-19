@@ -205,7 +205,7 @@ def get_navigation(request, url, staff=False):
             # TODO: not too sure why we are getting "selected_listing" since
             # it doesn't seem like it's used elsewhere...
             selected_listing = Listing.objects.get(key=key)
-            if not staff and not selected_listing.user_can_read(u):
+            if not staff and not selected_listing.can_user_read(u):
                 selected_listing = None
             selected_node = Navigation.objects.get(name='Discussion')
         except Listing.DoesNotExist:
@@ -217,10 +217,7 @@ def get_navigation(request, url, staff=False):
             if selected_node.name == 'Discussion':
                 grandchildren = Listing.objects.all()
                 if not staff:
-                    grandchildren = [
-                            g for g in grandchildren if not g.read_permission or
-                            (u and u.has_perm(g.read_permission))
-                            ]
+                    grandchildren = [ g for g in grandchildren if g.can_user_read(u) ]
                 sublinks = []
                 for g in grandchildren:
                     sublinks.append((g, key and g.key == key, []))
@@ -315,6 +312,7 @@ def process_comment(request, commentform, post):
     try:
         comment = C.objects.get(id=commentform.cleaned_data.get('id', None))
         if not comment.can_be_edited_by(request.user):
+            import pdb; pdb.set_trace()
             raise PermissionDenied
     except C.DoesNotExist:
         if not post.can_user_comment(request.user):
@@ -406,7 +404,7 @@ def individual_post(request, year=None, month=None, day=None, slug=None):
             'add_comment': True,
             }
             )
-    elif post.date_published and (post.listing.user_can_read(request.user)):
+    elif post.date_published and (post.listing.can_user_read(request.user)):
         # We show the post if it published, but provide no forms
         navigation = get_base_navigation(request)
         return render(request, 'cms/post.html', {

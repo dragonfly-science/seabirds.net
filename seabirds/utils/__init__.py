@@ -52,3 +52,8 @@ def generate_email(to_user, subject, template_data, text_template, html_template
     html_content = render_to_string(html_template, template_data)
     msg.attach_alternative(html_content, "text/html")
     return msg
+
+def perm_to_code(permission):
+    """ Django's has_perm forces you to pass a string instead of a permissions object """
+    ct, name = (permission.content_type.app_label, permission.codename)
+    return "%s.%s" % (ct, name)

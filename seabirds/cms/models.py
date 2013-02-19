@@ -277,7 +277,7 @@ class Post(models.Model):
             just_published_now = True
 
             # Check that the author is allowed to post to this list
-            if self.listing.post_permission and not self.author.has_perm(self.listing.post_permission):
+            if not self.listing.can_user_post(self.author):
                 raise PermissionDenied
 
         super(Post, self).save(*args, **kwargs)
@@ -316,15 +316,14 @@ class Post(models.Model):
     def can_user_comment(self, user):
         if not user.is_authenticated():
             return False
-        if self.listing.read_permission and not user.has_perm(self.listing.read_permission):
+        if not self.listing.can_user_read(user):
             return False
         return self.enable_comments and self.published
 
     def can_user_modify(self, user):
         if not user.is_authenticated():
             return False
-        return user == self.author or user.is_staff \
-                or user.has_perm(self.listing.moderation_permission)
+        return user == self.author or self.listing.can_user_moderate(user)
 
     class Meta:
         ordering = ['-date_published', '-date_created']
@@ -362,6 +361,8 @@ class Navigation(MPTTModel):
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
+from utils import perm_to_code
+
 def get_listing_content_type():
     return ContentType.objects.get(app_label="cms", model="listing")
 
@@ -375,7 +376,7 @@ class ListingManager(models.Manager):
 
         viewable_listings = []
         for l in all_listings:
-            if l.user_can_read(user):
+            if l.can_user_read(user):
                 viewable_listings.append(l)
         return viewable_listings
 
@@ -420,14 +421,25 @@ class Listing(models.Model):
     def __unicode__(self):
         return self.description
 
-    def user_can_post(self, user):
-        return not self.post_permission or user.has_perm(self.post_permission)
+    def can_user_post(self, user):
+        if user:
+            return not self.post_permission or user.has_perm(perm_to_code(self.post_permission))
+        return False
 
-    def user_can_read(self, user):
-        return not self.read_permission or user.has_perm(self.read_permission)
+    def can_user_read(self, user):
+        if self.read_permission:
+            if user:
+                return user.has_perm(perm_to_code(self.read_permission))
+            else:
+                return False
+        return True
 
-    def user_can_moderate(self, user):
-        return self.moderation_permission and user.has_perm(self.moderation_permission)
+    def can_user_moderate(self, user):
+        if user:
+            if user.is_staff:
+                return True
+            return self.moderation_permission and user.has_perm(perm_to_code(self.moderation_permission))
+        return False
 
     class Meta:
         permissions = (

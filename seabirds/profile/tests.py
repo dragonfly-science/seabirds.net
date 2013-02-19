@@ -69,7 +69,7 @@ class TestUnicodeNames(TestCase):
     @patch('os.mkdir')
     def test_get_photo_path(self, mkdir):
         photo_path = get_photo_path(self.unicode_user.profile.get(), 'test.jpg')
-        self.assertEqual(photo_path,'users/3/knosos-the_symbol_.jpg')
+        self.assertEqual(photo_path,'users/4/knosos-the_symbol_.jpg')
 
 class TestUsername(TestCase):
     fixtures = ['test-data/profile.json']
