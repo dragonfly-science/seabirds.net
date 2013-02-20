@@ -56,6 +56,10 @@ class PostArchiveView(ArchiveIndexView):
         Taken from django.views.generic.dates.BaseDateListView
         """
         listing = kwargs.get('listing', None)
+
+        u = request.user if request.user.is_authenticated else None
+        self.viewable_listings = Listing.objects.user_readable(u)
+
         self.date_list, self.object_list, extra_context = self.get_dated_items(request, listing)
         if listing is None:
             # On general recent posts page, we limit to the last couple of months or so
@@ -66,7 +70,7 @@ class PostArchiveView(ArchiveIndexView):
                                         date_list=self.date_list)
         context.update(extra_context)
         context.update({"twitter" : "seabirders"})
-        #context.update({'listings': self.visible_listings})
+        context.update({'listings': self.viewable_listings})
         return self.render_to_response(context)
 
     def get_dated_items(self, request, listing):
@@ -78,18 +82,14 @@ class PostArchiveView(ArchiveIndexView):
         Extended to take account of user and what posts they are allowed to see,
         and allows viewing posts in a given listing.
         """
-        u = request.user if request.user.is_authenticated else None
-
         if listing:
             listing_object = get_object_or_404(Listing, key=listing)
-            viewable_listings = Listing.objects.user_readable(u)
-            if listing_object not in viewable_listings:
+            if listing_object not in self.viewable_listings:
                 raise Http404
+            qs = self.get_dated_queryset(listing=listing_object)
         else:
             listing_object = None
-            viewable_listings = Listing.objects.user_readable(u)
-
-        qs = self.get_dated_queryset(listing__in=viewable_listings)
+            qs = self.get_dated_queryset(listing__in=self.viewable_listings)
 
         date_list = self.get_date_list(qs, 'year')
 

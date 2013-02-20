@@ -130,10 +130,6 @@ class TestPages(TestCase):
         response = self.client.get('/home.html')
         self.assertEqual(response.status_code, 200)
     
-    def test_posts(self):
-        response = self.client.get('/posts/')
-        self.assertEqual(response.status_code, 200)
-
 class TestPosts(TestCase):
     fixtures = ['test-data/profile.json']
     TEST_EMAIL_DELAYS = {
@@ -358,6 +354,21 @@ class TestPosts(TestCase):
         p = Post.objects.get(title='Testjob')
         u = User.objects.get(username='committee-jack')
         self.assertTrue(p.can_user_modify(u))
+
+    def test_view_all_recent_posts(self):
+        response = self.client.get('/posts/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_listing_posts(self):
+        response = self.client.get('/groups/jobs')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue('Sorry - there are no posts available in the "Job postings" group.' in response.content)
+
+    def test_view_listing_without_permission(self):
+        response = self.client.get('/groups/staff')
+        self.assertEqual(response.status_code, 404)
+
 
 class TestPermissions(TestCase):
     fixtures = ['test-data/profile.json']
@@ -712,22 +723,13 @@ class TestDigest(TestCase):
             self.assertTrue('[Seabirds.net]' in message.subject)
             self.assertTrue('long enough' in message.body, msg=message.body)
 
-#  TestJobs(TestCase):
-#
-#    def test_redirect(self):
-#        response = self.client.get('/jobs/', follow=True)
-#        assert response.redirect_chain[-1] == ('/jobs/?max_days_since_creation=90', 302)
-#
-#
-#class TestGallery(TestCase):
-#
-#    def test_gallery_url(self):
-#        r = self.client.get('/gallery')
-#        assert r.status_code == 200
-#
-#    def test_seabird_families_urls(self):
-#        for s in SeabirdFamily.objects.all():
-#            r = self.client.get('/gallery/' + slugify(str(s)))
-#            assert r.status_code == 200
-#
+class TestFeed(TestCase):
+    fixtures = ['test-data/profile.json']
+
+    def test_feed(self):
+        response = self.client.get('/feed/rss/posts')
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(response.content)
+        results = root.findall(".//item/title")
+        self.assertEqual("World Seabird Conference", results[0].text)
 
