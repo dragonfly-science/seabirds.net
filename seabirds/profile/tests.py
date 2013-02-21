@@ -2,11 +2,12 @@
 import os
 
 from django.contrib.auth.models import User
+from django.core import mail
 from django.test import TestCase
 
 from mock import patch
 
-from profile.models import UserProfile, get_photo_path, CollaborationChoice, create_user_profile
+from profile.models import UserProfile, get_photo_path
 
 
 class TestTwitter(TestCase):
@@ -125,10 +126,11 @@ class TestUsername(TestCase):
 
 
 class TestNewUser(TestCase):
+    fixtures = ['test-data/profile.json']
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
-        self.data = {
+        self.user_data = {
             'first_name':'Fairy',
             'last_name':'Prion',
             'email': 'fairy@prion.net',
@@ -154,22 +156,36 @@ class TestNewUser(TestCase):
         """ Admin should be emailed when user activates """
         response = self.client.post('/accounts/register/', self.user_data)
         self.assertTrue(response.status_code == 302)
+        # activation email
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue('Account registration for Seabirds.net' in mail.outbox[0].subject)
         u = User.objects.get(first_name='Fairy')
         self.assertFalse(u.is_active)
         u.is_active = True
         u.save()
+        # validation email
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertTrue('New user registered on Seabirds.net' in mail.outbox[1].subject)
+        p = u.profile.get()
+        self.assertEqual(p.is_valid_seabirder, False)
+        p.is_valid_seabirder = True
+        p.save()
+        self.assertEqual(len(mail.outbox), 3)
+        self.assertTrue('You have been validated on Seabirds.net' in mail.outbox[2].subject)
         # When profiles are created they should not be valid researchers
-        self.assertFalse(u.profile.get().is_valid_seabirder)
+        p = u.profile.get()
+        self.assertTrue(p.is_valid_seabirder)
 
     def test_create_duplicate_user(self):
         """ Test that users with the same name will generate a different username """
+        start_users = User.objects.count()
         response = self.client.post('/accounts/register/', self.user_data)
         self.assertTrue(response.status_code == 302)
-        user_data['email'] = 'fairy2@prion.net'
-        response = self.client.post('/accounts/register/', user_data)
+        self.user_data['email'] = 'fairy2@prion.net'
+        response = self.client.post('/accounts/register/', self.user_data)
         self.assertTrue(response.status_code == 302)
         users = User.objects.filter(first_name='Fairy')
-        self.assertTrue(len(users), 2)
+        self.assertTrue(len(users) - start_users, 2)
         # First username will be the prefix of the second one
         self.assertTrue(users[0].username in users[1].username)
 

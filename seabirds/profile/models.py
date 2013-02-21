@@ -80,7 +80,15 @@ def toggle_research_field(sender, instance, created, **kwargs):
             instance.save()
 post_save.connect(toggle_research_field, sender=UserProfile)
 
+def _get_users_with_permission(permission_code):
+    from django.contrib.auth.models import User, Permission
+    from django.db.models import Q
+
+    perm = Permission.objects.get(codename=permission_code)  
+    return User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm) ).distinct()
+
 def user_validated(sender, instance, **kwargs):
+    if kwargs['raw']: return
     if instance.id: # without an instance id, this is a create action
         old = sender.objects.get(pk=instance.id)
         if instance.is_valid_seabirder and not old.is_valid_seabirder:
@@ -92,12 +100,24 @@ def user_validated(sender, instance, **kwargs):
             body = render_to_string('registration/user_validated_email.txt', context).strip()
             message = EmailMessage(subject, body, to=[instance.user.email])
             message.send()
+pre_save.connect(user_validated, sender=UserProfile)
+
+def user_activated(sender, instance, **kwargs):
+    if kwargs['raw']: return
+    if instance.id: # without an instance id, this is a create action
+        old = sender.objects.get(pk=instance.id)
         if instance.is_active and not old.is_active:
             # Notify admin when user activates account
             current_site = Site.objects.get_current()
             context = { 'user': instance, 'site': current_site }
             subject = render_to_string('registration/notify_admin_of_new_user_subject.txt', context).strip()
             body = render_to_string('registration/notify_admin_of_new_user.txt', context).strip()
-            message = EmailMessage(subject, body, to=[settings.ADMINS[0][1]])
+            users = _get_users_with_permission('moderator')
+            if len(users) == 0:
+                # If no moderators, then use the email of the first defined admin
+                moderator_emails = [ a[1] for a in settings.ADMINS ]
+            else:
+                moderator_emails = [u.email for u in users]
+            message = EmailMessage(subject, body, to=moderator_emails)
             message.send()
-pre_save.connect(user_validated, sender=UserProfile)
+pre_save.connect(user_activated, sender=User)

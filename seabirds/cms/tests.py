@@ -286,7 +286,7 @@ class TestPosts(TestCase):
             'post-listing':1, 
             'post-seabird_families':[1, 2]}, follow=True)
         p = Post.objects.get(title='Test')
-        self.assertEqual(len(p.get_subscribers()), 2)
+        self.assertEqual(len(p.get_subscribers()), 4)
 
         self.client.login(username="albert-ross", password="foo")
         self.client.post(reverse('new-post'), {'post-title':'Test2', 

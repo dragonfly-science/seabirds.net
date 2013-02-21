@@ -655,6 +655,7 @@
             ], 
             "research_field": [], 
             "is_researcher": false, 
+            "is_valid_seabirder": true, 
             "display_twitter": true, 
             "collaboration_choices": [], 
             "title": "Dr", 
@@ -690,6 +691,7 @@
             ], 
             "research_field": [], 
             "is_researcher": false, 
+            "is_valid_seabirder": true, 
             "display_twitter": true, 
             "collaboration_choices": [], 
             "title": "Dr", 
@@ -700,6 +702,74 @@
             ], 
             "is_moderator": false, 
             "user": 2, 
+            "accept_terms": false, 
+            "institution": "Dragonfly Science", 
+            "photograph": "users/2/grant-humphries.jpg", 
+            "country": "NZ", 
+            "institution_type": 4, 
+            "institution_website": "http://www.dragonfly.co.nz/", 
+            "date_created": "2012-01-01"
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "profile.userprofile", 
+        "fields": {
+            "wid": null, 
+            "display_email": true, 
+            "webpage": "http://seabirds.net/petrel/albert-ross", 
+            "twitter": "@seabirders", 
+            "seabirds": [
+                1, 
+                10
+            ], 
+            "research_field": [], 
+            "is_researcher": false, 
+            "is_valid_seabirder": true, 
+            "display_twitter": true, 
+            "collaboration_choices": [], 
+            "title": "Dr", 
+            "research": "Albatross stuff", 
+            "date_updated": "2012-08-10", 
+            "subscriptions": [
+                1 
+            ], 
+            "is_moderator": false, 
+            "user": 3, 
+            "accept_terms": false, 
+            "institution": "Dragonfly Science", 
+            "photograph": "users/2/grant-humphries.jpg", 
+            "country": "NZ", 
+            "institution_type": 4, 
+            "institution_website": "http://www.dragonfly.co.nz/", 
+            "date_created": "2012-01-01"
+        }
+    },
+    {
+        "pk": 4, 
+        "model": "profile.userprofile", 
+        "fields": {
+            "wid": null, 
+            "display_email": true, 
+            "webpage": "http://seabirds.net/petrel/albert-ross", 
+            "twitter": "@seabirders", 
+            "seabirds": [
+                1, 
+                10
+            ], 
+            "research_field": [], 
+            "is_researcher": false, 
+            "is_valid_seabirder": true, 
+            "display_twitter": true, 
+            "collaboration_choices": [], 
+            "title": "Dr", 
+            "research": "Albatross stuff", 
+            "date_updated": "2012-08-10", 
+            "subscriptions": [
+                1 
+            ], 
+            "is_moderator": false, 
+            "user": 4, 
             "accept_terms": false, 
             "institution": "Dragonfly Science", 
             "photograph": "users/2/grant-humphries.jpg", 
@@ -760,6 +830,11 @@
             "user_permissions": [
                     [
                       "committee", 
+                      "cms", 
+                      "listing"
+                    ],
+                    [
+                      "moderator", 
                       "cms", 
                       "listing"
                     ]
