@@ -195,8 +195,6 @@
       "moderation_permission": null, 
       "description": "Member discussion", 
       "read_permission": null, 
-      "staff_only_write": false, 
-      "staff_only_read": false, 
       "key": "discussion", 
       "optional_list": true, 
       "post_permission": null
@@ -210,8 +208,6 @@
       "moderation_permission": null, 
       "description": "Announcements", 
       "read_permission": null, 
-      "staff_only_write": true, 
-      "staff_only_read": false, 
       "key": "announce", 
       "optional_list": false, 
       "post_permission": [
@@ -233,8 +229,6 @@
         "cms", 
         "listing"
       ], 
-      "staff_only_write": true, 
-      "staff_only_read": true, 
       "key": "staff", 
       "optional_list": false, 
       "post_permission": [
@@ -252,8 +246,6 @@
       "moderation_permission": null, 
       "description": "WSU news", 
       "read_permission": null, 
-      "staff_only_write": true, 
-      "staff_only_read": false, 
       "key": "news", 
       "optional_list": true, 
       "post_permission": [
@@ -275,8 +267,6 @@
         ],
       "description": "Job postings", 
       "read_permission": null, 
-      "staff_only_write": true, 
-      "staff_only_read": false, 
       "key": "jobs", 
       "optional_list": true, 
       "post_permission": [

@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 
 import django.core.mail as mail
 
-from cms.models import Page,  Navigation, Image, Post, Listing
+from cms.models import Page, Navigation, Image, Post, Listing
 from profile.models import UserProfile
 from comments.models import PigeonComment
 from cms.tasks import generate_comment_pigeons
@@ -53,6 +53,16 @@ class CommentEmailTest(TestCase):
         comment.is_removed = False
         comment.save()
         return comment
+
+    def test_comment_can_be_seen(self):
+        j = User.objects.get(username='committee-jack')
+        listing = Listing.objects.get(key='staff')
+        p = Post(title='New Post 2', text='A sentence that is long enough to go to the digest',  
+            listing=listing, author=j, name='new-post-2')
+        p.save()
+        comment = self.new_comment(p, j)
+
+        self.assertFalse(comment.can_be_seen_by(self.sooty))
 
     def test_author_comments_no_email(self):
         """ Comment by author sends no email to author """

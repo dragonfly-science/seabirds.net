@@ -387,8 +387,6 @@ class Listing(models.Model):
     description = models.TextField()
 
     # Permissions
-    staff_only_write = models.BooleanField()
-    staff_only_read = models.BooleanField()
     allow_comments = models.BooleanField()
 
     post_permission = models.ForeignKey(Permission, null=True, blank=True,

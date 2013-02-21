@@ -593,8 +593,6 @@
         "fields": {
             "key": "discussion", 
             "description": "Member discussion",
-            "staff_only_write": false,
-            "staff_only_read": false,
             "allow_comments": true
         }
     },
@@ -604,8 +602,6 @@
         "fields": {
             "key": "news", 
             "description": "WSU news",
-            "staff_only_write": true,
-            "staff_only_read": false,
             "allow_comments": true
         }
     },
@@ -615,8 +611,6 @@
         "fields": {
             "key": "staff", 
             "description": "Staff only discussion",
-            "staff_only_write": true,
-            "staff_only_read": true,
             "allow_comments": true
         }
     },
@@ -626,8 +620,6 @@
         "fields": {
             "key": "jobs", 
             "description": "Job postings",
-            "staff_only_write": false,
-            "staff_only_read": false,
             "allow_comments": false
         }
     },
@@ -637,8 +629,6 @@
         "fields": {
             "key": "announce", 
             "description": "Announcements",
-            "staff_only_write": true,
-            "staff_only_read": false,
             "allow_comments": false,
             "optional": false
         }

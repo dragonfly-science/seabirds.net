@@ -33,8 +33,12 @@ class PigeonComment(Comment):
             post_type = ContentType.objects.get(app_label="cms", model="post")
             # Otherwise, comments on staff only posts are invisible
             # everything else assumed to be public
-            if self.content_type == post_type and self.content_object.listing.staff_only_read:
-                return False
+
+            if (self.content_type == post_type):
+                if self.content_object.listing.can_user_read(user):
+                    return True
+                else:
+                    return False
             else:
                 return True
 
