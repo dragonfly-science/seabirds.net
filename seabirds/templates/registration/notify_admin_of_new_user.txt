@@ -1,0 +1,7 @@
+A new user has just registered at {{ site.name }}.
+
+Before they can post discussion topics, or comment, they need to be validated by a
+{{ site.name }} staff member. Please go to the admin page, check their details,
+and mark them valid if they look like a legit seabirder.
+
+http://{{site.domain}}{% url admin:profile_userprofile_change user.profile.get.id %}

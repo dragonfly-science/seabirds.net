@@ -1,0 +1,6 @@
+A {{ site.name }} staff member has reviewed your profile and validated your account.
+
+You now can post to the discussion forums and comment on posts. Join the
+scintillating seabird discussion here:
+
+http://{{site.domain}}{% url show_posts %}

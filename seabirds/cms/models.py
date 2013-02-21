@@ -317,7 +317,7 @@ class Post(models.Model):
     def can_user_comment(self, user):
         if not user.is_authenticated():
             return False
-        if not self.listing.can_user_read(user):
+        if not user.profile.get().is_valid_seabirder or not self.listing.can_user_read(user):
             return False
         return self.enable_comments and self.published
 
@@ -419,7 +419,10 @@ class Listing(models.Model):
 
     def can_user_post(self, user):
         if user:
-            return not self.post_permission or user.has_perm(perm_to_code(self.post_permission))
+            if user.profile.get().is_valid_seabirder:
+                return not self.post_permission or user.has_perm(perm_to_code(self.post_permission))
+            else:
+                return False
         return False
 
     def can_user_read(self, user):

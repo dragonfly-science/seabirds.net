@@ -1,13 +1,18 @@
 import os
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django_countries import CountryField
-from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
+from django.db.models.signals import post_save, pre_save
+from django.template.loader import render_to_string
+from django.contrib.sites.models import Site
+from django.core.mail import EmailMessage
 
 from categories.models import SeabirdFamily, InstitutionType, ResearchField
 from unidecode import unidecode
+
 
 def get_photo_path(instance, filename):
     if filename:
@@ -74,3 +79,25 @@ def toggle_research_field(sender, instance, created, **kwargs):
             instance.is_researcher = False
             instance.save()
 post_save.connect(toggle_research_field, sender=UserProfile)
+
+def user_validated(sender, instance, **kwargs):
+    if instance.id: # without an instance id, this is a create action
+        old = sender.objects.get(pk=instance.id)
+        if instance.is_valid_seabirder and not old.is_valid_seabirder:
+            # Someone just marked a UserProfile as valid. Let's send them an
+            # email to tell them the good news.
+            current_site = Site.objects.get_current()
+            context = { 'user': instance.user, 'site': current_site }
+            subject = render_to_string('registration/user_validated_email_subject.txt', context).strip()
+            body = render_to_string('registration/user_validated_email.txt', context).strip()
+            message = EmailMessage(subject, body, to=[instance.user.email])
+            message.send()
+        if instance.is_active and not old.is_active:
+            # Notify admin when user activates account
+            current_site = Site.objects.get_current()
+            context = { 'user': instance, 'site': current_site }
+            subject = render_to_string('registration/notify_admin_of_new_user_subject.txt', context).strip()
+            body = render_to_string('registration/notify_admin_of_new_user.txt', context).strip()
+            message = EmailMessage(subject, body, to=[settings.ADMINS[0][1]])
+            message.send()
+pre_save.connect(user_validated, sender=UserProfile)

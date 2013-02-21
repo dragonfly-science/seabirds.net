@@ -1,0 +1,1 @@
+Hurrah! You have been validated on {{ site.name }}.

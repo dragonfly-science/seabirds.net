@@ -1,4 +1,4 @@
-You (or someone pretending to be you) have registered 
+You (or someone pretending to be you) have registered an account on
 {{ site.name }}.  If this wasn't you, please ignore this email
 and your address will be removed from our records.
 

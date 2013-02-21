@@ -47,7 +47,7 @@ urlpatterns += patterns('',
     url(r'^posts/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/$', 'cms.views.individual_post', name='individual-post'),
     # This uses the new Generic Class views of Django 1.3+
     # Our custom implementation ensures we don't leak information about staff only discussions
-    (r'^posts/$', PostArchiveView.as_view(date_field='date_published',template_name='cms/list.html')),
+    url(r'^posts/$', PostArchiveView.as_view(date_field='date_published',template_name='cms/list.html'), name='show_posts'),
     (r'^groups/(?P<listing>[a-zA-Z0-9_\-]+)$', PostArchiveView.as_view(date_field='date_published',template_name='cms/list.html')),
     url(r'^feed/rss/posts$', LatestPostsFeed(), name='rssfeed'),
 )

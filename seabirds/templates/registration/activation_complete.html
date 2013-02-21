@@ -2,6 +2,9 @@
 {% block title %}Activation complete{% endblock %}
 {% block content %}
 <p>Thanks, your registration has been confirmed.</p>
+<p>Initially you'll only be able to edit your <a href='{% url profile_edit %}'>profile page</a>, but once a {{ site.name }} moderator has a chance to review your account you'll be given access to contribute to the discussions. Please add a little bit about yourself to your profile so that we can confirm your interest in seabirds.</p>
+<p>This is to help protect against spam and to ensure an environment with high-quality discussion.</p>
+<p>You will be notified by email when you are given full access to the discussion groups.</p>
 <p>You may now <a href='{% url auth_login %}'>login</a> to Seabirds.net using the email address and password you set at registration.</p>
 {% endblock %}
 

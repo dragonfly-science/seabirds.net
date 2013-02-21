@@ -128,31 +128,7 @@ class TestNewUser(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
-
-    def tearDown(self):
-        os.environ['RECAPTCHA_TESTING'] = 'False'
-
-    def test_create_user(self):
-        """ Ensure we can register new users """
-        response = self.client.post('/accounts/register/',
-            {
-            'first_name':'Fairy',
-            'last_name':'Prion',
-            'email': 'fairy@prion.net',
-            'accept_terms': True,
-            'recaptcha_response_field': 'PASSED',
-            'password1':'fairyprion',
-            'password2':'fairyprion',
-            })
-        self.assertTrue(response.status_code == 302)
-        u = User.objects.get(first_name='Fairy')
-        self.assertTrue(u.last_name, 'Prion')
-        # When profiles are created they should not be valid researchers
-        self.assertFalse(u.profile.get().is_valid_seabirder)
-
-    def test_create_duplicate_user(self):
-        """ Test that users with the same name will generate a different username """
-        user_data = {
+        self.data = {
             'first_name':'Fairy',
             'last_name':'Prion',
             'email': 'fairy@prion.net',
@@ -161,7 +137,33 @@ class TestNewUser(TestCase):
             'password1':'fairyprion',
             'password2':'fairyprion',
             }
-        response = self.client.post('/accounts/register/', user_data)
+
+    def tearDown(self):
+        os.environ['RECAPTCHA_TESTING'] = 'False'
+
+    def test_create_user(self):
+        """ Ensure we can register new users """
+        response = self.client.post('/accounts/register/', self.user_data)
+        self.assertTrue(response.status_code == 302)
+        u = User.objects.get(first_name='Fairy')
+        self.assertTrue(u.last_name, 'Prion')
+        # When profiles are created they should not be valid researchers
+        self.assertFalse(u.profile.get().is_valid_seabirder)
+
+    def test_activate_user(self):
+        """ Admin should be emailed when user activates """
+        response = self.client.post('/accounts/register/', self.user_data)
+        self.assertTrue(response.status_code == 302)
+        u = User.objects.get(first_name='Fairy')
+        self.assertFalse(u.is_active)
+        u.is_active = True
+        u.save()
+        # When profiles are created they should not be valid researchers
+        self.assertFalse(u.profile.get().is_valid_seabirder)
+
+    def test_create_duplicate_user(self):
+        """ Test that users with the same name will generate a different username """
+        response = self.client.post('/accounts/register/', self.user_data)
         self.assertTrue(response.status_code == 302)
         user_data['email'] = 'fairy2@prion.net'
         response = self.client.post('/accounts/register/', user_data)

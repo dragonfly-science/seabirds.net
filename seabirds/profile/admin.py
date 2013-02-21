@@ -81,9 +81,20 @@ class UserProfileAdmin(admin.ModelAdmin):
         is_active, 'is_valid_seabirder', 'is_researcher',
         'date_created', last_login, google_search_field, edit_user_field)
     list_filter = ('institution','country', 'is_valid_seabirder', 'date_created')
-    actions = [mark_as_active, mark_as_inactive, 
-        mark_as_valid, mark_as_invalid,
-        mark_as_researcher, mark_as_not_researcher]
+    fields = ('user',
+            ('title', 'is_valid_seabirder', 'is_researcher'),
+            'webpage', 'display_email',
+            'institution', 'institution_type', 'institution_website',
+            'country',
+            'research', 'research_field',
+            'photograph',
+            'seabirds',
+            'collaboration_choices',
+            'subscriptions',
+            'twitter', 'display_twitter',
+            'accept_terms')
+    actions = [mark_as_active, mark_as_inactive, mark_as_valid, mark_as_invalid,
+            mark_as_researcher, mark_as_not_researcher]
 admin.site.register(UserProfile, UserProfileAdmin)
 
 class CollaborationChoiceAdmin(admin.ModelAdmin):
