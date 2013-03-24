@@ -19,7 +19,8 @@ fabric
 pycrypto
 ssh
 git+https://github.com/praekelt/django-recaptcha
-hg+https://bitbucket.org/ubernostrum/django-registration
+#hg+https://bitbucket.org/ubernostrum/django-registration
+django-registration==0.8
 django-coverage
 django-grappelli==2.4.2
 coverage

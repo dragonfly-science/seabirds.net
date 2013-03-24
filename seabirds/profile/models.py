@@ -59,8 +59,8 @@ class UserProfile(models.Model):
     is_valid_seabirder = models.BooleanField(default=False)
     is_moderator = models.BooleanField(default=False, editable=False)
 
-    def __str__(self):
-        return "%s %s" % (self.user.first_name, self.user.last_name)
+    def __unicode__(self):
+        return u"%s %s" % (self.user.first_name, self.user.last_name)
 
     @models.permalink
     def get_absolute_url(self):
