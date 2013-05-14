@@ -13,7 +13,7 @@ class PostForm(forms.ModelForm):
         super(PostForm, self).__init__(*args, **kwargs)
         # This is not ideal because we need to convert a list into a queryset.
         # Not sure how to tell a form to just use a list instead.
-        listings = Listing.objects.user_readable(user)
+        listings = Listing.objects.user_postable(user)
         self.fields['listing'].queryset = Listing.objects.filter(id__in=[l.id for l in listings])
     
     class Meta:

@@ -371,14 +371,24 @@ def get_listing_content_type():
 class ListingManager(models.Manager):
     
     def user_readable(self, user):
-        u = user if user.is_authenticated else None
         all_listings = Listing.objects.all()
-        if u.is_staff:
+        if user.is_authenticated and user.is_staff:
             return list(all_listings)
 
         viewable_listings = []
         for l in all_listings:
             if l.can_user_read(user):
+                viewable_listings.append(l)
+        return viewable_listings
+
+    def user_postable(self, user):
+        all_listings = Listing.objects.all()
+        if user.is_authenticated and user.is_staff:
+            return list(all_listings)
+
+        viewable_listings = []
+        for l in all_listings:
+            if l.can_user_post(user):
                 viewable_listings.append(l)
         return viewable_listings
 

@@ -535,10 +535,13 @@ class TestPermissions(TestCase):
 
         # Users not allowed to post to "permission write" listing
         self.client.login(username='sooty-shearwater', password="foo")
+        response = self.client.get(reverse('new-post'))
+        self.assertNotContains(response, self.announce_listing.description)
+
         response = self.client.post(reverse('new-post'), {
             'post-title': 'Test normal user',
             'post-text': 'This is a test post', 
-            'post-listing': self.announce_listing, 
+            'post-listing': self.announce_listing.id, 
             'post-seabird_families': [1, 2]})
         self.assertTrue('Select a valid choice' in response.content)
 
