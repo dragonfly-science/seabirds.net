@@ -18,7 +18,7 @@ psycopg2
 fabric
 pycrypto
 ssh
-django-recaptcha
+django-recaptcha==1.0.3
 #hg+https://bitbucket.org/ubernostrum/django-registration
 django-registration==0.8
 django-coverage
