@@ -6,7 +6,7 @@ django-form-utils
 django-mptt==0.5.1
 django-taggit==0.9.3
 django-reversion==1.6.6
-django-countries
+django-countries==3.1.1
 django-profiles
 django-passwords
 longerusername==0.4
