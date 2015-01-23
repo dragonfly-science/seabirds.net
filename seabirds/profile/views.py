@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 
-from django_countries.countries import COUNTRIES
+from django_countries import countries as COUNTRIES
 
 from categories.models import SeabirdFamily
 from profile.models import UserProfile, CollaborationChoice
@@ -45,7 +45,7 @@ def custom_list(request, template_name='profiles/profile_list.html', **kwargs):
     countries_queryset = profile_model._default_manager.all()
     collaboration_queryset = utils.get_model('profile', 'collaborationchoice')._default_manager.all()
     extra_context = {'seabird': None, 'country':None, 'country_tag':None, 'collaboration_choice':None}
- 
+
     seabird = request.GET.get('s', None)
     if seabird is not None:
         try:
@@ -55,7 +55,7 @@ def custom_list(request, template_name='profiles/profile_list.html', **kwargs):
             extra_context['seabird'] =  bird
         except (SeabirdFamily.DoesNotExist, MultipleObjectsReturned):
             pass
-    
+
     country = request.GET.get('c', None)
     if country is not None and country in COUNTRIES.keys():
         queryset = queryset.filter(country=country)

@@ -1,11 +1,11 @@
 git+git://github.com/dragonfly-science/django-bibliography.git
 git+git://github.com/dragonfly-science/cuckoo-migrations.git
-Django==1.4.2
+Django==1.4.18
 django-disqus==0.4.1
 django-form-utils
 django-mptt==0.5.1
 django-taggit==0.9.3
-django-reversion==1.6.4
+django-reversion==1.6.6
 django-countries
 django-profiles
 django-passwords
@@ -18,7 +18,7 @@ psycopg2
 fabric
 pycrypto
 ssh
-git+https://github.com/praekelt/django-recaptcha
+django-recaptcha
 #hg+https://bitbucket.org/ubernostrum/django-registration
 django-registration==0.8
 django-coverage

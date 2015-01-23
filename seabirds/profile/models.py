@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
-from django_countries import CountryField
+from django_countries.fields import CountryField
 from django.template.defaultfilters import slugify
 from django.db.models.signals import post_save, pre_save
 from django.template.loader import render_to_string
@@ -18,7 +18,7 @@ def get_photo_path(instance, filename):
     if filename:
         base, ext = os.path.splitext(os.path.split(filename)[1])
         userid = str(instance.user.id)
-        try: 
+        try:
             os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', '%s' % userid))
         except OSError:
             pass
@@ -84,7 +84,7 @@ def _get_users_with_permission(permission_code):
     from django.contrib.auth.models import User, Permission
     from django.db.models import Q
 
-    perm = Permission.objects.get(codename=permission_code)  
+    perm = Permission.objects.get(codename=permission_code)
     return User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm) ).distinct()
 
 def user_validated(sender, instance, **kwargs):
