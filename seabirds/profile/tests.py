@@ -44,7 +44,7 @@ class TestProfile(TestCase):
 
 class TestAnonymous(TestCase):
     fixtures = ['test-data/profile.json']
-        
+
     def test_anonymous_users_are_barred(self):
         response = self.client.get('/petrel/edit/', follow=False)
         self.assertFalse(response.status_code==200, msg=response.status_code)
@@ -70,36 +70,36 @@ class TestUnicodeNames(TestCase):
     @patch('os.mkdir')
     def test_get_photo_path(self, mkdir):
         photo_path = get_photo_path(self.unicode_user.profile.get(), 'test.jpg')
-        self.assertEqual(photo_path,'users/5/knosos-the_symbol_.jpg')
+        self.assertEqual(photo_path,'users/5/knosos-the_symbol_23.jpg')
 
 class TestUsername(TestCase):
     fixtures = ['test-data/profile.json']
- 
+
     def test_have_sooty(self):
         sooty = User.objects.get(username='sooty-shearwater')
         self.assertTrue(sooty.email=='sooty@seabirds.net')
 
     def test_login(self):
-        response = self.client.post('/accounts/login/', 
-            {'username':'sooty-shearwater', 
-            'password': 'foo', 
+        response = self.client.post('/accounts/login/',
+            {'username':'sooty-shearwater',
+            'password': 'foo',
             }, follow=True)
         self.assertTrue('Dr Sooty Shearwater' in response.content)
 
     def test_login_email(self):
-        response = self.client.post('/accounts/login/', 
-            {'username':'sooty@seabirds.net', 
-            'password': 'foo', 
+        response = self.client.post('/accounts/login/',
+            {'username':'sooty@seabirds.net',
+            'password': 'foo',
             }, follow=True)
         self.assertTrue('Dr Sooty Shearwater' in response.content)
-        
+
     def test_login_long_username(self):
         sooty = User.objects.get(username='sooty-shearwater')
         sooty.username = 'sooty-shearwater-with-a-very-long-username'
         sooty.save()
-        response = self.client.post('/accounts/login/', 
-            {'username':'sooty-shearwater-with-a-very-long-username', 
-            'password': 'foo', 
+        response = self.client.post('/accounts/login/',
+            {'username':'sooty-shearwater-with-a-very-long-username',
+            'password': 'foo',
             }, follow=True)
         self.assertTrue('Dr Sooty Shearwater' in response.content)
 
@@ -107,9 +107,9 @@ class TestUsername(TestCase):
         sooty = User.objects.get(username='sooty-shearwater')
         sooty.email = 'sooty.shearwater.with.a.very.long.email@seabirds.net'
         sooty.save()
-        response = self.client.post('/accounts/login/', 
-            {'username':'sooty.shearwater.with.a.very.long.email@seabirds.net', 
-            'password': 'foo', 
+        response = self.client.post('/accounts/login/',
+            {'username':'sooty.shearwater.with.a.very.long.email@seabirds.net',
+            'password': 'foo',
             }, follow=True)
         self.assertTrue('Dr Sooty Shearwater' in response.content)
 
