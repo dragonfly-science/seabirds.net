@@ -1,6 +1,6 @@
-git+git://github.com/dragonfly-science/django-bibliography.git
+git+git://github.com/dragonfly-science/django-bibliography.git@779b05f57f4efaa898d139ba27c5d729d92758a9
 git+git://github.com/dragonfly-science/cuckoo-migrations.git
-Django==1.4.18
+Django==1.4.22
 django-disqus==0.4.1
 django-form-utils
 django-mptt==0.5.1
@@ -26,6 +26,6 @@ django-grappelli==2.4.2
 coverage
 git+git://github.com/dragonfly-science/django-pigeonpost@v0.1.9
 unidecode
-django-nose
+django-nose==1.3.0
 nose-cov
 mock
