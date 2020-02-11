@@ -1,6 +1,6 @@
 git+git://github.com/dragonfly-science/django-bibliography.git@779b05f57f4efaa898d139ba27c5d729d92758a9
 git+git://github.com/dragonfly-science/cuckoo-migrations.git
-Django==1.4.22
+Django==1.11.28
 django-disqus==0.4.1
 django-form-utils
 django-mptt==0.5.1
